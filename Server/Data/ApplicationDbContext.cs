@@ -14,6 +14,6 @@ namespace PhiJudge.Server.Data
 
         public DbSet<SubmitRecord> Records { get; set; }
 
-        public DbSet<JudgePoint> JudgePoints { get; set; }
+        public DbSet<AgentJudgePoint> JudgePoints { get; set; }
     }
 }

@@ -4,6 +4,8 @@
     {
         public long Id { get; set; }
 
+        public string AccessToken { get; set; }
+
         public string Title { get; set; }
 
         public string Description { get; set; }
@@ -11,6 +13,8 @@
         public PhiUser Author { get; set; }
 
         public DateTime CreateTime { get; set; }
+
+        public ProblemViewStatus ViewStatus { get; set; }
 
         public int TotalSubmits { get; set; }
 
@@ -20,7 +24,7 @@
         {
             get
             {
-                return TotalPasses / TotalSubmits;
+                return TotalSubmits == 0 ? 0 : TotalPasses / TotalSubmits;
             }
         }
 

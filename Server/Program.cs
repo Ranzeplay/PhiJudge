@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PhiJudge.Server.Data;
 using PhiJudge.Server.Models;
+using PhiJudge.Server.Services;
 using System.Configuration;
 using System.Text;
 
@@ -48,19 +49,23 @@ namespace PhiJudge.Server
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-                .AddJwtBearer(options =>
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new()
                 {
-                    options.RequireHttpsMetadata = false;
-                    options.SaveToken = true;
-                    options.TokenValidationParameters = new()
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidAudience = jwtConfig.Audience,
-                        ValidIssuer = jwtConfig.Issuer,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key)),
-                    };
-                });
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidAudience = jwtConfig.Audience,
+                    ValidIssuer = jwtConfig.Issuer,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtConfig.Key)),
+                };
+            });
+
+            builder.Services.AddScoped<IJudgePointStorageService, JudgePointFileStorageService>();
+
+            builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
             var app = builder.Build();
 

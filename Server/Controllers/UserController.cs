@@ -71,7 +71,7 @@ namespace PhiJudge.Server.Controllers
                     new Claim(JwtRegisteredClaimNames.Iss, _jwtConfig.Issuer),
                     new Claim(JwtRegisteredClaimNames.Aud, _jwtConfig.Audience),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                    new Claim(JwtRegisteredClaimNames.UniqueName, user.Id),
+                    new Claim("uid", user.Id),
                     new Claim(JwtRegisteredClaimNames.Iat, issueTime.ToString()),
                     new Claim(JwtRegisteredClaimNames.Exp, expire.ToString()),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())

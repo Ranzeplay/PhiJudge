@@ -14,6 +14,6 @@
 
         public string LanguageId { get; set; }
 
-        public IEnumerable<JudgePoint> JudgePoints { get; set; }
+        public IEnumerable<AgentJudgePoint> JudgePoints { get; set; }
     }
 }
