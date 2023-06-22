@@ -21,10 +21,10 @@ const routers = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <React.StrictMode>
-        <div className='mb-16'>
+        <div className='mb-24'>
             <NavBar />
         </div>
-        <div className='mt-8'>
+        <div>
             <RouterProvider router={routers} />
         </div>
     </React.StrictMode>

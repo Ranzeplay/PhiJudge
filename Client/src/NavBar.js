@@ -6,11 +6,11 @@ import './NavBar.scss'
 function NavBar() {
     return (
         <Header aria-label="navbar" className="NavBar">
-            <HeaderName href="#" prefix="Phi">Judge</HeaderName>
+            <HeaderName href="/" prefix="Phi">Judge</HeaderName>
             <SkipToContent />
 
             <HeaderNavigation>
-                <HeaderMenuItem href="#">Home</HeaderMenuItem>
+                <HeaderMenuItem href="/">Home</HeaderMenuItem>
                 <HeaderMenuItem href="#">Problem Set</HeaderMenuItem>
                 <HeaderMenuItem href="#">Submits</HeaderMenuItem>
             </HeaderNavigation>
@@ -19,7 +19,7 @@ function NavBar() {
                 <HeaderGlobalAction aria-label="Notifications">
                     <Notification size={20} />
                 </HeaderGlobalAction>
-                <HeaderGlobalAction aria-label="User">
+                <HeaderGlobalAction aria-label="User" href="/auth/signin">
                     <User size={20} />
                 </HeaderGlobalAction>
             </HeaderGlobalBar>
