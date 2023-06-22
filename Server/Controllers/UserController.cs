@@ -31,7 +31,7 @@ namespace PhiJudge.Server.Controllers
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp([FromForm] SignUpViewModel model)
+        public async Task<IActionResult> SignUp([FromBody] SignUpViewModel model)
         {
             var user = new PhiUser
             {
@@ -51,7 +51,7 @@ namespace PhiJudge.Server.Controllers
         }
 
         [HttpPost("signin")]
-        public async Task<IActionResult> SignIn([FromForm] SignInViewModel model)
+        public async Task<IActionResult> SignIn([FromBody] SignInViewModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)

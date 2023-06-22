@@ -74,6 +74,10 @@ namespace PhiJudge.Server
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
+                app.UseCors(options => options.AllowAnyHeader()
+                                              .AllowAnyMethod()
+                                              .SetIsOriginAllowed(origin => true)
+                                              .AllowCredentials());
             }
 
             app.UseHttpsRedirection();
