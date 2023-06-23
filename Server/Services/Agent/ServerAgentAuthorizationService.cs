@@ -40,7 +40,7 @@ namespace PhiJudge.Server.Services.Agent
 
         public override async Task<UnauthorizeReply> Unauthorize(UnauthorizeRequest request, ServerCallContext context)
         {
-            Guid.TryParse(request.AgentId, out var agentId);
+            _ = Guid.TryParse(request.AgentId, out var agentId);
 
             var agent = await _dbContext.Agents.FirstOrDefaultAsync(a => a.Id == agentId);
             if (agent == null)
