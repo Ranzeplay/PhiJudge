@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+option csharp_namespace = "PhiJudge.Server.Protos";
+
+service AgentConnectionService {
+	rpc Connect (ConnectRequest) returns (ConnectReply);
+	rpc Disconnect (DisconnectRequest) returns (DisconnectReply);
+}
+
+service AgentAuthorizationService {
+	rpc Authorize (AuthorizeRequest) returns (AuthorizeReply);
+	rpc Unauthorize (UnauthorizeRequest) returns (UnauthorizeReply);
+}
+
+service AgentProblemService {
+	rpc SubmitSolution (SubmitSolutionRequest) returns (SubmitSolutionReply);
+}
+
+message ConnectRequest {
+	string agentId = 1;
+	string accessToken = 2;
+}
+
+message ConnectReply {
+	bool status = 1;
+	optional string reason = 2;
+}
+
+message DisconnectRequest {
+	string agentId = 1;
+	string accessToken = 2;
+}
+
+message DisconnectReply {
+	bool status = 1;
+	optional string reason = 2;
+}
+
+message AuthorizeRequest {
+	string name = 1;
+}
+
+message AuthorizeReply {
+	bool status = 1;
+	optional string reason = 2;
+	optional string agentId = 3;
+	optional string accessToken = 4;
+}
+
+message UnauthorizeRequest {
+	string agentId = 1;
+	string accessToken = 2;
+}
+
+message UnauthorizeReply {
+	string status = 1;
+	optional string reason = 2;
+}
+
+message SubmitSolutionRequest {
+
+}
+
+message SubmitSolutionReply {
+	
+}

@@ -1,14 +1,11 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using PhiJudge.Server.Data;
 using PhiJudge.Server.Models;
 using PhiJudge.Server.Services;
-using System.Configuration;
+using PhiJudge.Server.Services.Agent;
 using System.Text;
 
 namespace PhiJudge.Server
@@ -67,6 +64,8 @@ namespace PhiJudge.Server
 
             builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 
+            builder.Services.AddGrpc();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -86,6 +85,7 @@ namespace PhiJudge.Server
             app.UseAuthorization();
 
             app.MapControllers();
+            app.MapGrpcService<ServerAgentAuthorizationService>();
 
             app.Run();
         }
