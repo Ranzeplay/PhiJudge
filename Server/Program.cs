@@ -86,6 +86,7 @@ namespace PhiJudge.Server
 
             app.MapControllers();
             app.MapGrpcService<ServerAgentAuthorizationService>();
+            app.MapGrpcService<ServerAgentConnectionService>();
 
             app.Run();
         }
