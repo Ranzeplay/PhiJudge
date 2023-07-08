@@ -42,18 +42,20 @@ namespace PhiJudge.Server.Services
 
             var result = new List<JudgePoint>();
 
-            var points = Directory.EnumerateDirectories(judgePointsPath)
-                .OrderBy(d => int.Parse(d));
+            var points = Directory.EnumerateDirectories(judgePointsPath).ToArray();
             foreach (var point in points)
             {
-                var pointPath = Path.Combine(judgePointsPath, point!);
+                // var pointPath = Path.Combine(judgePointsPath, point!);
+                var pointPath = point;
 
                 var input = await File.ReadAllTextAsync(Path.Combine(pointPath, "input.txt"));
                 var output = await File.ReadAllTextAsync(Path.Combine(pointPath, "output.txt"));
 
+                var name = new DirectoryInfo(pointPath).Name;
+
                 result.Add(new JudgePoint
                 {
-                    Index = int.Parse(point),
+                    Index = int.Parse(name!),
                     Input = input,
                     Output = output
                 });
