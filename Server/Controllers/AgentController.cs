@@ -19,7 +19,7 @@ namespace PhiJudge.Server.Controllers
             _dbContext = dbContext;
         }
 
-        [HttpPut("auth")]
+        [HttpPost("auth")]
         public async Task<IActionResult> Auth(AgentRegisterModel model)
         {
             var agent = new Agent

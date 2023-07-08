@@ -6,9 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-tide = "0.16.0"
+tokio = { version = "1", features = ["full"] }
+warp = "0.3"
 reqwest = { version = "0.11.18", features = ["blocking", "json"] }
-async-std = { version = "1.8.0", features = ["attributes"] }
 clap = { version = "4.3.3", features = ["derive"] }
 singleton-manager = "0.1.4"
 serde = { version = "1.0", features = ["derive"] }

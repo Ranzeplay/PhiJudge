@@ -1,18 +1,19 @@
 use clap::Parser;
 use singleton_manager::sm;
 
+
 use crate::managers::auth_manager::AuthManager;
 use crate::managers::config_manager::ConfigManager;
 use crate::managers::connection_manager::ConnectionManager;
+use crate::managers::server_manager::start_server;
 use crate::models::args::StartupArgs;
 
 mod models;
 mod managers;
 mod routes;
 
-
-#[async_std::main]
-async fn main() -> tide::Result<()> {
+#[tokio::main]
+async fn main() {
     let args = StartupArgs::parse();
 
     sm().set("config_manager", ConfigManager::init("./config.yml"))
@@ -28,17 +29,12 @@ async fn main() -> tide::Result<()> {
 
         if args.agent_name.is_none() || args.authorize_addr.is_none() {
             eprintln!("You must provide server address and agent name at the same time");
-            return Ok(())
+            return;
         }
 
         auth_manager.register(args.authorize_addr.expect("Server address required"), args.agent_name.expect("Agent name required")).await;
     } else if args.start {
-        let mut server = tide::new();
-        server.at("judge/submit").post(routes::judge::submit);
-
         println!("Starting HTTP server");
-        server.listen("127.0.0.1:37413").await?;
+        start_server().await;
     }
-
-    Ok(())
 }
