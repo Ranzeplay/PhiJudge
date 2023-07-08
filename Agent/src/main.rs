@@ -1,27 +1,24 @@
 mod proto;
+mod models;
+mod managers;
 
-use tonic::transport::{Certificate, Channel, ClientTlsConfig};
-use crate::proto::agent::agent_connection_service_client::AgentConnectionServiceClient;
-use crate::proto::agent::AgentConnectRequest;
+use clap::Parser;
+use singleton_manager::sm;
+use crate::managers::auth_manager::AuthManager;
+use crate::managers::config_manager::ConfigManager;
+use crate::managers::connection_manager::ConnectionManager;
+use crate::models::args::StartupArgs;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let cert = std::fs::read_to_string("ca.pem")?;
+    let args = StartupArgs::parse();
 
-    let addr = Channel::from_static("https://localhost:7052")
-        .tls_config(ClientTlsConfig::new()
-            .ca_certificate(Certificate::from_pem(&cert)))?;
-
-    let mut client = AgentConnectionServiceClient::connect(addr).await?;
-
-    let request = tonic::Request::new(AgentConnectRequest{
-        agent_id: "hello".to_string(),
-        access_token: "hello".to_string(),
-    });
-
-    let response = client.agent_connect(request).await?;
-
-    println!("{:?}", response);
+    sm().set("config_manager", ConfigManager::init("./config.yml"))
+        .expect("Failed to register config manager");
+    sm().set("connection_manager", ConnectionManager::init())
+        .expect("Failed to register connection manager");
+    sm().set("auth_manager", AuthManager::init())
+        .expect("Failed to register auth manager");
 
     Ok(())
 }
