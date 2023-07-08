@@ -1,12 +1,10 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using PhiJudge.Server.Data;
 using PhiJudge.Server.Models;
 using PhiJudge.Server.Models.ViewModels;
 using PhiJudge.Server.Services;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace PhiJudge.Server.Controllers
 {

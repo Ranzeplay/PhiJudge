@@ -1,9 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PhiJudge.Server.Data;
 using PhiJudge.Server.Models;
-using PhiJudge.Server.Models.ViewModels;
 using PhiJudge.Server.Models.ViewModels.Agent;
 
 namespace PhiJudge.Server.Controllers
