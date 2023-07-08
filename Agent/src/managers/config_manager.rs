@@ -22,13 +22,18 @@ impl ConfigManager {
             let mut file = File::create(path)
                 .expect("Failed to create config file");
 
-            let empty_config = Config { authorized: false, access_token: "".to_string(), agent_id: "".to_string() };
+            let empty_config = Config {
+                authorized: false,
+                access_token: "".to_string(),
+                agent_id: "".to_string(),
+                agent_port: 37413,
+            };
             let serialized_config = serde_yaml::to_string(&empty_config)
                 .unwrap();
 
             write!(file, "{}", serialized_config).expect("Failed to write a new config file");
 
             ConfigManager { path: path.to_string(), config: empty_config }
-        }
+        };
     }
 }
