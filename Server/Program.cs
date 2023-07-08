@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using PhiJudge.Server.Data;
 using PhiJudge.Server.Models;
 using PhiJudge.Server.Services;
-using PhiJudge.Server.Services.Agent;
 using System.Text;
 
 namespace PhiJudge.Server
@@ -18,6 +17,8 @@ namespace PhiJudge.Server
 
             // Add services to the container.
 
+            builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("AuthConfig"));
+            
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -38,9 +39,6 @@ namespace PhiJudge.Server
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DatabaseConnection"));
             });
 
-            builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection("AuthConfig"));
-            var jwtConfig = builder.Configuration.GetSection("AuthConfig").Get<JwtConfig>();
-
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -48,6 +46,8 @@ namespace PhiJudge.Server
             })
             .AddJwtBearer(options =>
             {
+                var jwtConfig = builder.Configuration.GetSection("AuthConfig").Get<JwtConfig>();
+
                 options.RequireHttpsMetadata = false;
                 options.SaveToken = true;
                 options.TokenValidationParameters = new()
@@ -79,14 +79,21 @@ namespace PhiJudge.Server
                                               .AllowCredentials());
             }
 
+            app.UseRouting();
+
             app.UseHttpsRedirection();
 
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
-            app.MapGrpcService<ServerAgentAuthorizationService>();
-            app.MapGrpcService<ServerAgentConnectionService>();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllerRoute(
+                  name: "areas",
+                  pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                );
+            });
 
             app.Run();
         }
