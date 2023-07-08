@@ -1,4 +1,3 @@
-mod proto;
 mod models;
 mod managers;
 
