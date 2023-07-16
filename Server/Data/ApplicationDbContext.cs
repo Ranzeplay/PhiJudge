@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using PhiJudge.Server.Models.Auth;
 using PhiJudge.Server.Models.Judge;
-using System.Diagnostics.CodeAnalysis;
 
 namespace PhiJudge.Server.Data
 {

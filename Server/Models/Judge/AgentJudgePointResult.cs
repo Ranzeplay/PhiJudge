@@ -6,6 +6,8 @@
 
         public int PointId { get; set; }
 
+        public int PointIndex { get; set; }
+
         public string ActualOutput { get; set; }
 
         public PointStatus Status { get; set; }

@@ -58,7 +58,8 @@ namespace PhiJudge.Server.Controllers
             });
         }
 
-        [HttpPut("upload-test-data")]
+        [Authorize]
+        [HttpPatch("upload-test-data")]
         public async Task<IActionResult> UploadJudgePoint([FromForm] JudgePointUploadModel model)
         {
             var problem = _dbContext.Problems.FirstOrDefault(p => p.Id == model.ProblemId);
@@ -101,7 +102,8 @@ namespace PhiJudge.Server.Controllers
             return Ok();
         }
 
-        [HttpPut("complete-creation")]
+        [Authorize]
+        [HttpPatch("complete-creation")]
         public IActionResult CompleteCreation([FromForm] ProblemViewModelBase model)
         {
             var problem = _dbContext.Problems.FirstOrDefault(p => p.Id == model.ProblemId);

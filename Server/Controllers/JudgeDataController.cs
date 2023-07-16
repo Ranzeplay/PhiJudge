@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PhiJudge.Server.Data;
 using PhiJudge.Server.Models.Judge;
-using PhiJudge.Server.Models.ViewModels;
+using PhiJudge.Server.Models.ViewModels.Problem;
 using PhiJudge.Server.Services;
 
 namespace PhiJudge.Server.Controllers
