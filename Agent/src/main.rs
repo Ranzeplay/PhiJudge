@@ -11,6 +11,10 @@ use crate::models::args::StartupArgs;
 mod models;
 mod managers;
 mod routes;
+mod utils;
+
+#[cfg(test)]
+mod test;
 
 #[tokio::main]
 async fn main() {
