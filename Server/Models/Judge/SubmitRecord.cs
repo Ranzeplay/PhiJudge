@@ -1,4 +1,6 @@
-﻿namespace PhiJudge.Server.Models
+﻿using PhiJudge.Server.Models.Auth;
+
+namespace PhiJudge.Server.Models.Judge
 {
     public class SubmitRecord
     {
@@ -14,6 +16,6 @@
 
         public string LanguageId { get; set; }
 
-        public IEnumerable<AgentJudgePoint> JudgePoints { get; set; }
+        public IEnumerable<AgentJudgePointResult> JudgePoints { get; set; }
     }
 }

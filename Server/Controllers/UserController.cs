@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using PhiJudge.Server.Models;
-using PhiJudge.Server.Models.ViewModels;
+using PhiJudge.Server.Models.Auth;
+using PhiJudge.Server.Models.ViewModels.Auth;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

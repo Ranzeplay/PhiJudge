@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace PhiJudge.Server.Models.ViewModels
+namespace PhiJudge.Server.Models.ViewModels.Problem
 {
     public class CreateProblemViewModel
     {

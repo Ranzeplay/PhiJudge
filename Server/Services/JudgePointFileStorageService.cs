@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using PhiJudge.Server.Models;
+using PhiJudge.Server.Models.Judge;
 
 namespace PhiJudge.Server.Services
 {

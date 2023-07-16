@@ -1,4 +1,6 @@
-﻿namespace PhiJudge.Server.Models.ViewModels
+﻿using PhiJudge.Server.Models.Judge;
+
+namespace PhiJudge.Server.Models.ViewModels.Problem
 {
     public class JudgeDataViewModel
     {

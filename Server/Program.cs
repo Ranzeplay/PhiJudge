@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using PhiJudge.Server.Data;
 using PhiJudge.Server.Models;
+using PhiJudge.Server.Models.Auth;
 using PhiJudge.Server.Services;
 using System.Text;
 
@@ -63,8 +64,6 @@ namespace PhiJudge.Server
             builder.Services.AddScoped<IJudgePointStorageService, JudgePointFileStorageService>();
 
             builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
-
-            builder.Services.AddGrpc();
 
             var app = builder.Build();
 

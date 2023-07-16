@@ -1,4 +1,4 @@
-﻿namespace PhiJudge.Server.Models.ViewModels
+﻿namespace PhiJudge.Server.Models.ViewModels.Problem
 {
     public class JudgePointUploadModel : ProblemViewModelBase
     {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using PhiJudge.Server.Models.Judge;
 
-namespace PhiJudge.Server.Models
+namespace PhiJudge.Server.Models.Auth
 {
     public class PhiUser : IdentityUser
     {

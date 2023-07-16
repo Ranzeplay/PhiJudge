@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PhiJudge.Server.Data;
-using PhiJudge.Server.Models;
+using PhiJudge.Server.Models.Judge;
 using PhiJudge.Server.Models.ViewModels;
 using PhiJudge.Server.Services;
 
@@ -19,7 +19,7 @@ namespace PhiJudge.Server.Controllers
             _judgePointStorageService = judgePointStorageService;
         }
 
-        [HttpGet("get/{id}")]
+        [HttpGet("points/{id}")]
         public async Task<IActionResult> GetById(long id)
         {
             var problem = _dbContext.Problems.FirstOrDefault(p => p.Id == id);
@@ -38,6 +38,12 @@ namespace PhiJudge.Server.Controllers
                 TimeLimitBytes = problem.TimeLimit,
                 JudgePoints = data
             });
+        }
+
+        [HttpGet("test-script")]
+        public IActionResult GetTestScript(string langId)
+        {
+            return Ok();
         }
     }
 }

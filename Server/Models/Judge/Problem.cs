@@ -1,4 +1,6 @@
-﻿namespace PhiJudge.Server.Models
+﻿using PhiJudge.Server.Models.Auth;
+
+namespace PhiJudge.Server.Models.Judge
 {
     public class Problem
     {

@@ -1,4 +1,4 @@
-﻿namespace PhiJudge.Server.Models
+﻿namespace PhiJudge.Server.Models.Auth
 {
     public class JwtConfig
     {

@@ -1,4 +1,4 @@
-﻿namespace PhiJudge.Server.Models
+﻿namespace PhiJudge.Server.Models.Judge
 {
     public class JudgePoint
     {
