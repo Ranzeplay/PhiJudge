@@ -6,6 +6,8 @@ namespace PhiJudge.Server.Models.Judge
     {
         public long Id { get; set; }
 
+        public JudgeStatus Status { get; set; }
+
         public Problem Problem { get; set; }
 
         public PhiUser Uploader { get; set; }
@@ -15,6 +17,8 @@ namespace PhiJudge.Server.Models.Judge
         public DateTime SubmitTime { get; set; }
 
         public string LanguageId { get; set; }
+
+        public string CompileOutput { get; set; }
 
         public IEnumerable<AgentJudgePointResult> JudgePoints { get; set; }
     }
