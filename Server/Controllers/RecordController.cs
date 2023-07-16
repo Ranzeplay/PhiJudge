@@ -31,7 +31,7 @@ namespace PhiJudge.Server.Controllers
             var userId = User.Claims.Where(c => c.Type.Equals("uid")).First();
             var user = await _userManager.FindByIdAsync(userId.Value);
 
-            var problem = _problemService.UserGetByIdAsync(model.ProblemId);
+            var problem = _problemService.GetByIdAsync(model.ProblemId);
 
             if (problem == null)
             {
@@ -67,6 +67,18 @@ namespace PhiJudge.Server.Controllers
             await _dbContext.SaveChangesAsync();
 
             return Ok();
+        }
+
+        [HttpGet("status")]
+        public IActionResult GetStatus(long recordId)
+        {
+            var record = _dbContext.Records.FirstOrDefault(x => x.Id == recordId);
+            if (record == null)
+            {
+                return NotFound("Record not found");
+            }
+
+            return Ok(record.Status);
         }
     }
 }
