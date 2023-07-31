@@ -55,7 +55,7 @@ namespace PhiJudge.Server.Controllers
             {
                 Problem = problem,
                 SubmitTime = DateTime.UtcNow,
-                Status = JudgeStatus.Pending,
+                Status = JudgeStatus.Queued,
                 Uploader = user,
                 LanguageId = model.LanguageId,
                 SourceCode = model.SourceCode,
@@ -79,6 +79,23 @@ namespace PhiJudge.Server.Controllers
             }
 
             return Ok(record.Status);
+        }
+
+        [HttpGet("data")]
+        public IActionResult GetData([FromBody] long recordId)
+        {
+            var record = _dbContext.Records.FirstOrDefault(x => x.Id == recordId);
+            if (record == null)
+            {
+                return NotFound("Record not found");
+            }
+
+            return Ok(new
+            {
+                ProblemId = record.Problem.Id,
+                record.LanguageId,
+                record.SourceCode,
+            });
         }
     }
 }

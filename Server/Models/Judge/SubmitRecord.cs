@@ -12,6 +12,8 @@ namespace PhiJudge.Server.Models.Judge
 
         public PhiUser Uploader { get; set; }
 
+        public Guid AgentId { get; set; }
+
         public string SourceCode { get; set; }
 
         public DateTime SubmitTime { get; set; }

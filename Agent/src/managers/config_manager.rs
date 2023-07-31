@@ -27,6 +27,7 @@ impl ConfigManager {
                 access_token: "".to_string(),
                 agent_id: "".to_string(),
                 agent_port: 37413,
+                server_address: "".to_string()
             };
             let serialized_config = serde_yaml::to_string(&empty_config)
                 .unwrap();

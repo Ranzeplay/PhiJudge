@@ -20,6 +20,7 @@ namespace PhiJudge.Server.Attributes
                 .Request
                 .Headers["Authorization"]
                 .ToString()
+                .Replace("Agent ", "")
                 .Split(' ');
 
             var agentIdText = authorizationHeaderParts[0];

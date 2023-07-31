@@ -63,6 +63,7 @@ namespace PhiJudge.Server
 
             builder.Services.AddScoped<IJudgePointStorageService, JudgePointFileStorageService>();
             builder.Services.AddScoped<IProblemService, IProblemService>();
+            builder.Services.AddScoped<IJudgeService, JudgeService>();
 
             builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 

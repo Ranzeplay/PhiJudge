@@ -3,11 +3,12 @@
     public enum JudgeStatus
     {
         Unknown = 0,
-        Pending = 1,
-        Compiling = 2,
-        Success = 3,
-        Fail,
-        Cancelled = 4,
-        Abort = 5,
+        Submitted = 1,
+        Queued = 2,
+        Compiling = 3,
+        Success = 4,
+        Fail = 5,
+        Cancelled = 6,
+        Abort = 7,
     }
 }
