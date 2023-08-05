@@ -8,13 +8,14 @@ use crate::managers::connection_manager::ConnectionManager;
 use crate::managers::server_manager::start_server;
 use crate::models::args::StartupArgs;
 
+#[cfg(test)]
+mod test;
+
 mod models;
 mod managers;
 mod routes;
 mod utils;
-
-#[cfg(test)]
-mod test;
+mod judge;
 
 #[tokio::main]
 async fn main() {

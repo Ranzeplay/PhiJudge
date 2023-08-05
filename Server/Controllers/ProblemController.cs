@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using PhiJudge.Server.Attributes;
 using PhiJudge.Server.Data;
 using PhiJudge.Server.Models.Auth;
 using PhiJudge.Server.Models.Judge;
@@ -17,12 +18,14 @@ namespace PhiJudge.Server.Controllers
         private readonly UserManager<PhiUser> _userManager;
 
         private readonly IJudgePointStorageService _judgePointStorageService;
+        private readonly IProblemService _problemService;
 
-        public ProblemController(ApplicationDbContext dbContext, UserManager<PhiUser> userManager, IJudgePointStorageService judgePointStorageService)
+        public ProblemController(ApplicationDbContext dbContext, UserManager<PhiUser> userManager, IJudgePointStorageService judgePointStorageService, IProblemService problemService)
         {
             _dbContext = dbContext;
             _userManager = userManager;
             _judgePointStorageService = judgePointStorageService;
+            _problemService = problemService;
         }
 
         [Authorize]

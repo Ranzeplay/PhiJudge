@@ -10,6 +10,6 @@ namespace PhiJudge.Server.Models.ViewModels.Problem
 
         public long MemoryLimitBytes { get; set; }
 
-        public long TimeLimitBytes { get; set; }
+        public long TimeLimitMillis { get; set; }
     }
 }

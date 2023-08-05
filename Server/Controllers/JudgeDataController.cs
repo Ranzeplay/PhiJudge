@@ -35,7 +35,7 @@ namespace PhiJudge.Server.Controllers
             {
                 Id = id,
                 MemoryLimitBytes = problem.MemoryLimit,
-                TimeLimitBytes = problem.TimeLimit,
+                TimeLimitMillis = problem.TimeLimit,
                 JudgePoints = data
             });
         }

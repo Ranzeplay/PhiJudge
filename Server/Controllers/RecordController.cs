@@ -31,7 +31,7 @@ namespace PhiJudge.Server.Controllers
             var userId = User.Claims.Where(c => c.Type.Equals("uid")).First();
             var user = await _userManager.FindByIdAsync(userId.Value);
 
-            var problem = _problemService.GetByIdAsync(model.ProblemId);
+            var problem = _problemService.GetById(model.ProblemId);
 
             if (problem == null)
             {

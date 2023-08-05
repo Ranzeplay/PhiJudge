@@ -1,5 +1,5 @@
 use warp::Filter;
-use crate::models::communication::judge_queue::JudgeQueue;
+use crate::models::judge_queue_entry::JudgeQueueEntry;
 use crate::routes::judge;
 
 pub async fn start_server() {
@@ -9,8 +9,8 @@ pub async fn start_server() {
         .and(warp::path("queue"))
         .and(warp::path::end())
         .and(warp::header::<String>("Authorization"))
-        .and(warp::body::json::<JudgeQueue>())
-        .map(judge::queue);
+        .and(warp::body::json::<JudgeQueueEntry>())
+        .and_then(judge::queue);
 
     let judge_routes = judge_prefix.and(judge_submit);
 

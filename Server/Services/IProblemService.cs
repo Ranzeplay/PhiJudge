@@ -4,8 +4,8 @@ namespace PhiJudge.Server.Services
 {
     public interface IProblemService
     {
-        Problem? GetByIdAsync(long id);
-        Task<Problem?> GetById(long id);
+        Problem? GetById(long id);
+        Task<Problem?> GetByIdAsync(long id);
         Problem? PrivilegedGetById(long id);
     }
 }
