@@ -1,11 +1,19 @@
 # PhiJudge
 
-## Project structure
+A continuity of [Semicolon.OnlineJudge](https://github.com/Ranzeplay/Semicolon.OnlineJudge).
 
-- Server
+## Features
 
-- Client
+- Separated services
+  
+  - Central server
+  
+  - Agent
+  
+  - Frontend web app
 
-- Agent
+- Container support
 
-- ProblemsetRepository (not implemented yet)
+## License
+
+The software follows [MIT License](./LICENSE).

@@ -1,0 +1,6 @@
+@PhiJudge.Central_HostAddress = http://localhost:5137
+
+GET {{PhiJudge.Central_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
