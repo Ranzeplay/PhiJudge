@@ -9,18 +9,24 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@carbon/charts-react": "^1.16.0",
+    "@carbon/elements": "^11.45.0",
+    "@carbon/icons": "^11.41.0",
+    "@carbon/icons-react": "^11.41.0",
+    "@carbon/react": "^1.57.0",
+    "@supabase/supabase-js": "^2.43.1",
+    "next": "14.2.3",
     "react": "^18",
-    "react-dom": "^18",
-    "next": "14.2.3"
+    "react-dom": "^18"
   },
   "devDependencies": {
-    "typescript": "^5",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "eslint": "^8",
+    "eslint-config-next": "14.2.3",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
-    "eslint": "^8",
-    "eslint-config-next": "14.2.3"
+    "typescript": "^5"
   }
 }
