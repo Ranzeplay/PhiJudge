@@ -1,15 +1,15 @@
 "use client";
 
-import { Header, HeaderName, Theme } from "@carbon/react";
+import { RootNavBar } from "@/components/nav/rootNavBar";
+import { Content, Heading } from "@carbon/react";
 
 export default function Home() {
   return (
-    <Theme theme={'g100'}>
-      <Header aria-label="IBM Platform Name">
-        <HeaderName href="#" prefix="IBM">
-          [Platform]
-        </HeaderName>
-      </Header>
-    </Theme>
+    <>
+      <RootNavBar />
+      <Content>
+        <Heading>Welcome to PhiJudge</Heading>
+      </Content>
+    </>
   );
 }

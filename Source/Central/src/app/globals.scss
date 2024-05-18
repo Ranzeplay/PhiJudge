@@ -1,5 +1,10 @@
 @use '@carbon/react';
+@use '@carbon/type';
 
-@tailwind base;
+@include type.reset();
+@include type.default-type();
+@include type.type-classes();
+
+// @tailwind base;
 @tailwind components;
 @tailwind utilities;
