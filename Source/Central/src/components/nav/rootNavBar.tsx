@@ -1,36 +1,30 @@
-"use client";
-
-import { Login, Notification, Search } from "@carbon/icons-react";
-import { Theme, Header, HeaderName, HeaderNavigation, HeaderMenuItem, HeaderGlobalBar, HeaderGlobalAction, SkipToContent, HeaderMenuButton } from "@carbon/react";
+import Link from "next/link"
 
 export function RootNavBar() {
 	return (
-		<Theme theme={'g100'}>
-			<Header aria-label="IBM Platform Name">
-				<SkipToContent />
-				<HeaderMenuButton />
-				<HeaderName href="/" prefix="#Dev">
-					PhiJudge
-				</HeaderName>
-				<HeaderNavigation>
-					<HeaderMenuItem href="/problems">Problems</HeaderMenuItem>
-					<HeaderMenuItem href="/contests">Contests</HeaderMenuItem>
-					<HeaderMenuItem href="/records">Records</HeaderMenuItem>
-					<HeaderMenuItem href="/community">Community</HeaderMenuItem>
-					<HeaderMenuItem href="/status">Status</HeaderMenuItem>
-				</HeaderNavigation>
-				<HeaderGlobalBar>
-					<HeaderGlobalAction>
-						<Search />
-					</HeaderGlobalAction>
-					<HeaderGlobalAction>
-						<Notification />
-					</HeaderGlobalAction>
-					<HeaderGlobalAction>
-						<Login />
-					</HeaderGlobalAction>
-				</HeaderGlobalBar>
-			</Header>
-		</Theme>
+		<header className="sticky top-0 flex h-12 items-center gap-4 bg-background px-4 backdrop-blur-md shadow-md text-xs">
+			<nav className="flex flex-row flex-grow gap-x-3 items-center">
+				<NavBarLink href="/" caption="PhiJudge" className="text-black mr-2 font-medium text-base font-serif" />
+				<NavBarLink href="/problems" caption="Problems" className="text-muted-foreground" />
+				<NavBarLink href="/contests" caption="Contests" className="text-muted-foreground" />
+				<NavBarLink href="/community" caption="Community" className="text-muted-foreground" />
+				<NavBarLink href="/status" caption="Status" className="text-muted-foreground" />
+			</nav>
+			<nav className="flex flex-grow-0 gap-x-3 items-center mr-4">
+				<NavBarLink href="/auth/login" caption="Login" className="text-muted-foreground" />
+				<NavBarLink href="/auth/register" caption="Register" className="text-muted-foreground" />
+			</nav>
+		</header>
+	)
+}
+
+function NavBarLink(props: { href?: string, caption: string, className?: string}) {
+	return (
+		<Link
+			href={props.href || '#'}
+			className={`hover:text-black hover:underline hover:text-foreground transition ${props.className}`}
+		>
+			{props.caption}
+		</Link>
 	)
 }
