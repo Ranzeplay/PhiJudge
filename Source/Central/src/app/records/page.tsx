@@ -46,7 +46,7 @@ export default function Page() {
 									<TableBody>
 											<TableRow>
 												<TableCell className="font-medium">
-													<Link className="flex text-blue-500 hover:underline" href="/record/1/details">1</Link>
+													<Link className="flex text-blue-500 hover:underline" href="/record/1">1</Link>
 												</TableCell>
 												<TableCell className="flex flex-row space-x-1 items-center">
 													<Badge variant={'secondary'}>1</Badge>
