@@ -7,6 +7,7 @@ export function RootNavBar() {
 				<NavBarLink href="/" caption="PhiJudge" className="text-black mr-2 font-medium text-base font-serif" />
 				<NavBarLink href="/problems" caption="Problems" className="text-muted-foreground" />
 				<NavBarLink href="/contests" caption="Contests" className="text-muted-foreground" />
+				<NavBarLink href="/records" caption="Records" className="text-muted-foreground" />
 				<NavBarLink href="/community" caption="Community" className="text-muted-foreground" />
 				<NavBarLink href="/status" caption="Status" className="text-muted-foreground" />
 			</nav>
