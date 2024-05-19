@@ -18,8 +18,8 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "@/components/ui/table"
-
+} from "@/components/ui/table";
+import Link from "next/link";
 export default function Page() {
 	return (
 		<>
@@ -43,12 +43,14 @@ export default function Page() {
 										</TableRow>
 									</TableHeader>
 									<TableBody>
-										<TableRow>
-											<TableCell className="font-medium">1</TableCell>
-											<TableCell>Hello, world</TableCell>
-											<TableCell>11.4%</TableCell>
-											<TableCell>Failed</TableCell>
-										</TableRow>
+											<TableRow>
+												<TableCell className="font-medium">1</TableCell>
+												<TableCell className="flex">
+													<Link className="flex text-blue-500 hover:underline" href="/problem/1/details">Hello, world</Link>
+												</TableCell>
+												<TableCell>11.4%</TableCell>
+												<TableCell>Failed</TableCell>
+											</TableRow>
 									</TableBody>
 								</Table>
 								<Pagination>
