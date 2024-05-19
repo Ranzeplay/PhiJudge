@@ -13,6 +13,20 @@ import {
 import { AlertTriangle, ArrowRight, Check } from "lucide-react";
 import Link from 'next/link';
 import { Badge } from "@/components/ui/badge";
+import { Chart } from 'react-chartjs-2';
+import {
+	Chart as ChartJS,
+	LinearScale,
+	CategoryScale,
+	BarElement,
+	PointElement,
+	LineElement,
+	Legend,
+	Tooltip,
+	LineController,
+	BarController,
+  } from 'chart.js';
+  
 
 export default function Page(params: { params: { id: string } }) {
 	return (
@@ -37,7 +51,7 @@ export default function Page(params: { params: { id: string } }) {
 						</p>
 						<p className="flex flex-row gap-x-1 items-center">
 							<ArrowRight size={15} />
-							<span>Finalize</span>
+							<span>Finish</span>
 						</p>
 					</CardContent>
 				</Card>
@@ -108,9 +122,7 @@ export default function Page(params: { params: { id: string } }) {
 									<CardTitle>Time consumption</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p>Limit: 1000ms</p>
-									<p>Average: 374.13ms (37.4%)</p>
-									<p>Maximum: 443.12ms (44.3%)</p>
+									<TimeChart />
 								</CardContent>
 							</Card>
 							<Card className="flex-grow">
@@ -118,9 +130,7 @@ export default function Page(params: { params: { id: string } }) {
 									<CardTitle>Memory consumption</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<p>Limit: 1024kB</p>
-									<p>Average: 42kB (4.1%)</p>
-									<p>Maximum: 82kB (8.0%)</p>
+									<MemoryChart />
 								</CardContent>
 							</Card>
 						</div>
@@ -137,13 +147,13 @@ export default function Page(params: { params: { id: string } }) {
 								<TableRow>
 									<TableCell>1</TableCell>
 									<TableCell>Correct</TableCell>
-									<TableCell>42kB</TableCell>
+									<TableCell>42 Bytes</TableCell>
 									<TableCell>374.13ms</TableCell>
 								</TableRow>
 								<TableRow>
 									<TableCell>2</TableCell>
 									<TableCell>Wrong Answer</TableCell>
-									<TableCell>82kB</TableCell>
+									<TableCell>82 Bytes</TableCell>
 									<TableCell>443.12ms</TableCell>
 								</TableRow>
 							</TableBody>
@@ -152,5 +162,107 @@ export default function Page(params: { params: { id: string } }) {
 				</Card>
 			</div>
 		</div>
+	)
+}
+
+ChartJS.register(
+	LinearScale,
+	CategoryScale,
+	BarElement,
+	PointElement,
+	LineElement,
+	Legend,
+	Tooltip,
+	LineController,
+	BarController
+  );
+
+function MemoryChart() {
+	const data = {
+		labels: ['1', '2'],
+		datasets: [
+			{
+				label: 'Used (bytes)' as const,
+				data: [42, 82],
+				backgroundColor: 'rgba(75, 192, 192, 0.2)',
+				borderColor: 'rgba(75, 192, 192, 1)',
+				borderWidth: 1,
+				type: 'bar'
+			},
+			{
+				label: 'Average (bytes)' as const,
+				data: [70, 70],
+				fill: false,
+				borderColor: 'rgba(255, 200, 100, 1)',
+				type: 'line'
+			},
+			{
+				label: 'Limit (bytes)' as const,
+				data: [128, 128],
+				fill: false,
+				borderColor: 'rgba(200, 50, 50, 1)',
+				type: 'line'
+			}
+		]
+	};
+
+	const options = {
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 128,
+            }
+        }
+    };
+
+	return (
+		<>
+			<Chart type={'bar'} data={data} options={options} />
+		</>
+	)
+}
+
+function TimeChart() {
+	const data = {
+		labels: ['1', '2'],
+		datasets: [
+			{
+				label: 'Used (ms)' as const,
+				data: [374.13, 443.12],
+				backgroundColor: 'rgba(75, 192, 192, 0.2)',
+				borderColor: 'rgba(75, 192, 192, 1)',
+				borderWidth: 1,
+				type: 'bar'
+			},
+			{
+				label: 'Average (ms)' as const,
+				data: [402.12, 402.12],
+				fill: false,
+				borderColor: 'rgba(255, 200, 100, 1)',
+				type: 'line'
+			},
+			{
+				label: 'Limit (ms)' as const,
+				data: [1000, 1000],
+				fill: false,
+				borderColor: 'rgba(200, 50, 50, 1)',
+				type: 'line',
+			}
+		]
+	};
+
+	const options = {
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 1000,
+            }
+        }
+    };
+
+	return (
+		<>
+			<Chart type={'bar'} data={data} options={options} />
+		</>
 	)
 }
