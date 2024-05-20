@@ -2,7 +2,7 @@ import Link from "next/link"
 
 export function RootNavBar() {
 	return (
-		<header className="sticky top-0 flex h-12 items-center gap-4 bg-background px-4 backdrop-blur-md shadow-md text-xs">
+		<header className="sticky top-0 flex h-14 items-center gap-4 bg-background px-4 backdrop-blur-md shadow-md text-xs">
 			<nav className="flex flex-row flex-grow gap-x-3 items-center">
 				<NavBarLink href="/" caption="PhiJudge" className="text-black mr-2 font-medium text-base font-serif" />
 				<NavBarLink href="/problems" caption="Problems" className="text-muted-foreground" />
