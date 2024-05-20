@@ -1,5 +1,5 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Activity } from "lucide-react";
+import { Activity, Database, Network } from "lucide-react";
 
 export default function Page() {
 	return (
@@ -22,21 +22,23 @@ export default function Page() {
 						</CardContent>
 					</Card>
 					<Card>
-						<CardHeader>
-							<CardTitle>Database</CardTitle>
-							<CardDescription>Operational</CardDescription>
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle className="text-sm font-medium">Database</CardTitle>
+							<Database className="h-4 w-4 text-muted-foreground" />
 						</CardHeader>
 						<CardContent>
-							Up 92.22%
+							<div className="text-2xl font-bold">Up</div>
+							<p className="text-xs text-muted-foreground">Up time: 93.28%</p>
 						</CardContent>
 					</Card>
 					<Card>
-						<CardHeader>
-							<CardTitle>Agents</CardTitle>
-							<CardDescription>Partially down</CardDescription>
+						<CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+							<CardTitle className="text-sm font-medium">Agents</CardTitle>
+							<Network className="h-4 w-4 text-muted-foreground" />
 						</CardHeader>
 						<CardContent>
-							Up 12/16
+							<div className="text-2xl font-bold">12/16</div>
+							<p className="text-xs text-muted-foreground">Up rate: 77.62%</p>
 						</CardContent>
 					</Card>
 				</div>
