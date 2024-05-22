@@ -13,22 +13,46 @@ import {
 import { AlertTriangle, ArrowRight, Check } from "lucide-react";
 import Link from 'next/link';
 import { Badge } from "@/components/ui/badge";
-import { Chart } from 'react-chartjs-2';
 import {
-	Chart as ChartJS,
-	LinearScale,
-	CategoryScale,
-	BarElement,
-	PointElement,
-	LineElement,
-	Legend,
+	BarChart,
+	Bar,
+	XAxis,
+	YAxis,
+	CartesianGrid,
 	Tooltip,
-	LineController,
-	BarController,
-  } from 'chart.js';
-  
+	Legend,
+	ReferenceLine,
+} from 'recharts';
+import { useEffect, useState } from "react";
+import {
+	BundledLanguage,
+	BundledTheme,
+	codeToHtml,
+	getHighlighter
+} from 'shiki/bundle/full'
 
 export default function Page(params: { params: { id: string } }) {
+	const [sourceCode, setSourceCode] = useState('' as string);
+	useEffect(() => {
+		async function highlightCode() {
+			const code = `
+#include <stdio.h>
+
+int main() {
+	printf("Hello, World!\\n");
+	return 0;
+}
+			`;
+			const html = await codeToHtml(code, {
+				lang: 'c',
+				theme: 'github-light',
+			});
+			setSourceCode(html);
+		}
+
+		highlightCode();
+	});
+
 	return (
 		<div className="grid grid-cols-3 w-full gap-4">
 			<div className="col-span-1 space-y-4">
@@ -100,7 +124,7 @@ export default function Page(params: { params: { id: string } }) {
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<Editor language="csharp" height={300} options={{ readOnly: true }} />
+						{sourceCode && <div dangerouslySetInnerHTML={{ __html: sourceCode }} />}
 					</CardContent>
 				</Card>
 				<Card>
@@ -165,104 +189,58 @@ export default function Page(params: { params: { id: string } }) {
 	)
 }
 
-ChartJS.register(
-	LinearScale,
-	CategoryScale,
-	BarElement,
-	PointElement,
-	LineElement,
-	Legend,
-	Tooltip,
-	LineController,
-	BarController
-  );
-
-function MemoryChart() {
-	const data = {
-		labels: ['1', '2'],
-		datasets: [
-			{
-				label: 'Used (bytes)' as const,
-				data: [42, 82],
-				backgroundColor: 'rgba(75, 192, 192, 0.2)',
-				borderColor: 'rgba(75, 192, 192, 1)',
-				borderWidth: 1,
-				type: 'bar'
-			},
-			{
-				label: 'Average (bytes)' as const,
-				data: [70, 70],
-				fill: false,
-				borderColor: 'rgba(255, 200, 100, 1)',
-				type: 'line'
-			},
-			{
-				label: 'Limit (bytes)' as const,
-				data: [128, 128],
-				fill: false,
-				borderColor: 'rgba(200, 50, 50, 1)',
-				type: 'line'
-			}
-		]
-	};
-
-	const options = {
-        scales: {
-            y: {
-                beginAtZero: true,
-                max: 128,
-            }
-        }
-    };
+function TimeChart() {
+	const data = [
+		{ name: '1', actual: 42.85, average: 42.95 },
+		{ name: '2', actual: 43.12, average: 42.65 },
+		{ name: '3', actual: 42.93, average: 44.85 },
+		{ name: '4', actual: 42.82, average: 40.85 },
+		{ name: '5', actual: 42.95, average: 42.85 },
+		{ name: '6', actual: 42.78, average: 41.85 },
+		{ name: '7', actual: 42.92, average: 47.85 },
+		{ name: '8', actual: 43.12, average: 42.25 },
+	];
 
 	return (
 		<>
-			<Chart type={'bar'} data={data} options={options} />
+			<BarChart width={300} height={300} data={data}>
+				<CartesianGrid strokeDasharray="3 3" />
+				<XAxis dataKey="name" />
+				<YAxis />
+				<Tooltip />
+				<Legend />
+				<Bar dataKey="actual" fill="#82ca9d" />
+				<Bar dataKey="average" fill="#800080" />
+				<ReferenceLine y={128} stroke="red" label="Limit" />
+			</BarChart>
 		</>
 	)
 }
 
-function TimeChart() {
-	const data = {
-		labels: ['1', '2'],
-		datasets: [
-			{
-				label: 'Used (ms)' as const,
-				data: [374.13, 443.12],
-				backgroundColor: 'rgba(75, 192, 192, 0.2)',
-				borderColor: 'rgba(75, 192, 192, 1)',
-				borderWidth: 1,
-				type: 'bar'
-			},
-			{
-				label: 'Average (ms)' as const,
-				data: [402.12, 402.12],
-				fill: false,
-				borderColor: 'rgba(255, 200, 100, 1)',
-				type: 'line'
-			},
-			{
-				label: 'Limit (ms)' as const,
-				data: [1000, 1000],
-				fill: false,
-				borderColor: 'rgba(200, 50, 50, 1)',
-				type: 'line',
-			}
-		]
-	};
-
-	const options = {
-        scales: {
-            y: {
-                beginAtZero: true,
-                max: 1000,
-            }
-        }
-    };
+function MemoryChart() {
+	const data = [
+		{ name: '1', actual: 42.85, average: 42.95 },
+		{ name: '2', actual: 43.12, average: 42.65 },
+		{ name: '3', actual: 42.93, average: 44.85 },
+		{ name: '4', actual: 42.82, average: 40.85 },
+		{ name: '5', actual: 42.95, average: 42.85 },
+		{ name: '6', actual: 42.78, average: 41.85 },
+		{ name: '7', actual: 42.92, average: 47.85 },
+		{ name: '8', actual: 43.12, average: 42.25 },
+	];
 
 	return (
 		<>
-			<Chart type={'bar'} data={data} options={options} />
+			<BarChart width={300} height={300} data={data}>
+				<CartesianGrid strokeDasharray="3 3" />
+				<XAxis dataKey="name" />
+				<YAxis />
+				<Tooltip />
+				<Legend />
+				<Bar dataKey="actual" fill="#82ca9d" />
+				<Bar dataKey="average" fill="#800080" />
+				<ReferenceLine y={128} stroke="red" label="Limit" />
+			</BarChart>
 		</>
 	)
 }
