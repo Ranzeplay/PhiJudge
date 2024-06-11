@@ -1,6 +1,25 @@
-import Link from "next/link"
+'use client';
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+
+type AuthenticationStatus = {
+	isLoggedIn: boolean | undefined,
+	userName: string | undefined
+};
 
 export function RootNavBar() {
+	const [authStatus, setAuthStatus] = useState<AuthenticationStatus>({ isLoggedIn: undefined, userName: undefined });
+	useEffect(() => {
+		async function fetchAuthStatus() {
+			const response = await fetch('/api/auth/status');
+			const data = await response.json() as AuthenticationStatus;
+			setAuthStatus(data);
+		}
+
+		fetchAuthStatus();
+	}, []);
+
 	return (
 		<header className="sticky top-0 flex h-14 items-center gap-4 bg-background px-4 backdrop-blur-md shadow-md text-xs">
 			<nav className="flex flex-row flex-grow gap-x-3 items-center">
@@ -12,14 +31,23 @@ export function RootNavBar() {
 				<NavBarLink href="/status" caption="Status" className="text-muted-foreground" />
 			</nav>
 			<nav className="flex flex-grow-0 gap-x-3 items-center mr-4">
-				<NavBarLink href="/auth/login" caption="Login" className="text-muted-foreground" />
-				<NavBarLink href="/auth/register" caption="Register" className="text-muted-foreground" />
+				{authStatus.isLoggedIn ? (
+					<>
+						<NavBarLink href="/user/me" caption={`Hello, ${authStatus.userName || 'undefined'}`} className="text-muted-foreground" />
+						<NavBarLink href="/auth/logout" caption="Logout" className="text-muted-foreground" />
+					</>
+				) : (
+					<>
+						<NavBarLink href="/auth/login" caption="Login" className="text-muted-foreground" />
+						<NavBarLink href="/auth/register" caption="Register" className="text-muted-foreground" />
+					</>
+				)}
 			</nav>
 		</header>
 	)
 }
 
-function NavBarLink(props: { href?: string, caption: string, className?: string}) {
+function NavBarLink(props: { href?: string, caption: string, className?: string }) {
 	return (
 		<Link
 			href={props.href || '#'}
