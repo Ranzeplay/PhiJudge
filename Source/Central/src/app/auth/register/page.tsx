@@ -16,7 +16,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useRouter } from "next/navigation";
 
 export default function Page() {
-	const form = useForm<RegisterForm>({ resolver: zodResolver(RegisterFormSchema) });
+	const form = useForm<RegisterForm>({
+		resolver: zodResolver(RegisterFormSchema),
+		defaultValues: {
+			email: '',
+			userName: '',
+			passwordScope: {
+				password: '',
+				confirmPassword: ''
+			}
+		}
+	});
 	const [errorText, setErrorText] = useState<string | null>('');
 
 	const [isSigningIn, setSignInState] = useState<boolean>(false);
@@ -32,7 +42,6 @@ export default function Page() {
 		}))) as AuthResponse;
 		if (result.error) {
 			setErrorText(result.error.message);
-			return;
 		} else {
 			router.push('/auth/login');
 		}

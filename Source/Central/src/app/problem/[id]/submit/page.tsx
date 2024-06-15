@@ -12,60 +12,120 @@ import {
 } from "@/components/ui/select";
 import Editor from "@monaco-editor/react";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { ProblemSubmissionForm, ProblemSubmissionSchema } from "./schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AvailableLanguage } from "@/app/api/submit/lang/route";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { HandleSubmission } from "./server";
+import { serialize } from "object-to-formdata";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }: { params: { id: string } }) {
-	const [lang, setLang] = useState("");
+	const [availableLangs, setAvailableLangs] = useState<AvailableLanguage[]>([]);
+	useEffect(() => {
+		async function fetchLangs() {
+			const res = await fetch(`/api/submit/lang`);
+			const langs = await res.json() as AvailableLanguage[];
+			setAvailableLangs(langs);
+		}
+		
+		fetchLangs();
+	}, []);
+
+	const form = useForm<ProblemSubmissionForm>({
+		resolver: zodResolver(ProblemSubmissionSchema),
+		defaultValues: {
+			problemId: parseInt(params.id)
+		}
+	});
+
+	const router = useRouter();
+	async function onSubmit(data: ProblemSubmissionForm) {
+		const recordId = await HandleSubmission(serialize(data));
+		router.push(`/record/${recordId}`);
+	}
 
 	return (
-		<div className="grid grid-cols-3 w-full gap-4">
-			<div className="col-span-2">
-				<Card>
-					<CardHeader>
-						<CardTitle>Code</CardTitle>
-					</CardHeader>
-					<CardContent>
-						<Editor language={lang} height={500} />
-					</CardContent>
-				</Card>
-			</div>
-			<div className="col-span-1 space-y-4">
-				<Card>
-					<CardHeader>
-						<CardTitle>Options</CardTitle>
-					</CardHeader>
-					<CardContent className="space-y-4">
-						<div>
-							<Label>Language</Label>
-							<Select onValueChange={setLang}>
-								<SelectTrigger>
-									<SelectValue placeholder="Select language" />
-								</SelectTrigger>
-								<SelectContent>
-									<SelectItem value="c">C</SelectItem>
-									<SelectItem value="cpp">C++</SelectItem>
-									<SelectItem value="csharp">C#</SelectItem>
-									<SelectItem value="rust">Rust</SelectItem>
-									<SelectItem value="java">Java</SelectItem>
-									<SelectItem value="kotlin">Kotlin</SelectItem>
-								</SelectContent>
-							</Select>
-						</div>
-						<div>
-							<Label>Additional configurations</Label>
-							<div className="flex flex-row space-x-1 items-center">
-								<Checkbox className="transition" />
-								<p className="text-sm">Enable optimization</p>
-							</div>
-							<div className="flex flex-row space-x-1 items-center">
-								<Checkbox className="transition" />
-								<p className="text-sm">Warning as error</p>
-							</div>
-						</div>
-					</CardContent>
-				</Card>
-				<Button className="flex w-full">Submit</Button>
-			</div>
-		</div>
+		<Form {...form}>
+			<form onSubmit={form.handleSubmit(onSubmit)}>
+				<div className="grid grid-cols-3 w-full gap-4">
+					<div className="col-span-2">
+						<Card>
+							<CardHeader>
+								<CardTitle>Code</CardTitle>
+							</CardHeader>
+							<CardContent>
+								<FormField control={form.control} name="code" render={({ field }) => (
+									<FormItem>
+										<FormControl>
+											<Editor value={field.value} onChange={field.onChange} language={form.getValues().languageId} height={500} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)} />
+
+							</CardContent>
+						</Card>
+					</div>
+					<div className="col-span-1 space-y-4">
+						<Card>
+							<CardHeader>
+								<CardTitle>Options</CardTitle>
+							</CardHeader>
+							<CardContent className="space-y-4">
+								<FormField control={form.control} name="languageId" render={({ field }) => (
+									<FormItem>
+										<FormLabel>Language</FormLabel>
+										<FormControl>
+											<Select onValueChange={field.onChange}>
+												<SelectTrigger>
+													<SelectValue placeholder="Select language" />
+												</SelectTrigger>
+												<SelectContent>
+													{availableLangs.map((lang) => (
+														<SelectItem key={lang.id} value={lang.id}>{lang.name}</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)} />
+
+								<div>
+									<Label>Additional configurations</Label>
+
+									<FormField control={form.control} name="enableOptimization" render={({ field }) => (
+										<FormItem>
+											<FormControl>
+												<div className="flex flex-row space-x-1 items-center">
+													<Checkbox checked={field.value} onCheckedChange={field.onChange} className="transition" />
+													<p className="text-sm">Enable optimization</p>
+												</div>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)} />
+									<FormField control={form.control} name="warningAsError" render={({ field }) => (
+										<FormItem>
+											<FormControl>
+												<div className="flex flex-row space-x-1 items-center">
+													<Checkbox checked={field.value} onCheckedChange={field.onChange} className="transition" />
+													<p className="text-sm">Warning as error</p>
+												</div>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)} />
+								</div>
+							</CardContent>
+						</Card>
+						<Button className="flex w-full">Submit</Button>
+					</div>
+				</div>
+			</form>
+		</Form>
 	);
 }

@@ -18,8 +18,8 @@ model problem {
   id           Int    @id @default(autoincrement())
   title        String
   description  String
-  totalSubmits Int
-  totalPassed  Int
+  totalSubmits Int    @default(0)
+  totalPassed  Int    @default(0)
   author       user   @relation(fields: [authorId], references: [id])
 
   testData problemTestData[]
@@ -34,6 +34,7 @@ model problemTestData {
   input          String
   expectedOutput String
   problem        problem @relation(fields: [problemId], references: [id])
+  order          Int
 
   timeLimitMs      Int
   memoryLimitBytes Int
@@ -48,16 +49,21 @@ enum RecordStatus {
 }
 
 model record {
-  id              Int               @id @default(autoincrement())
-  actualOutput    String
-  problem         problem           @relation(fields: [problemId], references: [id])
-  problemId       Int
-  recordTestPoint recordTestPoint[]
-  status          RecordStatus
-  submitter       user              @relation(fields: [submitterId], references: [id])
-  submitterId     String
-  agent           agent             @relation(fields: [agentId], references: [id])
-  agentId         String
+  id                 Int               @id @default(autoincrement())
+  actualOutput       String?
+  problem            problem           @relation(fields: [problemId], references: [id])
+  problemId          Int
+  recordTestPoint    recordTestPoint[]
+  status             RecordStatus      @default(PENDING)
+  submitter          user              @relation(fields: [submitterId], references: [id])
+  submitterId        String
+  agent              agent?            @relation(fields: [agentId], references: [id])
+  agentId            String
+  languageId         String
+  sourceCode         String
+  enableOptimization Boolean           @default(false)
+  warningAsError     Boolean           @default(false)
+  submitTime         DateTime          @default(now())
 }
 
 enum RecordTestPointStatus {
@@ -70,6 +76,7 @@ model recordTestPoint {
   recordId     Int
   actualOutput String
   record       record @relation(fields: [recordId], references: [id])
+  order        Int
 
   timeLimitMs      Int
   memoryLimitBytes Int

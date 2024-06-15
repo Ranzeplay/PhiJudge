@@ -4,7 +4,9 @@ export default function Home() {
   return (
     <>
       <RootNavBar />
-      <h1>Hello, world</h1>
+      <div className="container prose mt-4">
+        <h1>Hello, world</h1>
+      </div>
     </>
   );
 }

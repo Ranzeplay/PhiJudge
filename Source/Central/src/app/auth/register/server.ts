@@ -1,6 +1,6 @@
 'use server';
 
-import { createSupabaseServerSideClient } from "@/lib/supabase";
+import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 import { RegisterFormSchema } from "./schema";
 import { PrismaClient } from "@prisma/client";
 
