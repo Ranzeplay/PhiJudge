@@ -22,7 +22,7 @@ import {
 import { serverPrisma } from "@/lib/serverSidePrisma";
 import Link from "next/link";
 export default async function Page() {
-	const problems = await serverPrisma.problem.findMany();
+	const problems = await serverPrisma.problem.findMany({ orderBy: { id: 'asc' } });
 
 	return (
 		<>

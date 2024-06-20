@@ -26,7 +26,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 						<Separator />
 						<div className="prose">
 							<Markdown remarkPlugins={[remarkGfm]}>
-								{problem?.description}
+								{problem?.description || '> No description'}
 							</Markdown>
 						</div>
 						<Separator />
@@ -61,7 +61,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 						</div>
 						<div className="flex flex-col space-y-1">
 							<p>Pass rate</p>
-							<Progress value={problem?.totalSubmits === 0 ? 0 : (problem!.totalPassed / problem!.totalSubmits)} />
+							<Progress value={problem?.totalSubmits === 0 ? 0 : ((problem?.totalPassed || 0) / (problem?.totalSubmits || 0))} />
 						</div>
 						<div>
 							<p>History</p>
