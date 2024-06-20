@@ -25,6 +25,10 @@ export const ProblemTestDataSchema = z.object({
   existingId: z.number().optional(),
 });
 
+export const ProblemTestDataSeriesSchema = z.object({
+  data: z.array(ProblemTestDataSchema),
+});
+
 export const ProblemCreationSchema = z.object({
   title: z.string({ required_error: "Title required" }),
   description: z.string({ required_error: "Description required" }),
@@ -33,3 +37,5 @@ export const ProblemCreationSchema = z.object({
 export type ProblemCreation = z.infer<typeof ProblemCreationSchema>;
 
 export type ProblemTestData = z.infer<typeof ProblemTestDataSchema>;
+
+export type ProblemTestDataSeries = z.infer<typeof ProblemTestDataSeriesSchema>;

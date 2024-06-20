@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useForm } from "react-hook-form";
-import { ProblemCreation, ProblemCreationSchema, ProblemTestData, ProblemTestDataSchema } from "./schema";
+import { ProblemCreation, ProblemCreationSchema, ProblemTestData, ProblemTestDataSchema, ProblemTestDataSeries, ProblemTestDataSeriesSchema, TestDataModification } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "@/components/ui/input";
 import { Editor } from "@monaco-editor/react";
@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { HandleProblemCreation } from "./server";
+import { HandleProblemCreation, HandleTestDataModification } from "./server";
 import { serialize } from "object-to-formdata";
 
 export default function Page() {
@@ -27,9 +27,11 @@ export default function Page() {
 		}
 	});
 
-	const testDataForm = useForm<ProblemTestData[]>({
-		resolver: zodResolver(ProblemTestDataSchema),
-		defaultValues: []
+	const testDataForm = useForm<ProblemTestDataSeries>({
+		resolver: zodResolver(ProblemTestDataSeriesSchema),
+		defaultValues: {
+			data: []
+		}
 	});
 
 	const [currentlyEditingTestDataIndex, setCurrentlyEditingTestDataIndex] = useState<number | null>(null);
@@ -57,7 +59,7 @@ export default function Page() {
 								<FormItem>
 									<FormLabel>Title</FormLabel>
 									<FormControl className="-mt-1">
-										<Input placeholder="Enter text" {...field} className="mr-8" />
+										<Input placeholder="Enter text" {...field} className="mr-8" readOnly={problemId != null} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -66,7 +68,7 @@ export default function Page() {
 								<FormItem>
 									<FormLabel>Description</FormLabel>
 									<FormControl className="-mt-1">
-										<Editor className="border rounded" {...field} height={400} />
+										<Editor className="border rounded" {...field} height={400} options={{ readOnly: problemId != null }} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -85,14 +87,14 @@ export default function Page() {
 				<CardHeader>
 					<CardTitle>Test data</CardTitle>
 					<div className="text-sm text-muted-foreground">
-						<p>{testDataForm.getValues().length} entries logged.</p>
+						<p>{testDataForm.getValues().data.length} entries logged.</p>
 						<p>The first entry will be the example test data shown.</p>
 					</div>
 				</CardHeader>
 				<CardContent>
-					<Button variant={'link'} className="text-blue-500" onClick={() => openTestDataEditor(testDataForm.getValues().length)}>Add new data</Button>
+					<Button variant={'link'} className="text-blue-500" onClick={() => openTestDataEditor(testDataForm.getValues().data.length)}>Add new data</Button>
 					<div className="flex flex-col space-y-2 mt-2">
-						{testDataForm.getValues().map((_, index) => (
+						{testDataForm.getValues().data.map((_, index) => (
 							<Card>
 								<CardHeader>
 									<CardTitle className="text-blue-500 hover:underline hover:cursor-pointer" onClick={() => openTestDataEditor(index)}>#{index}</CardTitle>
@@ -121,14 +123,40 @@ export default function Page() {
 	}
 
 	function TestDataEditor() {
-		const testDataEditorForm = useForm<ProblemTestData>({ resolver: zodResolver(ProblemTestDataSchema) });
+		const testDataEditorForm = useForm<ProblemTestData>({
+			resolver: zodResolver(ProblemTestDataSchema), defaultValues: {
+				input: '',
+				expectedOutput: '',
+				timeLimitMs: '',
+				memoryLimitBytes: '',
+				problemId: problemId!,
+				modificationType: currentlyEditingTestDataIndex === testDataForm.getValues().data.length ? TestDataModification.CREATE : TestDataModification.UPDATE,
+			}
+		});
 		useEffect(() => {
-			if (currentlyEditingTestDataIndex !== testDataForm.getValues().length) {
-				testDataEditorForm.reset(testDataForm.getValues()[currentlyEditingTestDataIndex!]); 
+			if (currentlyEditingTestDataIndex !== testDataForm.getValues().data.length) {
+				testDataEditorForm.reset(testDataForm.getValues().data[currentlyEditingTestDataIndex!]);
 			} else {
 				testDataEditorForm.reset();
 			}
 		}, [currentlyEditingTestDataIndex]);
+
+		async function onTestDataFormSubmit(newData: ProblemTestData) {
+			console.log(newData);
+			
+			const dataSeries = testDataForm.getValues().data;
+			if (currentlyEditingTestDataIndex! == testDataForm.getValues().data.length) {
+				dataSeries.push(newData);
+			} else {
+				dataSeries[currentlyEditingTestDataIndex!] = newData;
+			}
+			testDataForm.setValue('data', dataSeries);
+
+			const id = await HandleTestDataModification(serialize(newData));
+			setCurrentlyEditingTestDataId(id);
+
+			closeTestDataEditor();
+		}
 
 		return (
 			<Sheet open={testDataEditorOpen} onOpenChange={(e) => { setTestDataEditorOpen(e) }}>
@@ -137,7 +165,7 @@ export default function Page() {
 						<SheetTitle>Edit test data</SheetTitle>
 					</SheetHeader>
 					<Form {...testDataEditorForm}>
-						<form className="flex flex-col space-y-3 mt-4" onSubmit={testDataEditorForm.handleSubmit(onTestDataFormSubmit)}>
+						<form className="flex flex-col space-y-3 mt-4">
 							<FormField control={testDataEditorForm.control} name="timeLimitMs" render={({ field }) => (
 								<FormItem>
 									<FormLabel>Time limit</FormLabel>
@@ -176,7 +204,7 @@ export default function Page() {
 							)} />
 
 							<div className="block space-x-2">
-								<Button type="submit">Apply</Button>
+								<Button onClick={() => testDataEditorForm.handleSubmit(onTestDataFormSubmit)}>Apply</Button>
 								<Button variant={'destructive'} onClick={() => closeTestDataEditor()}>Delete</Button>
 								<Button variant={'outline'} onClick={() => closeTestDataEditor()}>Discard</Button>
 							</div>
@@ -185,17 +213,5 @@ export default function Page() {
 				</SheetContent>
 			</Sheet>
 		);
-
-		function onTestDataFormSubmit(data: ProblemTestData) {
-			const testData = basicInfoForm.getValues().testData;
-			if (currentlyEditingTestDataIndex! == basicInfoForm.getValues().testData.length) {
-				testData.push(data);
-			} else {
-				testData[currentlyEditingTestDataIndex!] = data;
-			}
-
-			basicInfoForm.setValue('testData', testData);
-			closeTestDataEditor();
-		}
 	}
 }

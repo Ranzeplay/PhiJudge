@@ -38,7 +38,9 @@ export async function HandleProblemCreation(formData: FormData): Promise<number>
 	return problem.id;
 }
 
-export function HandleTestDataModification(formData: FormData) {
+export async function HandleTestDataModification(formData: FormData): Promise<number> {
+	console.log(formData);
+
 	const data = ProblemTestDataSchema.parse({
 		input: formData.get('input') as string,
 		expectedOutput: formData.get('expectedOutput') as string,
@@ -52,7 +54,7 @@ export function HandleTestDataModification(formData: FormData) {
 
 	const prisma = new PrismaClient();
 	if (data.modificationType === TestDataModification.CREATE) {
-		return prisma.problemTestData.create({
+		const result = await prisma.problemTestData.create({
 			data: {
 				input: data.input,
 				expectedOutput: data.expectedOutput,
@@ -66,8 +68,10 @@ export function HandleTestDataModification(formData: FormData) {
 				}
 			}
 		});
+
+		return result.id;
 	} else if (data.modificationType === TestDataModification.UPDATE) {
-		return prisma.problemTestData.update({
+		await prisma.problemTestData.update({
 			where: {
 				id: data.existingId
 			},
@@ -80,10 +84,12 @@ export function HandleTestDataModification(formData: FormData) {
 			}
 		});
 	} else if (data.modificationType === TestDataModification.DELETE) {
-		return prisma.problemTestData.delete({
+		await prisma.problemTestData.delete({
 			where: {
 				id: data.existingId
 			}
 		});
 	}
+
+	return data.existingId!;
 }
