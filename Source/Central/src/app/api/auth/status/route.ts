@@ -1,5 +1,5 @@
+import { serverPrisma } from "@/lib/serverSidePrisma";
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
-import { PrismaClient } from "@prisma/client";
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { env } from "process";
@@ -13,8 +13,7 @@ export async function GET(request: NextApiRequest) {
 		return NextResponse.json({ isLoggedIn: false }, { status: 200 });
 	}
 
-	const prisma = new PrismaClient();
-	const prismaUser = await prisma.user.findUnique({
+	const prismaUser = await serverPrisma.user.findUnique({
 		where: {
 			id: supabaseUser.data!.user.id
 		}

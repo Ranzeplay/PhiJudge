@@ -1,6 +1,6 @@
 import { RootNavBar } from "@/components/nav/rootNavBar"
 
-export default function DashboardLayout({
+export default function Layout({
 	children,
 }: {
 	children: React.ReactNode

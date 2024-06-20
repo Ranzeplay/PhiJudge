@@ -1,8 +1,8 @@
 'use server';
 
-import { PrismaClient } from "@prisma/client";
 import { ProblemCreationSchema } from "./schema";
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
+import { serverPrisma } from "@/lib/serverSidePrisma";
 
 export async function HandleProblemCreation(formData: FormData): Promise<number> {
 	const data = ProblemCreationSchema.parse({
@@ -22,8 +22,7 @@ export async function HandleProblemCreation(formData: FormData): Promise<number>
 	const supabase = createSupabaseServerSideClient();
 	const { data: user } = await supabase.auth.getUser();
 
-	const prisma = new PrismaClient();
-	const problem = await prisma.problem.create({
+	const problem = await serverPrisma.problem.create({
 		data: {
 			title: data.title,
 			description: data.description,

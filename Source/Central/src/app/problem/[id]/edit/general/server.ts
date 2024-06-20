@@ -1,10 +1,9 @@
 'use server';
 
-import { PrismaClient } from "@prisma/client";
+import { serverPrisma } from "@/lib/serverSidePrisma";
 
 export async function GetProblemBasicInfo(problemId: number) {
-	const prisma = new PrismaClient();
-	const problem = await prisma.problem.findUnique({
+	const problem = await serverPrisma.problem.findUnique({
 		where: {
 			id: problemId
 		}
@@ -19,8 +18,7 @@ export async function GetProblemBasicInfo(problemId: number) {
 }
 
 export async function UpdateTitle(problemId: number, title: string) {
-	const prisma = new PrismaClient();
-	await prisma.problem.update({
+	await serverPrisma.problem.update({
 		where: {
 			id: problemId
 		},
@@ -31,8 +29,7 @@ export async function UpdateTitle(problemId: number, title: string) {
 }
 
 export async function UpdateDescription(problemId: number, description: string) {
-	const prisma = new PrismaClient();
-	await prisma.problem.update({
+	await serverPrisma.problem.update({
 		where: {
 			id: problemId
 		},

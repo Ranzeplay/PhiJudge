@@ -2,7 +2,7 @@
 
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 import { RegisterFormSchema } from "./schema";
-import { PrismaClient } from "@prisma/client";
+import { serverPrisma } from "@/lib/serverSidePrisma";
 
 export async function HandleRegister(formData: FormData): Promise<string> {
   const data = await RegisterFormSchema.parseAsync({
@@ -21,8 +21,7 @@ export async function HandleRegister(formData: FormData): Promise<string> {
   });
 
   if (!supabaseRequestResult.error) {
-    const prisma = new PrismaClient();
-    await prisma.user.create({
+    await serverPrisma.user.create({
       data: {
         id: supabaseRequestResult.data.user?.id!,
         userName: data.userName,

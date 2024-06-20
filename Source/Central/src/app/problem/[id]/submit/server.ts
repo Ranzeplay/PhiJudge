@@ -1,8 +1,8 @@
 "use server";
 
-import { PrismaClient } from "@prisma/client";
 import { ProblemSubmissionSchema } from "./schema";
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
+import { serverPrisma } from "@/lib/serverSidePrisma";
 
 export async function HandleSubmission(formData: FormData): Promise<number> {
   const data = await ProblemSubmissionSchema.parseAsync({
@@ -18,14 +18,13 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const prisma = new PrismaClient();
-  await prisma.user.findUnique({
+  await serverPrisma.user.findUnique({
     where: {
       id: user!.id,
     },
   });
 
-  const record = await prisma.record.create({
+  const record = await serverPrisma.record.create({
     data: {
       languageId: data.languageId,
       sourceCode: data.code,
