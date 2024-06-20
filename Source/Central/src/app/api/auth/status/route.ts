@@ -2,9 +2,11 @@ import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 import { PrismaClient } from "@prisma/client";
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
+import { env } from "process";
 
 export async function GET(request: NextApiRequest) {
-	const supabase = createSupabaseServerSideClient();
+	if(env.DEBUG_ENABLE_AUTH) {
+		const supabase = createSupabaseServerSideClient();
 	const supabaseUser = await supabase.auth.getUser();
 
 	if(supabaseUser.error) {
@@ -22,4 +24,7 @@ export async function GET(request: NextApiRequest) {
 		isLoggedIn: true,
 		userName: prismaUser?.userName
 	}, { status: 200 });
+	} else {
+		return NextResponse.json({ isLoggedIn: true, userName: "debug" }, { status: 200 });
+	}
 }
