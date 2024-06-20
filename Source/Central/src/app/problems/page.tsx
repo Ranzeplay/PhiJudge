@@ -19,8 +19,11 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { serverPrisma } from "@/lib/serverSidePrisma";
 import Link from "next/link";
-export default function Page() {
+export default async function Page() {
+	const problems = await serverPrisma.problem.findMany();
+
 	return (
 		<>
 			<RootNavBar />
@@ -43,14 +46,24 @@ export default function Page() {
 										</TableRow>
 									</TableHeader>
 									<TableBody>
-											<TableRow>
-												<TableCell className="font-medium">1</TableCell>
+										{problems.map((problem) => (
+											<TableRow key={problem.id}>
+												<TableCell className="font-medium">{problem.id}</TableCell>
 												<TableCell className="flex">
-													<Link className="flex text-blue-500 hover:underline" href="/problem/1/details">Hello, world</Link>
+													<Link
+														className="flex text-blue-500 hover:underline"
+														href={`/problem/${problem.id}/details`}>
+														{problem.title}
+													</Link>
 												</TableCell>
-												<TableCell>11.4%</TableCell>
-												<TableCell>Failed</TableCell>
+												<TableCell>
+													{problem.totalSubmits === 0
+														? 'N/A'
+														: `${((problem.totalPassed / problem.totalSubmits) * 100).toFixed(2)}%`}
+												</TableCell>
+												<TableCell>Unknown</TableCell>
 											</TableRow>
+										))}
 									</TableBody>
 								</Table>
 								<Pagination>

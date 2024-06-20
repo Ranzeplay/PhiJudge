@@ -7,8 +7,13 @@ import Link from "next/link";
 import { Flag, Send } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge"
+import { serverPrisma } from "@/lib/serverSidePrisma";
 
-export default function Page({ params }: { params: { id: string } }) {
+export default async function Page({ params }: { params: { id: string } }) {
+	const problem = await serverPrisma.problem.findUnique({ where: { id: parseInt(params.id) } });
+	const testPointCount = await serverPrisma.problemTestData.count({ where: { problemId: parseInt(params.id) } });
+	const exampleData = await serverPrisma.problemTestData.findFirst({ where: { problemId: parseInt(params.id), order: 0 } });
+
 	return (
 		<div className="grid grid-cols-3 w-full gap-4">
 			<div className="col-span-2">
@@ -17,11 +22,11 @@ export default function Page({ params }: { params: { id: string } }) {
 						<CardTitle>Content</CardTitle>
 					</CardHeader>
 					<CardContent className="space-y-4">
-						<h2 className="text-xl font-bold">Hello, world</h2>
+						<h2 className="text-xl font-bold">{problem?.title}</h2>
 						<Separator />
 						<div className="prose">
 							<Markdown remarkPlugins={[remarkGfm]}>
-								{`# Hello, world`}
+								{problem?.description}
 							</Markdown>
 						</div>
 						<Separator />
@@ -29,12 +34,17 @@ export default function Page({ params }: { params: { id: string } }) {
 						<div className="flex flex-row space-x-4">
 							<div className="flex flex-col flex-grow space-y-1">
 								<h3>Input</h3>
-								<textarea readOnly className="w-full h-24 px-2 py-1 bg-gray-100 rounded-md resize-none font-mono" value={``} placeholder="None" />
+								<textarea readOnly className="w-full h-24 px-2 py-1 bg-gray-100 rounded-md resize-none font-mono" value={exampleData?.input} placeholder="None" />
 							</div>
 							<div className="flex flex-col flex-grow space-y-1">
 								<h3>Output</h3>
-								<textarea readOnly className="w-full h-24 px-2 py-1 bg-gray-100 rounded-md resize-none font-mono" value={`Hello, world`} placeholder="None" />
+								<textarea readOnly className="w-full h-24 px-2 py-1 bg-gray-100 rounded-md resize-none font-mono" value={exampleData?.expectedOutput} placeholder="None" />
 							</div>
+						</div>
+						<div className="flex flex-row space-x-2 items-center">
+							<p>Requirements: </p>
+							<Badge variant="outline">{exampleData?.timeLimitMs || 'N/A'} ms</Badge>
+							<Badge variant="outline">{exampleData?.memoryLimitBytes || 'N/A'} bytes</Badge>
 						</div>
 					</CardContent>
 				</Card>
@@ -51,15 +61,15 @@ export default function Page({ params }: { params: { id: string } }) {
 						</div>
 						<div className="flex flex-col space-y-1">
 							<p>Pass rate</p>
-							<Progress value={11.4} />
+							<Progress value={problem?.totalSubmits === 0 ? 0 : (problem!.totalPassed / problem!.totalSubmits)} />
 						</div>
 						<div>
 							<p>History</p>
-							<Badge variant="destructive">Failed</Badge>
+							<Badge variant="destructive">Unknown</Badge>
 						</div>
 						<div>
 							<p>Test points</p>
-							<p className="font-serif text-lg">12</p>
+							<p className="font-serif text-lg">{testPointCount}</p>
 						</div>
 					</CardContent>
 				</Card>
