@@ -9,6 +9,6 @@ namespace PhiJudge.Agent.Executor.Endpoint.Services
 {
     internal interface IRealtimeService
     {
-        public event EventHandler<RecordData> OnRecordDataReceived;
+        public event EventHandler<FetchRecordData> OnRecordDataReceived;
     }
 }

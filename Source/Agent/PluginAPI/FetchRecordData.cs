@@ -6,5 +6,5 @@ using System.Threading.Tasks;
 
 namespace PhiJudge.Agent.API.Plugin
 {
-    public record RecordData(string SourceCode, string Language, string ProblemId, bool EnableOptimization, bool WarningAsError);
+    public record FetchRecordData(string SourceCode, string Language, string ProblemId, bool EnableOptimization, bool WarningAsError);
 }

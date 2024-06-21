@@ -12,7 +12,6 @@ namespace PhiJudge.Agent.API.Plugin.Stages
         Compiling,
         Executing,
         Finished,
-        Error,
         Unknown
     }
 }
