@@ -2,6 +2,6 @@
 {
     public interface ICompilationStage
     {
-        string Compile(string filePath);
+        CompilationResult Compile(string filePath);
     }
 }

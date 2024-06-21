@@ -9,6 +9,7 @@
         public string Version { get; }
         public string[] Dependencies { get; }
         public string[] OptionalDependencies { get; }
+        public string[] SupportedLanguageId { get; }
 
         void Load();
         void Unload();

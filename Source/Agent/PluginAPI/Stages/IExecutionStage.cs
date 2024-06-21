@@ -2,5 +2,6 @@
 {
     public interface IExecutionStage
     {
+        ExecutionResult Execute();
     }
 }

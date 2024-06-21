@@ -10,6 +10,13 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.0" />
+	  <PackageReference Include="Supabase" Version="1.0.4" />
+	  <PackageReference Include="Supabase.Realtime" Version="7.0.1" />
+	  <PackageReference Include="Supabase.Storage" Version="2.0.1" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\PluginAPI\PluginAPI.csproj" />
 	</ItemGroup>
 
 </Project>
