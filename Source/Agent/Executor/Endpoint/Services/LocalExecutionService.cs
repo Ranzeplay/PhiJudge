@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace PhiJudge.Agent.Executor.Endpoint.Services
 {
-    internal class ExecutionService : IExecutionService
+    internal class LocalExecutionService : IExecutionService
     {
+        public LocalExecutionService(IRealtimeService realtimeService)
+        { }
     }
 }
