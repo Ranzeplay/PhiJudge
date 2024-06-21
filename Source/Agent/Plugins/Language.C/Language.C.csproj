@@ -7,4 +7,8 @@
 		<RootNamespace>PhiJudge.Plugin.Language.C</RootNamespace>
 	</PropertyGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\..\PluginAPI\PluginAPI.csproj" />
+	</ItemGroup>
+
 </Project>

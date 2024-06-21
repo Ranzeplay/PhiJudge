@@ -13,7 +13,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Endpoint", "Executor\Endpoi
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{D3CD57A0-394D-4A05-8A6E-FAD0C74833CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Language.C", "..\Plugins\Language.C\Language.C.csproj", "{BEC2B698-635F-48A3-A0AA-16C1403FCE79}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Language.C", "Plugins\Language.C\Language.C.csproj", "{BEC2B698-635F-48A3-A0AA-16C1403FCE79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
