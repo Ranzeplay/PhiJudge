@@ -1,20 +1,29 @@
 ﻿using Microsoft.Extensions.Logging;
 using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PhiJudge.Agent.Executor.Services
 {
-    internal class LocalExecutionService(IDataExchangeService dataExchangeService, PluginService pluginService, ILogger<LocalExecutionService> logger) : IExecutionService, IDisposable
+    internal class LocalExecutionService : IExecutionService, IDisposable
     {
-        private readonly IDataExchangeService _dataExchangeService = dataExchangeService;
-        private readonly PluginService _pluginService = pluginService;
-        private readonly ILogger<LocalExecutionService> _logger = logger;
+        private readonly IDataExchangeService _dataExchangeService;
+        private readonly PluginService _pluginService;
+        private readonly ILogger<LocalExecutionService> _logger;
         private readonly string TempDirectoryPath = Directory.CreateTempSubdirectory("PhiJudge").FullName;
+
+        public LocalExecutionService(IDataExchangeService dataExchangeService, PluginService pluginService, ILogger<LocalExecutionService> logger)
+        {
+            _dataExchangeService = dataExchangeService;
+            _pluginService = pluginService;
+            _logger = logger;
+
+            _dataExchangeService.AddRecordAllocationHandler(RecordAllocationHandler);
+        }
+
+        private async void RecordAllocationHandler(object? sender, long e)
+        {
+            await RunAsync(e);
+        }
 
         public void Dispose()
         {

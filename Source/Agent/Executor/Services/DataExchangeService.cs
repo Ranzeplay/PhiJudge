@@ -2,13 +2,8 @@
 using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
 using PhiJudge.Agent.Executor.Communication;
-using Supabase.Realtime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace PhiJudge.Agent.Executor.Services
 {
@@ -16,11 +11,11 @@ namespace PhiJudge.Agent.Executor.Services
     {
         private readonly Supabase.Client SupabaseClient;
         private readonly HttpClient HttpClient;
+        public event EventHandler<long>? RecordAllocationBroadcastReceived;
 
-        private readonly IExecutionService _executionService;
         private readonly ILogger<DataExchangeService> _logger;
 
-        public DataExchangeService(IExecutionService executionService, ILogger<DataExchangeService> logger)
+        public DataExchangeService(ILogger<DataExchangeService> logger)
         {
             var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
             var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
@@ -37,7 +32,6 @@ namespace PhiJudge.Agent.Executor.Services
                 BaseAddress = new Uri(Environment.GetEnvironmentVariable("CENTRAL_SERVER_URL")!)
             };
 
-            _executionService = executionService;
             _logger = logger;
         }
 
@@ -57,8 +51,7 @@ namespace PhiJudge.Agent.Executor.Services
                     if (response.AgentId == Environment.GetEnvironmentVariable("AGENT_ID"))
                     {
                         _logger.LogInformation("Running tests for record {0}", response.RecordId);
-
-                        _executionService.RunAsync(response.RecordId).Start();
+                        RecordAllocationBroadcastReceived?.Invoke(this, response.RecordId);
                     }
                 }
             });
@@ -106,6 +99,11 @@ namespace PhiJudge.Agent.Executor.Services
             SupabaseClient.Realtime.Disconnect();
             _logger.LogInformation("Disconnected from Supabase realtime channels");
             HttpClient.Dispose();
+        }
+
+        public void AddRecordAllocationHandler(EventHandler<long> handler)
+        {
+            RecordAllocationBroadcastReceived += handler;
         }
     }
 }
