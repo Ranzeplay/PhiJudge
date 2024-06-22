@@ -48,9 +48,16 @@ enum RecordStatus {
   ERROR
 }
 
+enum CompilationStatus {
+  PENDING
+  PASSED_WITHOUT_WARNINGS
+  PASSED_WITH_WARNINGS
+  FAILED_WITH_ERRORS
+  UNKNOWN
+}
+
 model record {
   id                 Int               @id @default(autoincrement())
-  actualOutput       String?
   problem            problem           @relation(fields: [problemId], references: [id])
   problemId          Int
   recordTestPoint    recordTestPoint[]
@@ -61,14 +68,21 @@ model record {
   agentId            String
   languageId         String
   sourceCode         String
+  compilationResult  CompilationStatus @default(PENDING)
+  compilationOutput  String            @default("")
   enableOptimization Boolean           @default(false)
   warningAsError     Boolean           @default(false)
   submitTime         DateTime          @default(now())
 }
 
 enum RecordTestPointStatus {
-  PASSED
-  FAILED
+  Accepted
+  WrongAnswer
+  TimeLimitExceeded
+  MemoryLimitExceeded
+  OutputLimitExceeded
+  RuntimeError
+  Unknown
 }
 
 model recordTestPoint {
@@ -78,9 +92,9 @@ model recordTestPoint {
   record       record @relation(fields: [recordId], references: [id])
   order        Int
 
-  timeLimitMs      Int
-  memoryLimitBytes Int
-  status           RecordTestPointStatus
+  actualTimeMs          Int
+  actualPeakMemoryBytes Int
+  status                RecordTestPointStatus
 }
 
 enum AgentStatus {
@@ -90,10 +104,11 @@ enum AgentStatus {
 }
 
 model agent {
-  id                 String      @id @default(cuid())
-  name               String
-  status             AgentStatus
-  lastHeartbeat      DateTime
-  lastNetworkAddress String
-  records            record[]
+  id                  String      @id @default(cuid())
+  name                String
+  status              AgentStatus
+  lastHeartbeat       DateTime
+  lastNetworkAddress  String
+  records             record[]
+  availableLanguageId String[]
 }

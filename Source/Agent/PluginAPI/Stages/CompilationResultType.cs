@@ -5,6 +5,6 @@
         PassedWithoutWarnings,
         PassedWithWarnings,
         FailedWithErrors,
-        Unknown
+        Unknown 
     }
 }

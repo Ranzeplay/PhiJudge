@@ -3,6 +3,7 @@
 import { ProblemSubmissionSchema } from "./schema";
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 import { serverPrisma } from "@/lib/serverSidePrisma";
+import { AgentStatus } from "@prisma/client";
 
 export async function HandleSubmission(formData: FormData): Promise<number> {
   const data = await ProblemSubmissionSchema.parseAsync({
@@ -42,6 +43,26 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
       },
     },
   });
+
+  const agent = await serverPrisma.agent.findFirst({
+    where: {
+      status: AgentStatus.AVAILABLE,
+      availableLanguageId: {
+        hasEvery: [data.languageId],
+      },
+    },
+  });
+
+  const channel = supabase.channel('phijudge.record.alloc');
+  channel.send({
+    type: 'broadcast',
+    event: 'centralBroadcast',
+    payload: {
+      recordId: record.id,
+      agentId: agent?.id,
+    }
+  });
+  channel.untrack();
 
   return record.id;
 }
