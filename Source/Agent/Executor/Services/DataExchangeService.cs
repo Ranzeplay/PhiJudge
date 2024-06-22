@@ -1,4 +1,5 @@
-﻿using PhiJudge.Agent.API.Plugin;
+﻿using Microsoft.Extensions.Logging;
+using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
 using PhiJudge.Agent.Executor.Communication;
 using Supabase.Realtime;
@@ -17,8 +18,9 @@ namespace PhiJudge.Agent.Executor.Services
         private readonly HttpClient HttpClient;
 
         private readonly IExecutionService _executionService;
+        private readonly ILogger<DataExchangeService> _logger;
 
-        public DataExchangeService(IExecutionService executionService)
+        public DataExchangeService(IExecutionService executionService, ILogger<DataExchangeService> logger)
         {
             var url = Environment.GetEnvironmentVariable("SUPABASE_URL");
             var key = Environment.GetEnvironmentVariable("SUPABASE_KEY");
@@ -36,6 +38,7 @@ namespace PhiJudge.Agent.Executor.Services
             };
 
             _executionService = executionService;
+            _logger = logger;
         }
 
         public async Task InitializeAsync()
@@ -53,12 +56,15 @@ namespace PhiJudge.Agent.Executor.Services
                 {
                     if (response.AgentId == Environment.GetEnvironmentVariable("AGENT_ID"))
                     {
+                        _logger.LogInformation("Running tests for record {0}", response.RecordId);
+
                         _executionService.RunAsync(response.RecordId).Start();
                     }
                 }
             });
 
             await allocChannel.Subscribe();
+            _logger.LogInformation("Successfully connected to Supabase realtime channel");
         }
 
         public async Task<RecordData> FetchRecordAsync(long recordId)
@@ -66,7 +72,10 @@ namespace PhiJudge.Agent.Executor.Services
             var response = await HttpClient.GetAsync($"/api/agent/record/{recordId}");
             var content = await response.Content.ReadAsStringAsync();
 
-            return JsonSerializer.Deserialize<RecordData>(content)!;
+            var recordData = JsonSerializer.Deserialize<RecordData>(content)!;
+            _logger.LogInformation("Successfully fetched data of record {0}", recordId);
+
+            return recordData;
         }
 
         public async Task<ProblemData> FetchProblemAsync(long problemId)
@@ -75,6 +84,7 @@ namespace PhiJudge.Agent.Executor.Services
             var content = await response.Content.ReadAsStringAsync();
 
             var problemData = JsonSerializer.Deserialize<ProblemData>(content)!;
+            _logger.LogInformation("Successfully fetched data of record {0}", problemId);
 
             return problemData;
         }
@@ -94,6 +104,7 @@ namespace PhiJudge.Agent.Executor.Services
         public void Dispose()
         {
             SupabaseClient.Realtime.Disconnect();
+            _logger.LogInformation("Disconnected from Supabase realtime channels");
             HttpClient.Dispose();
         }
     }

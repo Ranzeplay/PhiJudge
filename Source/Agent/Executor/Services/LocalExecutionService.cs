@@ -1,4 +1,5 @@
-﻿using PhiJudge.Agent.API.Plugin;
+﻿using Microsoft.Extensions.Logging;
+using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System;
 using System.Collections.Generic;
@@ -8,14 +9,16 @@ using System.Threading.Tasks;
 
 namespace PhiJudge.Agent.Executor.Services
 {
-    internal class LocalExecutionService(IDataExchangeService dataExchangeService, PluginService pluginService) : IExecutionService, IDisposable
+    internal class LocalExecutionService(IDataExchangeService dataExchangeService, PluginService pluginService, ILogger<LocalExecutionService> logger) : IExecutionService, IDisposable
     {
         private readonly IDataExchangeService _dataExchangeService = dataExchangeService;
         private readonly PluginService _pluginService = pluginService;
+        private readonly ILogger<LocalExecutionService> _logger = logger;
         private readonly string TempDirectoryPath = Directory.CreateTempSubdirectory("PhiJudge").FullName;
 
         public void Dispose()
         {
+            _logger.LogInformation("Deleting temporary directory");
             Directory.Delete(TempDirectoryPath, true);
         }
 
@@ -24,12 +27,14 @@ namespace PhiJudge.Agent.Executor.Services
             var recordData = await _dataExchangeService.FetchRecordAsync(recordId);
             var problemData = await _dataExchangeService.FetchProblemAsync(recordData.ProblemId);
             var plugin = _pluginService.GetPlugin(recordData.Language);
+            _logger.LogInformation("Using plugin {0} to run tests", plugin.PluginEntrypoint.Id);
 
             var compilationResult = await CompileAsync(plugin, recordData);
             await _dataExchangeService.PushCompilationResultAsync(recordId, compilationResult);
 
             if (compilationResult.Type != CompilationResultType.FailedWithErrors && compilationResult.Type != CompilationResultType.Unknown)
             {
+                _logger.LogInformation("Successfully compiled source code of record {0}", recordData.RecordId);
                 await ExecuteAllAsync(plugin, recordId, problemData);
             }
         }
@@ -47,6 +52,8 @@ namespace PhiJudge.Agent.Executor.Services
                 var executionResult = await ExecuteSingle(plugin, recordId, testPoint);
                 await _dataExchangeService.PushExecutionResultAsync(recordId, executionResult);
             }
+
+            _logger.LogInformation("Successfully finished test for record {0}", recordId);
         }
 
         public async Task<ExecutionResult> ExecuteSingle(Plugin plugin, long recordId, TestPointData data)
