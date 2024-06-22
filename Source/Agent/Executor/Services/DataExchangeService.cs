@@ -1,6 +1,6 @@
 ﻿using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
-using PhiJudge.Agent.Executor.Endpoint.Communication;
+using PhiJudge.Agent.Executor.Communication;
 using Supabase.Realtime;
 using System;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace PhiJudge.Agent.Executor.Endpoint.Services
+namespace PhiJudge.Agent.Executor.Services
 {
     internal class DataExchangeService : IDataExchangeService, IDisposable
     {

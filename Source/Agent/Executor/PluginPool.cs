@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhiJudge.Agent.Executor.Endpoint
+namespace PhiJudge.Agent.Executor
 {
     internal class PluginPool
     {

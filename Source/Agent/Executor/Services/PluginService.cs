@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhiJudge.Agent.Executor.Endpoint.Services
+namespace PhiJudge.Agent.Executor.Services
 {
     internal class PluginService
     {
@@ -21,7 +21,7 @@ namespace PhiJudge.Agent.Executor.Endpoint.Services
 
         public Plugin GetPlugin(string language)
         {
-            return PluginPool.Plugins.FirstOrDefault(p => 
+            return PluginPool.Plugins.FirstOrDefault(p =>
                 p.Value
                 .PluginEntrypoint
                 .SupportedLanguageId

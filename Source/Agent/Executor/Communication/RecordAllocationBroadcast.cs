@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhiJudge.Agent.Executor.Endpoint.Communication
+namespace PhiJudge.Agent.Executor.Communication
 {
     internal class RecordAllocationBroadcast : BaseBroadcast
     {

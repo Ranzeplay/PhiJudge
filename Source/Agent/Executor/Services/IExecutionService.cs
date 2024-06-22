@@ -1,7 +1,7 @@
 ﻿using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
 
-namespace PhiJudge.Agent.Executor.Endpoint.Services
+namespace PhiJudge.Agent.Executor.Services
 {
     internal interface IExecutionService
     {

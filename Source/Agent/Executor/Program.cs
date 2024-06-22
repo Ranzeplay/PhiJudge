@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
-using PhiJudge.Agent.Executor.Endpoint.Services;
 using Microsoft.Extensions.Logging;
+using PhiJudge.Agent.Executor.Services;
 
 var builder = Host.CreateApplicationBuilder(args);
 

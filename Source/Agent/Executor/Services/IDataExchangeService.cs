@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PhiJudge.Agent.Executor.Endpoint.Services
+namespace PhiJudge.Agent.Executor.Services
 {
     internal interface IDataExchangeService
     {
