@@ -68,18 +68,25 @@ export async function POST(
     },
   });
 
-  await createSupabaseServerSideClient()
-    .realtime.channel(`phijudge.record.${params.id}`)
-    .send({
-      type: "broadcast",
-      event: "testPoint",
-      payload: {
-        order: body.order,
-        status: testPointStatus,
-        actualTimeMs: body.timeMilliseconds,
-        actualPeakMemoryBytes: body.peakMemoryBytes,
-      },
-    });
+  const channel = await createSupabaseServerSideClient().realtime.channel(
+    `phijudge.record.${params.id}`
+  );
+
+  channel.subscribe((status) => {
+    if (status === "SUBSCRIBED") {
+      channel.send({
+        type: "broadcast",
+        event: "testPoint",
+        payload: {
+          order: body.order,
+          status: testPointStatus,
+          actualTimeMs: body.timeMilliseconds,
+          actualPeakMemoryBytes: body.peakMemoryBytes,
+        },
+      });
+    }
+  });
+  channel.unsubscribe();
 
   return NextResponse.json({ success: true });
 }

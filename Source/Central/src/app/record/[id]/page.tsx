@@ -30,8 +30,9 @@ import {
 	codeToHtml,
 	getHighlighter
 } from 'shiki/bundle/full'
+import { createSupabaseBrowserSideClient } from "@/lib/supabase/client";
 
-export default function Page(params: { params: { id: string } }) {
+export default function Page({ params }: { params: { id: string } }) {
 	const [sourceCode, setSourceCode] = useState('' as string);
 	useEffect(() => {
 		async function highlightCode() {
@@ -51,6 +52,14 @@ int main() {
 		}
 
 		highlightCode();
+	});
+
+	const supabase = createSupabaseBrowserSideClient();
+	const channel = supabase.channel(`phijudge.record.${params.id}`);
+	channel.on('broadcast', { event: 'compilationResult' }, payload => {
+		const { type: CompilationResultType, output: string } = payload;
+
+		
 	});
 
 	return (
