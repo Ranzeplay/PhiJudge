@@ -12,4 +12,17 @@ builder.Services.AddSingleton<IExecutionService, LocalExecutionService>();
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+await host.StartAsync();
+
+
+var logger = host.Services.GetRequiredService<ILogger<Program>>();
+logger.LogInformation("PhiJudge Agent Executor started");
+
+host.Services.GetRequiredService<PluginService>();
+host.Services.GetRequiredService<IDataExchangeService>();
+host.Services.GetRequiredService<IExecutionService>();
+
+logger.LogInformation("Initialized services");
+
+await host.WaitForShutdownAsync();
