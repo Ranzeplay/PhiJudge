@@ -9,7 +9,7 @@ namespace PhiJudge.Plugin.Language.C
 {
     internal class CompilationStage : ICompilationStage
     {
-        public CompilationResult Compile(string filePath)
+        public Task<CompilationResult> CompileAsync(string directoryPath, bool enableOptimization, bool warningAsError)
         {
             throw new NotImplementedException();
         }

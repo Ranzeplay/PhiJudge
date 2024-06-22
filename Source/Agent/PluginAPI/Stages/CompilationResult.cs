@@ -1,4 +1,4 @@
 ﻿namespace PhiJudge.Agent.API.Plugin.Stages
 {
-    public record CompilationResult(CompilationResultType Type, string Output);
+    public record CompilationResult(long RecordId, CompilationResultType Type, string Output);
 }

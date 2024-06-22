@@ -2,6 +2,6 @@
 {
     public interface IExecutionStage
     {
-        ExecutionResult Execute();
+        Task<ExecutionResult> ExecuteAsync(string directory, TestPointData testPoint);
     }
 }

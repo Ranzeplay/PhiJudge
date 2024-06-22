@@ -12,6 +12,8 @@ namespace PhiJudge.Plugin.Language.C
         public string[] Dependencies => [];
         public string[] OptionalDependencies => [];
 
+        public string[] SupportedLanguageId => ["c"];
+
         public void Load()
         {
             throw new NotImplementedException();
