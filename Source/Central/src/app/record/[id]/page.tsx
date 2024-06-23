@@ -31,35 +31,39 @@ import {
 	getHighlighter
 } from 'shiki/bundle/full'
 import { createSupabaseBrowserSideClient } from "@/lib/supabase/client";
+import { GetRecordPersistentData, RecordPersistentData } from "./server";
+import dayjs from "dayjs";
 
-export default function Page({ params }: { params: { id: string } }) {
-	const [sourceCode, setSourceCode] = useState('' as string);
+export default function Page({ params }: { params: { id: number } }) {
+	const [persistentData, setPersistentData] = useState<RecordPersistentData | null>(null);
+	const [sourceCodeHtml, setSourceCodeHtml] = useState<string | null>(null);
+
+	useEffect(() => {
+		async function fetchPersistentData() {
+			const data = await GetRecordPersistentData(params.id.toString());
+			setPersistentData(JSON.parse(data) as RecordPersistentData);
+		}
+
+		fetchPersistentData();
+	}, []);
+
 	useEffect(() => {
 		async function highlightCode() {
-			const code = `
-#include <stdio.h>
-
-int main() {
-	printf("Hello, World!\\n");
-	return 0;
-}
-			`;
-			const html = await codeToHtml(code, {
-				lang: 'c',
+			const html = await codeToHtml(persistentData?.sourceCode || '', {
+				lang: persistentData?.language || '',
 				theme: 'github-light',
 			});
-			setSourceCode(html);
+
+			setSourceCodeHtml(html);
 		}
 
 		highlightCode();
-	});
+	}, [persistentData]);
 
 	const supabase = createSupabaseBrowserSideClient();
 	const channel = supabase.channel(`phijudge.record.${params.id}`);
 	channel.on('broadcast', { event: 'compilationResult' }, payload => {
 		const { type: CompilationResultType, output: string } = payload;
-
-		
 	});
 
 	return (
@@ -95,19 +99,19 @@ int main() {
 					<CardContent className="flex flex-col space-y-1">
 						<div>
 							<h4>Id</h4>
-							<p className="ml-2 font-mono text-sm">1</p>
+							<p className="ml-2 font-mono text-sm">{params.id}</p>
 						</div>
 						<div>
 							<h4>Time</h4>
-							<p className="ml-2 font-mono text-sm">2024/5/19 13:45</p>
+							<p className="ml-2 font-mono text-sm">{dayjs(persistentData?.submitTime).format('YYYY/M/D H:mm')}</p>
 						</div>
 						<div>
 							<h4>Problem</h4>
-							<Link className="flex text-blue-500 hover:underline ml-2 text-sm" href="/problem/1/details">Hello, world</Link>
+							<Link className="flex text-blue-500 hover:underline ml-2 text-sm" href={`/problem/${persistentData?.problem.id}/details`}>{persistentData?.problem.title}</Link>
 						</div>
 						<div>
 							<h4>Author</h4>
-							<Link className="flex text-blue-500 hover:underline ml-2 text-sm" href="/user/1">Jeb Feng</Link>
+							<Link className="flex text-blue-500 hover:underline ml-2 text-sm" href={`/user/${persistentData?.problem.authorId}`}>{persistentData?.problem.author}</Link>
 						</div>
 						<div>
 							<h4>Status</h4>
@@ -129,11 +133,11 @@ int main() {
 					<CardHeader>
 						<CardTitle className="flex flex-row space-x-2 items-center">
 							<span>Source code</span>
-							<Badge variant={'secondary'}>C#</Badge>
+							<Badge variant={'secondary'}>{persistentData?.language}</Badge>
 						</CardTitle>
 					</CardHeader>
 					<CardContent>
-						{sourceCode && <div dangerouslySetInnerHTML={{ __html: sourceCode }} />}
+						{sourceCodeHtml && <div dangerouslySetInnerHTML={{ __html: sourceCodeHtml }} />}
 					</CardContent>
 				</Card>
 				<Card>

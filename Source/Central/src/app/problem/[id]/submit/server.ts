@@ -25,6 +25,15 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
     },
   });
 
+  const agent = await serverPrisma.agent.findFirst({
+    where: {
+      status: AgentStatus.AVAILABLE,
+      availableLanguageId: {
+        hasEvery: [data.languageId],
+      },
+    },
+  });
+
   const record = await serverPrisma.record.create({
     data: {
       languageId: data.languageId,
@@ -41,15 +50,11 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
           id: data.problemId,
         },
       },
-    },
-  });
-
-  const agent = await serverPrisma.agent.findFirst({
-    where: {
-      status: AgentStatus.AVAILABLE,
-      availableLanguageId: {
-        hasEvery: [data.languageId],
-      },
+      agent: {
+        connect: {
+          id: agent?.id,
+        }
+      }
     },
   });
 

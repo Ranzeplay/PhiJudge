@@ -45,6 +45,7 @@ namespace PhiJudge.Agent.Executor.Services
             allocSubscription.AddBroadcastEventHandler((sender, broadcast) =>
             {
                 var response = allocSubscription.Current();
+                _logger.LogInformation("Received record allocation broadcast");
 
                 if (response != null)
                 {

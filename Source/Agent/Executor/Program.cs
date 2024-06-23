@@ -20,7 +20,10 @@ var logger = host.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("PhiJudge Agent Executor started");
 
 host.Services.GetRequiredService<PluginService>();
-host.Services.GetRequiredService<IDataExchangeService>();
+
+var dataExchangeService = host.Services.GetRequiredService<IDataExchangeService>();
+await dataExchangeService.InitializeAsync();
+
 host.Services.GetRequiredService<IExecutionService>();
 
 var heartBeatService = host.Services.GetRequiredService<IHeartbeatService>();

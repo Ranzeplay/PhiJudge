@@ -20,8 +20,29 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import { serverPrisma } from "@/lib/serverSidePrisma";
 import Link from "next/link";
-export default function Page() {
+export default async function Page() {
+	const records = await serverPrisma
+		.record
+		.findMany({
+			orderBy: { id: 'asc' },
+			include: {
+				problem: {
+					select: {
+						id: true,
+						title: true,
+					},
+				},
+				submitter: {
+					select: {
+						id: true,
+						userName: true,
+					},
+				},
+			},
+		});
+
 	return (
 		<>
 			<RootNavBar />
@@ -39,24 +60,26 @@ export default function Page() {
 										<TableRow>
 											<TableHead className="w-[100px]">Id</TableHead>
 											<TableHead>Problem</TableHead>
-											<TableHead>Author</TableHead>
+											<TableHead>Submitter</TableHead>
 											<TableHead>Status</TableHead>
 										</TableRow>
 									</TableHeader>
 									<TableBody>
-											<TableRow>
+										{records.map((record) => (
+											<TableRow key={record.id}>
 												<TableCell className="font-medium">
-													<Link className="flex text-blue-500 hover:underline" href="/record/1">1</Link>
+													<Link className="flex text-blue-500 hover:underline" href={`/record/${record.id}`}>{record.id}</Link>
 												</TableCell>
 												<TableCell className="flex flex-row space-x-1 items-center">
-													<Badge variant={'secondary'}>1</Badge>
-													<Link className="flex text-blue-500 hover:underline" href="/problem/1/details">Hello, world</Link>
+													<Badge variant={'secondary'}>{record.problem.id}</Badge>
+													<Link className="flex text-blue-500 hover:underline" href={`/problem/${record.problem.id}/details`}>{record.problem.title}</Link>
 												</TableCell>
 												<TableCell>
-													<Link className="flex text-blue-500 hover:underline" href="/user/1">Jeb Feng</Link>
+													<Link className="flex text-blue-500 hover:underline" href={`/user/${record.submitter.id}`}>{record.submitter.userName}</Link>
 												</TableCell>
-												<TableCell>Failed</TableCell>
+												<TableCell>{record.status}</TableCell>
 											</TableRow>
+										))}
 									</TableBody>
 								</Table>
 								<Pagination>
