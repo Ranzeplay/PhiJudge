@@ -105,5 +105,11 @@ namespace PhiJudge.Agent.Executor.Services
         {
             RecordAllocationBroadcastReceived += handler;
         }
+
+        public async Task SendHeartbeatSignalAsync()
+        {
+            await HttpClient.GetAsync($"/api/agent/heartbeat/{Environment.GetEnvironmentVariable("AGENT_ID")}");
+            _logger.LogInformation("Heartbeat signal sent");
+        }
     }
 }
