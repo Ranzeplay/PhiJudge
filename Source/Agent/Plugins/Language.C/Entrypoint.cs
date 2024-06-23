@@ -1,4 +1,5 @@
-﻿using PhiJudge.Agent.API.Plugin;
+﻿using Microsoft.Extensions.Logging;
+using PhiJudge.Agent.API.Plugin;
 
 namespace PhiJudge.Plugin.Language.C
 {
@@ -11,17 +12,19 @@ namespace PhiJudge.Plugin.Language.C
         public string Version => "0.1";
         public string[] Dependencies => [];
         public string[] OptionalDependencies => [];
-
         public string[] SupportedLanguageId => ["c"];
 
-        public void Load()
+        private ILogger _logger = null!;
+
+        public void Load(ILogger logger)
         {
-            throw new NotImplementedException();
+            _logger = logger;
+            _logger.LogInformation("The plugin uses gcc to run code");
         }
 
         public void Unload()
         {
-            throw new NotImplementedException();
+            _logger.LogInformation("Unloading plugin for C programming language");
         }
     }
 }

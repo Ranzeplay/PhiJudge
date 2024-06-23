@@ -111,5 +111,11 @@ namespace PhiJudge.Agent.Executor.Services
             await HttpClient.GetAsync($"/api/agent/heartbeat/{Environment.GetEnvironmentVariable("AGENT_ID")}");
             _logger.LogInformation("Heartbeat signal sent");
         }
+
+        public async void UpdateSupportedLanguagesAsync(IEnumerable<string> languages)
+        {
+            await HttpClient.PostAsync($"/api/agent/languages/{Environment.GetEnvironmentVariable("AGENT_ID")}", new StringContent(JsonSerializer.Serialize(languages), Encoding.UTF8, "application/json"));
+            _logger.LogInformation("Updated supported languages on server side");
+        }
     }
 }

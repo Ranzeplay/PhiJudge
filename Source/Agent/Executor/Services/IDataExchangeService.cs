@@ -12,5 +12,6 @@ namespace PhiJudge.Agent.Executor.Services
         Task<bool> PushCompilationResultAsync(long recordId, CompilationResult compilationResult);
         Task<bool> PushExecutionResultAsync(long recordId, ExecutionResult executionResult);
         Task SendHeartbeatSignalAsync();
+        void UpdateSupportedLanguagesAsync(IEnumerable<string> languages);
     }
 }

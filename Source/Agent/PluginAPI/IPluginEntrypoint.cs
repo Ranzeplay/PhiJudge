@@ -1,4 +1,6 @@
-﻿namespace PhiJudge.Agent.API.Plugin
+﻿using Microsoft.Extensions.Logging;
+
+namespace PhiJudge.Agent.API.Plugin
 {
     public interface IPluginEntrypoint
     {
@@ -11,7 +13,7 @@
         public string[] OptionalDependencies { get; }
         public string[] SupportedLanguageId { get; }
 
-        void Load();
+        void Load(ILogger logger);
         void Unload();
     }
 }
