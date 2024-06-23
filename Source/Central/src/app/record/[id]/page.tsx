@@ -10,7 +10,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
-import { AlertTriangle, ArrowRight, Check } from "lucide-react";
+import { AlertTriangle, ArrowRight, Check, Loader } from "lucide-react";
 import Link from 'next/link';
 import { Badge } from "@/components/ui/badge";
 import {
@@ -31,12 +31,14 @@ import {
 	getHighlighter
 } from 'shiki/bundle/full'
 import { createSupabaseBrowserSideClient } from "@/lib/supabase/client";
-import { GetRecordPersistentData, RecordPersistentData } from "./server";
+import { GetRecordPersistentData, GetRecordStatus, RecordPersistentData } from "./server";
 import dayjs from "dayjs";
+import { RecordStatus } from "@prisma/client";
 
 export default function Page({ params }: { params: { id: number } }) {
 	const [persistentData, setPersistentData] = useState<RecordPersistentData | null>(null);
 	const [sourceCodeHtml, setSourceCodeHtml] = useState<string | null>(null);
+	const [recordStatus, setRecordStatus] = useState<RecordStatus | null>(null);
 
 	useEffect(() => {
 		async function fetchPersistentData() {
@@ -44,7 +46,13 @@ export default function Page({ params }: { params: { id: number } }) {
 			setPersistentData(JSON.parse(data) as RecordPersistentData);
 		}
 
+		async function fetchRecordStatus() {
+			const status = await GetRecordStatus(params.id.toString());
+			setRecordStatus(status || RecordStatus.UNKNOWN);
+		}
+
 		fetchPersistentData();
+		fetchRecordStatus();
 	}, []);
 
 	useEffect(() => {
@@ -74,22 +82,10 @@ export default function Page({ params }: { params: { id: number } }) {
 						<CardTitle>Steps</CardTitle>
 					</CardHeader>
 					<CardContent className="flex flex-col space-y-1">
-						<p className="flex flex-row gap-x-1 text-muted-foreground items-center">
-							<Check size={15} />
-							<span>Queue</span>
-						</p>
-						<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
-							<Check size={15} />
-							<span>Compile</span>
-						</p>
-						<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
-							<AlertTriangle size={15} />
-							<span>Execute</span>
-						</p>
-						<p className="flex flex-row gap-x-1 items-center">
-							<ArrowRight size={15} />
-							<span>Finish</span>
-						</p>
+						<QueueIndicator status={recordStatus || RecordStatus.UNKNOWN} />
+						<CompileIndicator status={recordStatus || RecordStatus.UNKNOWN} />
+						<TestIndicator status={recordStatus || RecordStatus.UNKNOWN} />
+						<FinishIndicator status={recordStatus || RecordStatus.UNKNOWN} />
 					</CardContent>
 				</Card>
 				<Card>
@@ -114,12 +110,8 @@ export default function Page({ params }: { params: { id: number } }) {
 							<Link className="flex text-blue-500 hover:underline ml-2 text-sm" href={`/user/${persistentData?.problem.authorId}`}>{persistentData?.problem.author}</Link>
 						</div>
 						<div>
-							<h4>Status</h4>
-							<p className="ml-2 font-mono text-sm">Finished</p>
-						</div>
-						<div>
-							<h4>Result</h4>
-							<p className="ml-2 font-mono text-sm">Failed</p>
+							<h4>Status & Result</h4>
+							<p className="ml-2 font-mono text-sm">{recordStatus}</p>
 						</div>
 						<div>
 							<h4>Rate</h4>
@@ -200,6 +192,92 @@ export default function Page({ params }: { params: { id: number } }) {
 			</div>
 		</div>
 	)
+}
+
+function QueueIndicator(props: { status: RecordStatus }) {
+	return (
+		<p className={`flex flex-row gap-x-1 items-center ${props.status !== RecordStatus.PENDING && 'text-muted-foreground'}`}>
+			{props.status !== RecordStatus.PENDING ? <Check size={15} /> : <ArrowRight size={15} />}
+			<span>Queue</span>
+		</p>
+	)
+}
+
+function CompileIndicator(props: { status: RecordStatus }) {
+	if (props.status === RecordStatus.COMPILING) {
+		return (
+			<p className="flex flex-row gap-x-1 items-center">
+				<ArrowRight size={15} />
+				<span>Compile</span>
+			</p>
+		)
+	} else if (props.status === RecordStatus.PENDING) {
+		return (
+			<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
+				<Loader size={15} opacity={0} />
+				<span>Compile</span>
+			</p>
+		)
+	} else {
+		return (
+			<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
+				<Check size={15} />
+				<span>Compile</span>
+			</p>
+		)
+	}
+}
+
+function TestIndicator(props: { status: RecordStatus }) {
+	if (props.status === RecordStatus.TESTING) {
+		return (
+			<p className="flex flex-row gap-x-1 items-center">
+				<ArrowRight size={15} />
+				<span>Test</span>
+			</p>
+		)
+	}else if (props.status === RecordStatus.PENDING || props.status === RecordStatus.COMPILING) {
+		return (
+			<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
+				<Loader size={15} opacity={0} />
+				<span>Test</span>
+			</p>
+		)
+	} else {
+		return (
+			<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
+				<Check size={15} />
+				<span>Test</span>
+			</p>
+		)
+	}
+}
+
+function FinishIndicator(props: { status: RecordStatus }) {
+	if(props.status === RecordStatus.FAILED || props.status === RecordStatus.PASSED) {
+		if(props.status === RecordStatus.FAILED) {
+			return (
+				<p className="flex flex-row gap-x-1 items-center">
+					<AlertTriangle size={15} />
+					<span>Finished</span>
+				</p>
+			)
+		} else {
+			return (
+				<p className="flex flex-row gap-x-1 items-center">
+					<Check size={15} />
+					<span>Finish</span>
+				</p>
+			)
+		}
+	} else {
+		return (
+			<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
+				<Loader size={15} opacity={0} />
+				<span>Finish</span>
+			</p>
+		)
+	}
 }
 
 function TimeChart() {
