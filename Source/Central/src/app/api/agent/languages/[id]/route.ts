@@ -1,9 +1,8 @@
 import { serverPrisma } from "@/lib/serverSidePrisma";
-import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
-export async function POST(request: NextApiRequest, { params }: { params: { id: string } }) {
-	const languages = request.body as string[];
+export async function POST(request: Request, { params }: { params: { id: string } }) {
+	const languages = (await request.json()) as string[];
 
 	await serverPrisma.agent.update({
 		where: {

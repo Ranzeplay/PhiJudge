@@ -56,10 +56,8 @@ namespace PhiJudge.Agent.Executor.Services
                 Plugins.Add(entrypoint!.Id, new Plugin(entrypoint!, compilationStage!, executionStage!));
                 _logger.LogInformation("Loaded plugin {0}, whose id is {1}", entrypoint.Name, entrypoint.Id);
             }
-
             _logger.LogInformation("Found {0} plugins", Plugins.Count);
 
-            // Update supported languages
             _dataExchangeService.UpdateSupportedLanguagesAsync(Plugins.Values.SelectMany(p => p.PluginEntrypoint.SupportedLanguageId).Distinct());
         }
 

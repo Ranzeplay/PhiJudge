@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -45,6 +46,12 @@ export default async function Page({ params }: { params: { id: string } }) {
 							<TableRow>
 								<TableCell>Last network address</TableCell>
 								<TableCell>{agent?.lastNetworkAddress}</TableCell>
+							</TableRow>
+							<TableRow>
+								<TableCell>Supported languages</TableCell>
+								<TableCell>{agent?.availableLanguageId.map(lang => (
+									<Badge key={lang}>{lang}</Badge>
+								))}</TableCell>
 							</TableRow>
 						</TableBody>
 					</Table>
