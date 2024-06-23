@@ -2,6 +2,6 @@
 {
     public interface ICompilationStage
     {
-        Task<CompilationResult> CompileAsync(string directoryPath, bool enableOptimization, bool warningAsError);
+        Task<CompilationResult> CompileAsync(string directoryPath, string sourceCode, bool enableOptimization, bool warningAsError);
     }
 }

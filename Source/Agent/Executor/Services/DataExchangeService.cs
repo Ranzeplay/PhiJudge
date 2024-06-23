@@ -83,16 +83,34 @@ namespace PhiJudge.Agent.Executor.Services
             return problemData;
         }
 
+        public async Task BeginCompilationAsync(long recordId)
+        {
+            var response = await HttpClient.GetAsync($"/api/agent/record/{recordId}/compilation/begin");
+            _logger.LogInformation("Compilation started for record {0}", recordId);
+        }
+
         public async Task<bool> PushCompilationResultAsync(long recordId, CompilationResult compilationResult)
         {
             var response = await HttpClient.PostAsync($"/api/agent/record/{recordId}/compilation", new StringContent(JsonSerializer.Serialize(compilationResult), Encoding.UTF8, "application/json"));
             return response.IsSuccessStatusCode;
         }
 
+        public async Task BeginExecutionAsync(long recordId)
+        {
+            await HttpClient.GetAsync($"/api/agent/record/{recordId}/execution/begin");
+            _logger.LogInformation("Execution started for record {0}", recordId);
+        }
+
         public async Task<bool> PushExecutionResultAsync(long recordId, ExecutionResult executionResult)
         {
             var response = await HttpClient.PostAsync($"/api/agent/record/{recordId}/execution", new StringContent(JsonSerializer.Serialize(executionResult), Encoding.UTF8, "application/json"));
             return response.IsSuccessStatusCode;
+        }
+
+        public async Task FinishExecutionAsync(long recordId)
+        {
+            await HttpClient.GetAsync($"/api/agent/record/{recordId}/execution/finish");
+            _logger.LogInformation("Finished execution for record {0}", recordId);
         }
 
         public void Dispose()

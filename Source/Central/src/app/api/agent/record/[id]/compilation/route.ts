@@ -47,7 +47,7 @@ export async function POST(
     },
   });
 
-  const channel = await createSupabaseServerSideClient().realtime.channel(
+  const channel = createSupabaseServerSideClient().realtime.channel(
     `phijudge.record.${params.id}`
   );
   channel.subscribe((status) => {

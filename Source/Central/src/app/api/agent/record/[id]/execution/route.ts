@@ -1,6 +1,6 @@
 import { serverPrisma } from "@/lib/serverSidePrisma";
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
-import { RecordTestPointStatus } from "@prisma/client";
+import { RecordStatus, RecordTestPointStatus } from "@prisma/client";
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
@@ -68,7 +68,14 @@ export async function POST(
     },
   });
 
-  const channel = await createSupabaseServerSideClient().realtime.channel(
+  await serverPrisma.record.update({
+    where: { id: params.id },
+    data: {
+      status: RecordStatus.RUNNING,
+    },
+  });
+
+  const channel = createSupabaseServerSideClient().realtime.channel(
     `phijudge.record.${params.id}`
   );
 

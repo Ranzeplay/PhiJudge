@@ -39,6 +39,7 @@ namespace PhiJudge.Agent.Executor.Services
             _logger.LogInformation("Using plugin {0} to run tests", plugin.PluginEntrypoint.Id);
 
             var compilationResult = await CompileAsync(plugin, recordData);
+            compilationResult.RecordId = recordId;
             await _dataExchangeService.PushCompilationResultAsync(recordId, compilationResult);
 
             if (compilationResult.Type != CompilationResultType.FailedWithErrors && compilationResult.Type != CompilationResultType.Unknown)
@@ -50,25 +51,31 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async Task<CompilationResult> CompileAsync(Plugin plugin, RecordData recordData)
         {
+            await _dataExchangeService.BeginCompilationAsync(recordData.RecordId);
             var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordData.RecordId.ToString()));
-            return await plugin.CompilationStage.CompileAsync(workingDirectory.FullName, recordData.EnableOptimization, recordData.WarningAsError);
+            return await plugin.CompilationStage.CompileAsync(workingDirectory.FullName, recordData.SourceCode, recordData.EnableOptimization, recordData.WarningAsError);
         }
 
         public async Task ExecuteAllAsync(Plugin plugin, long recordId, ProblemData data)
         {
+            await _dataExchangeService.BeginExecutionAsync(recordId);
             foreach (var testPoint in data.TestPoints)
             {
-                var executionResult = await ExecuteSingle(plugin, recordId, testPoint);
+                var executionResult = await ExecuteSingleAsync(plugin, recordId, testPoint);
                 await _dataExchangeService.PushExecutionResultAsync(recordId, executionResult);
             }
 
+            await _dataExchangeService.FinishExecutionAsync(recordId);
             _logger.LogInformation("Successfully finished test for record {0}", recordId);
         }
 
-        public async Task<ExecutionResult> ExecuteSingle(Plugin plugin, long recordId, TestPointData data)
+        public async Task<ExecutionResult> ExecuteSingleAsync(Plugin plugin, long recordId, TestPointData data)
         {
             var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordId.ToString()));
-            return await plugin.ExecutionStage.ExecuteAsync(workingDirectory.FullName, data);
+            var result = await plugin.ExecutionStage.ExecuteAsync(workingDirectory.FullName, data);
+            result.RecordId = recordId;
+            result.Order = data.Order;
+            return result;
         }
     }
 }
