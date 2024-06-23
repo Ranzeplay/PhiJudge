@@ -17,13 +17,13 @@ export default function MyAccountLayout({
 					<nav
 						className="grid gap-4 text-sm text-muted-foreground" x-chunk="dashboard-04-chunk-0"
 					>
-						<Link href="#" className="font-semibold text-primary">Overview</Link>
-						<Link href="#" className="hover:underline">General</Link>
-						<Link href="#" className="hover:underline">Users</Link>
-						<Link href="#" className="hover:underline">Problems</Link>
-						<Link href="#" className="hover:underline">Records</Link>
-						<Link href="#" className="hover:underline">Agents</Link>
-						<Link href="#" className="hover:underline">Maintenance</Link>
+						<Link href="/admin/overview" className="font-semibold text-primary">Overview</Link>
+						<Link href="/admin/general" className="hover:underline">General</Link>
+						<Link href="/admin/users" className="hover:underline">Users</Link>
+						<Link href="/problems" className="hover:underline">Problems</Link>
+						<Link href="/records" className="hover:underline">Records</Link>
+						<Link href="/admin/agents" className="hover:underline">Agents</Link>
+						<Link href="/admin/maintenance" className="hover:underline">Maintenance</Link>
 					</nav>
 					<div className="grid gap-6">
 						{children}

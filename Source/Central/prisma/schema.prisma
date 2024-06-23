@@ -106,9 +106,9 @@ enum AgentStatus {
 model agent {
   id                  String      @id @default(cuid())
   name                String
-  status              AgentStatus
-  lastHeartbeat       DateTime
-  lastNetworkAddress  String
+  status              AgentStatus @default(DISCONNECTED)
+  lastHeartbeat       DateTime    @default(now())
+  lastNetworkAddress  String      @default("Unknown")
   records             record[]
   availableLanguageId String[]
 }

@@ -4,7 +4,7 @@ import { CompilationStatus } from "@prisma/client";
 import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
-type CompilationResult = {
+export type CompilationResult = {
   recordId: number;
   type: CompilationResultType;
   output: string;
