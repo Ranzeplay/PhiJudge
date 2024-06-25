@@ -42,10 +42,12 @@ model problemTestData {
 
 enum RecordStatus {
   PENDING
-  RUNNING
+  COMPILING
+  TESTING
   PASSED
   FAILED
   ERROR
+  UNKNOWN
 }
 
 enum CompilationStatus {

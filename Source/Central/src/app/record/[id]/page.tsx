@@ -39,6 +39,7 @@ export default function Page({ params }: { params: { id: number } }) {
 	const [persistentData, setPersistentData] = useState<RecordPersistentData | null>(null);
 	const [sourceCodeHtml, setSourceCodeHtml] = useState<string | null>(null);
 	const [recordStatus, setRecordStatus] = useState<RecordStatus | null>(null);
+	const [compilationOutput, setCompilationOutput] = useState<string | null>(null);
 
 	useEffect(() => {
 		async function fetchPersistentData() {

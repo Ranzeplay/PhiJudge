@@ -16,12 +16,11 @@ namespace PhiJudge.Plugin.Language.C
                 StartInfo = new()
                 {
                     FileName = "gcc",
-                    Arguments = $"-o {directoryPath}/target.out -x c {directoryPath}/source.c",
+                    Arguments = $"-o {directoryPath}/target.out -x c \"{directoryPath}/source.c\"",
                     WorkingDirectory = directoryPath,
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };
@@ -32,7 +31,7 @@ namespace PhiJudge.Plugin.Language.C
             string output = await compilerProcess.StandardOutput.ReadToEndAsync();
 
             var resultType = CompilationResultType.Unknown;
-            if (compilerProcess.ExitCode == 0 && !string.IsNullOrWhiteSpace(output))
+            if (compilerProcess.ExitCode == 0 && string.IsNullOrWhiteSpace(output))
             {
                 resultType = CompilationResultType.PassedWithoutWarnings;
             }

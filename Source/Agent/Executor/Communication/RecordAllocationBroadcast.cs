@@ -1,5 +1,5 @@
-﻿using Supabase.Realtime.Models;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using Supabase.Realtime.Models;
 
 namespace PhiJudge.Agent.Executor.Communication
 {
@@ -7,10 +7,10 @@ namespace PhiJudge.Agent.Executor.Communication
     {
         public static string ChannelName = "phijudge.record.alloc";
 
-        [JsonPropertyName("recordId")]
+        [JsonProperty("recordId")]
         public long RecordId { get; set; }
 
-        [JsonPropertyName("agentId")]
-        public string AgentId { get; set; } = Guid.Empty.ToString();
+        [JsonProperty("agentId")]
+        public string? AgentId { get; set; }
     }
 }

@@ -49,10 +49,10 @@ namespace PhiJudge.Agent.Executor.Services
 
                 if (response != null)
                 {
-                    if (response.AgentId == Environment.GetEnvironmentVariable("AGENT_ID"))
+                    if (response.Payload!["agentId"] as string == Environment.GetEnvironmentVariable("AGENT_ID"))
                     {
-                        _logger.LogInformation("Running tests for record {0}", response.RecordId);
-                        RecordAllocationBroadcastReceived?.Invoke(this, response.RecordId);
+                        _logger.LogInformation("Running tests for record {0}", response.Payload!["recordId"]);
+                        RecordAllocationBroadcastReceived?.Invoke(this, (long)response.Payload!["recordId"]);
                     }
                 }
             });

@@ -17,7 +17,6 @@ namespace PhiJudge.Plugin.Language.C
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };

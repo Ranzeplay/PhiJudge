@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: number } }
+  { params }: { params: { id: string } }
 ) {
   const agent = serverPrisma.agent.findUnique({
     where: {
@@ -19,7 +19,7 @@ export async function GET(
 
   const problem = await serverPrisma.problem.findUnique({
     where: {
-      id: params.id,
+      id: parseInt(params.id),
     },
     include: {
       testData: true,

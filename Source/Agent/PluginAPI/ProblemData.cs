@@ -1,4 +1,13 @@
-﻿namespace PhiJudge.Agent.API.Plugin
+﻿using System.Text.Json.Serialization;
+
+namespace PhiJudge.Agent.API.Plugin
 {
-    public record ProblemData(long Id, IEnumerable<TestPointData> TestPoints);
+    public class ProblemData(long id, IEnumerable<TestPointData> testPoints)
+    {
+        [JsonPropertyName("id")]
+        public long Id { get; set; } = id;
+
+        [JsonPropertyName("testPoints")]
+        public IEnumerable<TestPointData> TestPoints { get; set; } = testPoints;
+    }
 }
