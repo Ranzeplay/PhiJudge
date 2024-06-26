@@ -13,7 +13,7 @@ namespace PhiJudge.Agent.API.Plugin
         public string[] OptionalDependencies { get; }
         public string[] SupportedLanguageId { get; }
 
-        void Load(ILogger logger);
-        void Unload();
+        Task Load(ILogger logger);
+        Task Unload();
     }
 }

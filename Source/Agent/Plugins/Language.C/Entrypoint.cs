@@ -16,15 +16,30 @@ namespace PhiJudge.Plugin.Language.C
 
         private ILogger _logger = null!;
 
-        public void Load(ILogger logger)
+        public async Task Load(ILogger logger)
         {
             _logger = logger;
-            _logger.LogInformation("The plugin uses gcc to run code");
+
+            await PrepareEnvironmentAsync();
         }
 
-        public void Unload()
+        public Task Unload()
         {
             _logger.LogInformation("Unloading plugin for C programming language");
+            return Task.CompletedTask;
+        }
+
+        private async Task PrepareEnvironmentAsync()
+        {
+            if(!await ContainerUtils.CheckPackageInstalled("gcc"))
+            {
+                await ContainerUtils.InstallPackageAsync(["gcc"], true);
+            }
+
+            if (!await ContainerUtils.CheckPackageInstalled("valgrind"))
+            {
+                await ContainerUtils.InstallPackageAsync(["valgrind"], true);
+            }
         }
     }
 }
