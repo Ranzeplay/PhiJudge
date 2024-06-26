@@ -30,7 +30,7 @@ export async function GET(
     return NextResponse.json({ message: "Problem not found" }, { status: 404 });
   }
 
-  const testData = problem.testData.map((t) => ({
+  const testData = problem.testData.map(t => ({
     input: t.input,
     expectedOutput: t.expectedOutput,
     timeLimitMilliseconds: t.timeLimitMs,

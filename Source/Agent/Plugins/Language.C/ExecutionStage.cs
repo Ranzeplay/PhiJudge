@@ -17,6 +17,7 @@ namespace PhiJudge.Plugin.Language.C
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
+                    UseShellExecute = false,
                     CreateNoWindow = true
                 }
             };
@@ -32,7 +33,7 @@ namespace PhiJudge.Plugin.Language.C
             string output = await targetProcess.StandardOutput.ReadToEndAsync();
 
             var resultType = ExecutionResultType.Unknown;
-            if(output.Trim() == testPoint.ExpectedOutput.Trim())
+            if (output.Trim() == testPoint.ExpectedOutput.Trim())
             {
                 resultType = ExecutionResultType.Accepted;
             }
@@ -40,15 +41,15 @@ namespace PhiJudge.Plugin.Language.C
             {
                 resultType = ExecutionResultType.WrongAnswer;
             }
-            if(stopwatch.ElapsedMilliseconds > testPoint.TimeLimitMilliseconds)
+            if (stopwatch.ElapsedMilliseconds > testPoint.TimeLimitMilliseconds)
             {
                 resultType = ExecutionResultType.TimeLimitExceeded;
             }
-            if(targetProcess.PeakWorkingSet64 > testPoint.MemoryLimitBytes)
+            if (targetProcess.PeakWorkingSet64 > testPoint.MemoryLimitBytes)
             {
                 resultType = ExecutionResultType.MemoryLimitExceeded;
             }
-            if(targetProcess.ExitCode != 0)
+            if (targetProcess.ExitCode != 0)
             {
                 resultType = ExecutionResultType.RuntimeError;
             }
