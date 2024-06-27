@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\PluginAPI\PluginAPI.csproj" />
+	  <ProjectReference Include="..\..\PluginAPI\PhiJudge.Agent.PluginAPI.csproj" />
 	</ItemGroup>
 
 </Project>
