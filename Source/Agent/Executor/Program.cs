@@ -10,6 +10,8 @@ builder.Services.AddSingleton<IDataExchangeService, DataExchangeService>();
 builder.Services.AddSingleton<IExecutionService, LocalExecutionService>();
 builder.Services.AddSingleton<IHeartbeatService, HeartbeatService>();
 
+builder.Services.AddHostedService<ConsoleService>();
+
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 

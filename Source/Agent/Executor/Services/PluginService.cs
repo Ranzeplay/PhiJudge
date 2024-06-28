@@ -12,16 +12,27 @@ namespace PhiJudge.Agent.Executor.Services
         private readonly IDataExchangeService _dataExchangeService;
         private readonly ILoggerFactory _loggerFactory;
 
+        private readonly string PluginsDirectory;
         private Dictionary<string, Plugin> Plugins { get; } = [];
+        private readonly FileSystemWatcher Watcher;
 
         public PluginService(ILogger<PluginService> logger, IDataExchangeService dataExchangeService, ILoggerFactory loggerFactory)
         {
+            PluginsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Plugins");
+            if (!Directory.Exists(PluginsDirectory))
+            {
+                Directory.CreateDirectory(PluginsDirectory);
+            }
+            Watcher = new FileSystemWatcher(PluginsDirectory);
+
             _logger = logger;
             _dataExchangeService = dataExchangeService;
             _loggerFactory = loggerFactory;
 
             InitPlugins();
             LoadPlugins();
+
+            RegisterFileWatcher();
         }
 
         public Plugin GetPlugin(string language)
@@ -37,14 +48,12 @@ namespace PhiJudge.Agent.Executor.Services
 
         public void InitPlugins()
         {
-            var path = Path.Combine(Directory.GetCurrentDirectory(), "Plugins");
-
-            if (!Directory.Exists(path))
+            if (!Directory.Exists(PluginsDirectory))
             {
-                Directory.CreateDirectory(path);
+                Directory.CreateDirectory(PluginsDirectory);
             }
 
-            foreach (var file in Directory.GetFiles(path, "*.dll"))
+            foreach (var file in Directory.GetFiles(PluginsDirectory, "*.dll"))
             {
                 var assembly = Assembly.LoadFile(file);
                 var types = assembly.GetTypes();
@@ -80,7 +89,23 @@ namespace PhiJudge.Agent.Executor.Services
                 plugin.PluginEntrypoint.Unload();
             }
 
+            Plugins.Clear();
+
             _logger.LogInformation("Unloaded {0} plugins", Plugins.Count);
+        }
+
+        private void RegisterFileWatcher()
+        {
+            Watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.LastWrite;
+            Watcher.Created += ReloadPlugins;
+            Watcher.Changed += ReloadPlugins;
+        }
+
+        private void ReloadPlugins(object _s, FileSystemEventArgs _e)
+        {
+            UnloadPlugins();
+            LoadPlugins();
+            _logger.LogInformation($"Reloaded plugins due to the change of plugins directory");
         }
     }
 }
