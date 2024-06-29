@@ -72,6 +72,8 @@ namespace PhiJudge.Agent.Executor.Services
                 var pluginLogger = _loggerFactory.CreateLogger(plugin.PluginEntrypoint.Id);
 
                 plugin.PluginEntrypoint.Load(pluginLogger);
+                plugin.CompilationStage.SetLogger(pluginLogger);
+                plugin.ExecutionStage.SetLogger(pluginLogger);
             }
 
             _logger.LogInformation("Loaded {0} plugins", Plugins.Count);

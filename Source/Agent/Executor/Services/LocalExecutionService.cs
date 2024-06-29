@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
+using System.Text.Json;
 
 namespace PhiJudge.Agent.Executor.Services
 {
@@ -47,6 +48,10 @@ namespace PhiJudge.Agent.Executor.Services
                 _logger.LogInformation("Successfully compiled source code of record {0}", recordData.RecordId);
                 await ExecuteAllAsync(plugin, recordId, problemData);
             }
+            else
+            {
+                _logger.LogInformation("Failed to compile source code of record {0}", recordData.RecordId);
+            }
         }
 
         public async Task<CompilationResult> CompileAsync(Plugin plugin, RecordData recordData)
@@ -71,6 +76,8 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async Task<ExecutionResult> ExecuteSingleAsync(Plugin plugin, long recordId, TestPointData data)
         {
+            _logger.LogInformation("Executing test point {0} for record {1}", data.Order, recordId);
+
             var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordId.ToString()));
             var result = await plugin.ExecutionStage.ExecuteAsync(workingDirectory.FullName, data);
             result.RecordId = recordId;

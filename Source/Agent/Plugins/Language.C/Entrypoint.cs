@@ -35,8 +35,9 @@ namespace PhiJudge.Plugin.Language.C
             {
                 if (!await ContainerUtils.CheckPackageInstalled(pkg))
                 {
-                    _logger.LogInformation($"{pkg} is not installed yet, installing using apk");
+                    _logger.LogInformation("{0} is not installed yet, installing using apk", pkg);
                     await ContainerUtils.InstallPackageAsync([pkg], true);
+                    _logger.LogInformation("Successfully installed required package {0} via apk", pkg);
                 }
             }
         }

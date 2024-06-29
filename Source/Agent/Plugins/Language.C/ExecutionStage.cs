@@ -1,19 +1,27 @@
-﻿using PhiJudge.Agent.API.Plugin;
+﻿using Microsoft.Extensions.Logging;
+using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System.Diagnostics;
+using System.Text.Json;
 
 namespace PhiJudge.Plugin.Language.C
 {
     internal class ExecutionStage : IExecutionStage
     {
+        private ILogger _logger = null!;
+
         public async Task<ExecutionResult> ExecuteAsync(string directory, TestPointData testPoint)
         {
+            _logger.LogInformation("Executing test point {0}+{1} in {2} from compiled target", new DirectoryInfo(directory).Name, testPoint.Order, directory);
+
+            var profileFilePath = Path.Combine(directory, "profile.dat");
+            var targetProgramPath = Path.Combine(directory, "target.out");
             var targetProcess = new Process
             {
                 StartInfo = new()
                 {
-                    FileName = "busybox",
-                    Arguments = $"-v -o profile.dat {directory}/target.out",
+                    FileName = "/bin/busybox",
+                    Arguments = $"time -v -o \"{profileFilePath}\" \"{targetProgramPath}\"",
                     WorkingDirectory = directory,
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
@@ -27,11 +35,18 @@ namespace PhiJudge.Plugin.Language.C
             stopwatch.Start();
 
             targetProcess.Start();
-            targetProcess.StandardInput.WriteLine(testPoint.Input);
+
+            if (!string.IsNullOrEmpty(testPoint.Input))
+            {
+                targetProcess.StandardInput.WriteLine(testPoint.Input);
+            }
+
             await targetProcess.WaitForExitAsync();
             stopwatch.Stop();
 
             string output = await targetProcess.StandardOutput.ReadToEndAsync();
+
+            _logger.LogInformation("Finished executing {0}+{1}, collecting data...", new DirectoryInfo(directory).Name, testPoint.Order);
 
             // Get usage from profile.dat
             var readerProcess = new Process
@@ -39,7 +54,7 @@ namespace PhiJudge.Plugin.Language.C
                 StartInfo = new()
                 {
                     FileName = "sh",
-                    Arguments = $"-c \"cat a.profile | grep \\\"Maximum resident set size\\\" | awk '{{print $6}}'\"",
+                    Arguments = $"-c \"cat {profileFilePath} | grep \\\"Maximum resident set size\\\" | awk '{{print $6}}'\"",
                     WorkingDirectory = directory,
                     RedirectStandardOutput = true,
                     UseShellExecute = false,
@@ -48,7 +63,8 @@ namespace PhiJudge.Plugin.Language.C
             };
             readerProcess.Start();
             readerProcess.WaitForExit();
-            string memoryUsage = (await readerProcess.StandardOutput.ReadToEndAsync()).Split(' ').Last();
+            string memoryUsageStr = (await readerProcess.StandardOutput.ReadToEndAsync()).Trim().Split(' ').Last();
+            long memoryUsageNum = long.Parse(memoryUsageStr);
 
             var resultType = ExecutionResultType.Unknown;
             if (output.Trim() == testPoint.ExpectedOutput.Trim())
@@ -63,7 +79,7 @@ namespace PhiJudge.Plugin.Language.C
             {
                 resultType = ExecutionResultType.TimeLimitExceeded;
             }
-            if (long.Parse(memoryUsage) > testPoint.MemoryLimitBytes)
+            if (memoryUsageNum > testPoint.MemoryLimitBytes)
             {
                 resultType = ExecutionResultType.MemoryLimitExceeded;
             }
@@ -72,7 +88,9 @@ namespace PhiJudge.Plugin.Language.C
                 resultType = ExecutionResultType.RuntimeError;
             }
 
-            return new(resultType, output, stopwatch.ElapsedMilliseconds, targetProcess.PeakWorkingSet64);
+            return new(resultType, output, stopwatch.ElapsedMilliseconds, memoryUsageNum);
         }
+
+        public void SetLogger(ILogger logger) => _logger = logger;
     }
 }
