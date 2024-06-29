@@ -1,7 +1,6 @@
 import { serverPrisma } from "@/lib/serverSidePrisma";
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 import { RecordStatus, RecordTestPointStatus } from "@prisma/client";
-import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
 type ExecutionResult = {
@@ -14,20 +13,20 @@ type ExecutionResult = {
 };
 
 enum ExecutionResultType {
-  Accepted = "accepted",
-  WrongAnswer = "wrongAnswer",
-  TimeLimitExceeded = "timeLimitExceeded",
-  MemoryLimitExceeded = "memoryLimitExceeded",
-  OutputLimitExceeded = "outputLimitExceeded",
-  RuntimeError = "runtimeError",
-  Unknown = "unknown",
+  Accepted = "Accepted",
+  WrongAnswer = "WrongAnswer",
+  TimeLimitExceeded = "TimeLimitExceeded",
+  MemoryLimitExceeded = "MemoryLimitExceeded",
+  OutputLimitExceeded = "OutputLimitExceeded",
+  RuntimeError = "RuntimeError",
+  Unknown = "Unknown",
 }
 
 export async function POST(
-  request: NextApiRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
-  const body = request.body as ExecutionResult;
+  const body = (await request.json()) as ExecutionResult;
 
   let testPointStatus: RecordTestPointStatus;
   switch (body.type) {

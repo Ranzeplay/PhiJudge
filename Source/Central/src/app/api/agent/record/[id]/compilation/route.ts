@@ -1,7 +1,6 @@
 import { serverPrisma } from "@/lib/serverSidePrisma";
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 import { CompilationStatus } from "@prisma/client";
-import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
 export type CompilationResult = {
@@ -11,17 +10,17 @@ export type CompilationResult = {
 };
 
 export enum CompilationResultType {
-  PassedWithoutWarnings = "passedWithoutWarnings",
-  PassedWithWarnings = "passedWithWarnings",
-  FailedWithErrors = "failedWithErrors",
-  Unknown = "unknown",
+  PassedWithoutWarnings = "PassedWithoutWarnings",
+  PassedWithWarnings = "PassedWithWarnings",
+  FailedWithErrors = "FailedWithErrors",
+  Unknown = "Unknown",
 }
 
 export async function POST(
-  request: NextApiRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
-  const body = request.body as CompilationResult;
+  const body = (await request.json()) as CompilationResult;
 
   let resultType: CompilationStatus;
   switch (body.type) {
