@@ -16,7 +16,6 @@ builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
 var host = builder.Build();
-await host.StartAsync();
 
 var logger = host.Services.GetRequiredService<ILogger<Program>>();
 logger.LogInformation("PhiJudge Agent Executor started");
@@ -39,5 +38,7 @@ Console.CancelKeyPress += async (sender, e) =>
     heartBeatService.End();
     await host.StopAsync();
 };
+
+await host.StartAsync();
 
 await host.WaitForShutdownAsync();

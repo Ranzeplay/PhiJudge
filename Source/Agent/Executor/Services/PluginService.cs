@@ -18,7 +18,7 @@ namespace PhiJudge.Agent.Executor.Services
 
         public PluginService(ILogger<PluginService> logger, IDataExchangeService dataExchangeService, ILoggerFactory loggerFactory)
         {
-            PluginsDirectory = Path.Combine(Directory.GetCurrentDirectory(), "Plugins");
+            PluginsDirectory = Environment.GetEnvironmentVariable("PLUGINS_DIR") ?? Path.Combine(Environment.CurrentDirectory, "plugins");
             if (!Directory.Exists(PluginsDirectory))
             {
                 Directory.CreateDirectory(PluginsDirectory);
@@ -48,11 +48,6 @@ namespace PhiJudge.Agent.Executor.Services
 
         public void InitPlugins()
         {
-            if (!Directory.Exists(PluginsDirectory))
-            {
-                Directory.CreateDirectory(PluginsDirectory);
-            }
-
             foreach (var file in Directory.GetFiles(PluginsDirectory, "*.dll"))
             {
                 var assembly = Assembly.LoadFile(file);
@@ -106,6 +101,7 @@ namespace PhiJudge.Agent.Executor.Services
         private void ReloadPlugins(object _s, FileSystemEventArgs _e)
         {
             UnloadPlugins();
+            InitPlugins();
             LoadPlugins();
             _logger.LogInformation($"Reloaded plugins due to the change of plugins directory");
         }
