@@ -35,6 +35,8 @@ import { GetRecordPersistentData, GetRecordStatus, RecordPersistentData } from "
 import dayjs from "dayjs";
 import { RecordStatus } from "@prisma/client";
 
+import './style.css';
+
 export default function Page({ params }: { params: { id: string } }) {
 	const [persistentData, setPersistentData] = useState<RecordPersistentData | null>(null);
 	const [sourceCodeHtml, setSourceCodeHtml] = useState<string | null>(null);
