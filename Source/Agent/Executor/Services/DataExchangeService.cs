@@ -2,6 +2,7 @@
 using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
 using PhiJudge.Agent.Executor.Communication;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 
@@ -91,7 +92,7 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async Task<bool> PushCompilationResultAsync(long recordId, CompilationResult compilationResult)
         {
-            var response = await HttpClient.PostAsync($"/api/agent/record/{recordId}/compilation", new StringContent(JsonSerializer.Serialize(compilationResult), Encoding.UTF8, "application/json"));
+            var response = await HttpClient.PostAsync($"/api/agent/record/{recordId}/compilation", JsonContent.Create(compilationResult));
             return response.IsSuccessStatusCode;
         }
 
@@ -103,7 +104,7 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async Task<bool> PushExecutionResultAsync(long recordId, ExecutionResult executionResult)
         {
-            var response = await HttpClient.PostAsync($"/api/agent/record/{recordId}/execution", new StringContent(JsonSerializer.Serialize(executionResult), Encoding.UTF8, "application/json"));
+            var response = await HttpClient.PostAsync($"/api/agent/record/{recordId}/execution", JsonContent.Create(executionResult));
             return response.IsSuccessStatusCode;
         }
 
@@ -133,7 +134,7 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async void UpdateSupportedLanguagesAsync(IEnumerable<string> languages)
         {
-            await HttpClient.PostAsync($"/api/agent/languages/{Environment.GetEnvironmentVariable("AGENT_ID")}", new StringContent(JsonSerializer.Serialize(languages), Encoding.UTF8, "application/json"));
+            await HttpClient.PostAsync($"/api/agent/languages/{Environment.GetEnvironmentVariable("AGENT_ID")}", JsonContent.Create(languages));
             _logger.LogInformation("Updated supported languages on server side");
         }
     }
