@@ -35,7 +35,7 @@ import { GetRecordPersistentData, GetRecordStatus, RecordPersistentData } from "
 import dayjs from "dayjs";
 import { RecordStatus } from "@prisma/client";
 
-export default function Page({ params }: { params: { id: number } }) {
+export default function Page({ params }: { params: { id: string } }) {
 	const [persistentData, setPersistentData] = useState<RecordPersistentData | null>(null);
 	const [sourceCodeHtml, setSourceCodeHtml] = useState<string | null>(null);
 	const [recordStatus, setRecordStatus] = useState<RecordStatus | null>(null);
@@ -43,12 +43,12 @@ export default function Page({ params }: { params: { id: number } }) {
 
 	useEffect(() => {
 		async function fetchPersistentData() {
-			const data = await GetRecordPersistentData(params.id.toString());
+			const data = await GetRecordPersistentData(params.id);
 			setPersistentData(JSON.parse(data) as RecordPersistentData);
 		}
 
 		async function fetchRecordStatus() {
-			const status = await GetRecordStatus(params.id.toString());
+			const status = await GetRecordStatus(params.id);
 			setRecordStatus(status || RecordStatus.UNKNOWN);
 		}
 
@@ -138,7 +138,7 @@ export default function Page({ params }: { params: { id: number } }) {
 						<CardTitle>Compilation output</CardTitle>
 					</CardHeader>
 					<CardContent>
-						<Editor language="plaintext" height={100} value="[Process exited with code 0]" options={{ readOnly: true }} />
+						<Editor language="plaintext" height={100} value={compilationOutput || 'Waiting...'} options={{ readOnly: true }} />
 					</CardContent>
 				</Card>
 				<Card>

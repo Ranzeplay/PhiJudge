@@ -19,7 +19,7 @@ export enum CompilationResultType {
 
 export async function POST(
   request: NextApiRequest,
-  { params }: { params: { id: number } }
+  { params }: { params: { id: string } }
 ) {
   const body = request.body as CompilationResult;
 
@@ -40,7 +40,7 @@ export async function POST(
   }
 
   await serverPrisma.record.update({
-    where: { id: params.id },
+    where: { id: parseInt(params.id) },
     data: {
       compilationOutput: body.output,
       compilationResult: resultType,

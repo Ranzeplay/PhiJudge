@@ -1,11 +1,12 @@
 import { serverPrisma } from "@/lib/serverSidePrisma";
 import { RecordStatus, RecordTestPointStatus } from "@prisma/client";
+import { NextResponse } from "next/server";
 
-export async function GET(_request: Request, { params }: { params: { id: number } }) {
+export async function GET(_request: Request, { params }: { params: { id: string } }) {
   const testPoints = await serverPrisma.recordTestPoint.findMany({
 	where: {
 	  record: {
-		id: params.id
+		id: parseInt(params.id)
 	  }
 	},
 	select: {
@@ -15,9 +16,11 @@ export async function GET(_request: Request, { params }: { params: { id: number 
 
   const allTestPointsPassed = testPoints.every(testPoint => testPoint.status === RecordTestPointStatus.Accepted);
   await serverPrisma.record.update({
-	where: { id: params.id },
+	where: { id: parseInt(params.id) },
 	data: {
 	  status: allTestPointsPassed ? RecordStatus.PASSED : RecordStatus.FAILED,
 	},
   });
+
+  return NextResponse.json({});
 }

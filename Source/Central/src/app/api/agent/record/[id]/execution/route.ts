@@ -25,7 +25,7 @@ enum ExecutionResultType {
 
 export async function POST(
   request: NextApiRequest,
-  { params }: { params: { id: number } }
+  { params }: { params: { id: string } }
 ) {
   const body = request.body as ExecutionResult;
 
@@ -62,16 +62,16 @@ export async function POST(
       actualPeakMemoryBytes: body.peakMemoryBytes,
       record: {
         connect: {
-          id: params.id,
+          id: parseInt(params.id),
         },
       },
     },
   });
 
   await serverPrisma.record.update({
-    where: { id: params.id },
+    where: { id: parseInt(params.id) },
     data: {
-      status: RecordStatus.RUNNING,
+      status: RecordStatus.TESTING,
     },
   });
 
