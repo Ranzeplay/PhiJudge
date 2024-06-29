@@ -12,7 +12,8 @@ namespace PhiJudge.Plugin.Language.C
             {
                 StartInfo = new()
                 {
-                    FileName = $"{directory}/target.out",
+                    FileName = "busybox",
+                    Arguments = $"-v -o profile.dat {directory}/target.out",
                     WorkingDirectory = directory,
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
@@ -32,6 +33,23 @@ namespace PhiJudge.Plugin.Language.C
 
             string output = await targetProcess.StandardOutput.ReadToEndAsync();
 
+            // Get usage from profile.dat
+            var readerProcess = new Process
+            {
+                StartInfo = new()
+                {
+                    FileName = "sh",
+                    Arguments = $"-c \"cat a.profile | grep \\\"Maximum resident set size\\\" | awk '{{print $6}}'\"",
+                    WorkingDirectory = directory,
+                    RedirectStandardOutput = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                }
+            };
+            readerProcess.Start();
+            readerProcess.WaitForExit();
+            string memoryUsage = (await readerProcess.StandardOutput.ReadToEndAsync()).Split(' ').Last();
+
             var resultType = ExecutionResultType.Unknown;
             if (output.Trim() == testPoint.ExpectedOutput.Trim())
             {
@@ -45,7 +63,7 @@ namespace PhiJudge.Plugin.Language.C
             {
                 resultType = ExecutionResultType.TimeLimitExceeded;
             }
-            if (targetProcess.PeakWorkingSet64 > testPoint.MemoryLimitBytes)
+            if (long.Parse(memoryUsage) > testPoint.MemoryLimitBytes)
             {
                 resultType = ExecutionResultType.MemoryLimitExceeded;
             }

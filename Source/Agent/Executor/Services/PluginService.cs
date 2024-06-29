@@ -96,7 +96,9 @@ namespace PhiJudge.Agent.Executor.Services
 
         private void RegisterFileWatcher()
         {
-            Watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.LastWrite;
+            Watcher.NotifyFilter = NotifyFilters.FileName | NotifyFilters.DirectoryName | NotifyFilters.LastWrite | NotifyFilters.CreationTime;
+            Watcher.EnableRaisingEvents = true;
+            Watcher.Renamed += ReloadPlugins;
             Watcher.Created += ReloadPlugins;
             Watcher.Changed += ReloadPlugins;
         }

@@ -31,14 +31,13 @@ namespace PhiJudge.Plugin.Language.C
 
         private async Task PrepareEnvironmentAsync()
         {
-            if(!await ContainerUtils.CheckPackageInstalled("gcc"))
+            foreach(var pkg in new string[] { "gcc", "valgrind", "busybox", "musl-dev" })
             {
-                await ContainerUtils.InstallPackageAsync(["gcc"], true);
-            }
-
-            if (!await ContainerUtils.CheckPackageInstalled("valgrind"))
-            {
-                await ContainerUtils.InstallPackageAsync(["valgrind"], true);
+                if (!await ContainerUtils.CheckPackageInstalled(pkg))
+                {
+                    _logger.LogInformation($"{pkg} is not installed yet, installing using apk");
+                    await ContainerUtils.InstallPackageAsync([pkg], true);
+                }
             }
         }
     }
