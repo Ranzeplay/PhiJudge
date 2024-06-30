@@ -1,5 +1,7 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+  engineType = "library"
 }
 
 datasource db {
@@ -114,4 +116,12 @@ model agent {
   lastNetworkAddress  String      @default("Unknown")
   records             record[]
   availableLanguageId String[]
+}
+
+model requestLog {
+  id         Int      @id @default(autoincrement())
+  url        String
+  ip         String
+  isApiRoute Boolean
+  timestamp  DateTime @default(now())
 }
