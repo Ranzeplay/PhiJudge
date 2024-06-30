@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 import { RegisterFormSchema } from "./schema";
@@ -21,10 +21,12 @@ export async function HandleRegister(formData: FormData): Promise<string> {
   });
 
   if (!supabaseRequestResult.error) {
+    const isFirstUser = (await serverPrisma.user.count()) === 0;
     await serverPrisma.user.create({
       data: {
         id: supabaseRequestResult.data.user?.id!,
         userName: data.userName,
+        isAdmin: isFirstUser,
       },
     });
   }

@@ -33,7 +33,7 @@ export function RootNavBar() {
 			<nav className="flex flex-grow-0 gap-x-3 items-center mr-4">
 				{authStatus.isLoggedIn ? (
 					<>
-						<NavBarLink href="/user/me" caption={`Hello, ${authStatus.userName || 'undefined'}`} className="text-muted-foreground" />
+						<NavBarLink href="/user/my" caption={`Hello, ${authStatus.userName || 'undefined'}`} className="text-muted-foreground" />
 						<NavBarLink href="/auth/logout" caption="Logout" className="text-muted-foreground" />
 					</>
 				) : (

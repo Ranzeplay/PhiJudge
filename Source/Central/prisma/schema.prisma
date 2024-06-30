@@ -12,6 +12,7 @@ model user {
   userName        String
   problemsCreated problem[]
   records         record[]
+  isAdmin         Boolean   @default(false)
 }
 
 model problem {
