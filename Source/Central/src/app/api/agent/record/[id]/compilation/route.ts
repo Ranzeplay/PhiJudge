@@ -1,20 +1,10 @@
+'use server';
+
+import { CompilationResult, CompilationResultType } from "@/lib/models/compilation";
 import { serverPrisma } from "@/lib/serverSidePrisma";
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 import { CompilationStatus } from "@prisma/client";
 import { NextResponse } from "next/server";
-
-export type CompilationResult = {
-  recordId: number;
-  type: CompilationResultType;
-  output: string;
-};
-
-export enum CompilationResultType {
-  PassedWithoutWarnings = "PassedWithoutWarnings",
-  PassedWithWarnings = "PassedWithWarnings",
-  FailedWithErrors = "FailedWithErrors",
-  Unknown = "Unknown",
-}
 
 export async function POST(
   request: Request,

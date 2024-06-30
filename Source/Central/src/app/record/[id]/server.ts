@@ -44,14 +44,3 @@ export async function GetRecordPersistentData(recordId: string) {
   };
   return JSON.stringify(data);
 }
-
-export async function GetRecordStatus(recordId: string) {
-  return (await serverPrisma.record.findUnique({
-	where: {
-	  id: parseInt(recordId),
-	},
-	select: {
-	  status: true,
-	},
-  }))?.status;
-}

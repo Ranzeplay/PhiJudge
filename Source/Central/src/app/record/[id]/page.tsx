@@ -1,7 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Editor } from "@monaco-editor/react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
 	Table,
 	TableBody,
@@ -24,24 +23,33 @@ import {
 	ReferenceLine,
 } from 'recharts';
 import { useEffect, useState } from "react";
-import {
-	BundledLanguage,
-	BundledTheme,
-	codeToHtml,
-	getHighlighter
-} from 'shiki/bundle/full'
-import { createSupabaseBrowserSideClient } from "@/lib/supabase/client";
-import { GetRecordPersistentData, GetRecordStatus, RecordPersistentData } from "./server";
+import { codeToHtml } from 'shiki/bundle/full'
+import { GetRecordPersistentData, RecordPersistentData } from "./server";
 import dayjs from "dayjs";
-import { RecordStatus } from "@prisma/client";
+import { RecordStatus, recordTestPoint } from "@prisma/client";
+import useSWR from "swr";
 
 import './style.css';
+import { CompilationResultType } from "@/lib/models/compilation";
+
+const fetcher = (url: string) => fetch(url).then((res: Response) => res.json());
+
+function isRecordFinished(status: RecordStatus) {
+	return status === RecordStatus.FAILED || status === RecordStatus.PASSED || status === RecordStatus.ERROR;
+}
 
 export default function Page({ params }: { params: { id: string } }) {
 	const [persistentData, setPersistentData] = useState<RecordPersistentData | null>(null);
 	const [sourceCodeHtml, setSourceCodeHtml] = useState<string | null>(null);
-	const [recordStatus, setRecordStatus] = useState<RecordStatus | null>(null);
-	const [compilationOutput, setCompilationOutput] = useState<string | null>(null);
+	const [recordFinished, setRecordFinished] = useState<boolean>(false);
+
+	const { data: status } = useSWR<RecordStatus>(`/api/record/${params.id}/status`, fetcher, { isPaused(): boolean { return !recordFinished } });
+	const { data: testPoints } = useSWR<recordTestPoint>(`/api/record/${params.id}/testPoints`, fetcher, { isPaused(): boolean { return !recordFinished } });
+	const { data: compilationResult } = useSWR<{ compilationOutput: string, compilationResult: CompilationResultType }>(`/api/record/${params.id}/compilation`, fetcher, { isPaused(): boolean { return status !== undefined && isRecordFinished(status) } });
+
+	useEffect(() => {
+		setRecordFinished(status !== undefined && isRecordFinished(status));
+	}, [status]);
 
 	useEffect(() => {
 		async function fetchPersistentData() {
@@ -49,13 +57,7 @@ export default function Page({ params }: { params: { id: string } }) {
 			setPersistentData(JSON.parse(data) as RecordPersistentData);
 		}
 
-		async function fetchRecordStatus() {
-			const status = await GetRecordStatus(params.id);
-			setRecordStatus(status || RecordStatus.UNKNOWN);
-		}
-
 		fetchPersistentData();
-		fetchRecordStatus();
 	}, []);
 
 	useEffect(() => {
@@ -71,12 +73,6 @@ export default function Page({ params }: { params: { id: string } }) {
 		highlightCode();
 	}, [persistentData]);
 
-	const supabase = createSupabaseBrowserSideClient();
-	const channel = supabase.channel(`phijudge.record.${params.id}`);
-	channel.on('broadcast', { event: 'compilationResult' }, payload => {
-		const { type: CompilationResultType, output: string } = payload;
-	});
-
 	return (
 		<div className="grid grid-cols-3 w-full gap-4">
 			<div className="col-span-1 space-y-4">
@@ -85,10 +81,10 @@ export default function Page({ params }: { params: { id: string } }) {
 						<CardTitle>Steps</CardTitle>
 					</CardHeader>
 					<CardContent className="flex flex-col space-y-1">
-						<QueueIndicator status={recordStatus || RecordStatus.UNKNOWN} />
-						<CompileIndicator status={recordStatus || RecordStatus.UNKNOWN} />
-						<TestIndicator status={recordStatus || RecordStatus.UNKNOWN} />
-						<FinishIndicator status={recordStatus || RecordStatus.UNKNOWN} />
+						<QueueIndicator status={status || RecordStatus.UNKNOWN} />
+						<CompileIndicator status={status || RecordStatus.UNKNOWN} />
+						<TestIndicator status={status || RecordStatus.UNKNOWN} />
+						<FinishIndicator status={status || RecordStatus.UNKNOWN} />
 					</CardContent>
 				</Card>
 				<Card>
@@ -114,7 +110,7 @@ export default function Page({ params }: { params: { id: string } }) {
 						</div>
 						<div>
 							<h4>Status & Result</h4>
-							<p className="ml-2 font-mono text-sm">{recordStatus}</p>
+							<p className="ml-2 font-mono text-sm">{status}</p>
 						</div>
 						<div>
 							<h4>Rate</h4>
@@ -138,9 +134,12 @@ export default function Page({ params }: { params: { id: string } }) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Compilation output</CardTitle>
+						<CardDescription>{compilationResult?.compilationResult}</CardDescription>
 					</CardHeader>
 					<CardContent>
-						<Editor language="plaintext" height={100} value={compilationOutput || 'Waiting...'} options={{ readOnly: true }} />
+						<p className="font-mono">
+							{compilationResult?.compilationResult === CompilationResultType.Unknown ? 'Waiting...' : compilationResult?.compilationOutput || 'None'}
+						</p>
 					</CardContent>
 				</Card>
 				<Card>
@@ -239,7 +238,7 @@ function TestIndicator(props: { status: RecordStatus }) {
 				<span>Test</span>
 			</p>
 		)
-	}else if (props.status === RecordStatus.PENDING || props.status === RecordStatus.COMPILING) {
+	} else if (props.status === RecordStatus.PENDING || props.status === RecordStatus.COMPILING) {
 		return (
 			<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
 				<Loader size={15} opacity={0} />
@@ -257,8 +256,8 @@ function TestIndicator(props: { status: RecordStatus }) {
 }
 
 function FinishIndicator(props: { status: RecordStatus }) {
-	if(props.status === RecordStatus.FAILED || props.status === RecordStatus.PASSED) {
-		if(props.status === RecordStatus.FAILED) {
+	if (props.status === RecordStatus.FAILED || props.status === RecordStatus.PASSED) {
+		if (props.status === RecordStatus.FAILED) {
 			return (
 				<p className="flex flex-row gap-x-1 items-center">
 					<AlertTriangle size={15} />
