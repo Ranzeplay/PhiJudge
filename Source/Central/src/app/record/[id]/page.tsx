@@ -24,11 +24,33 @@ import {
 } from 'recharts';
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { RecordStatus, recordTestPoint } from "@prisma/client";
+import { RecordStatus, RecordTestPointStatus } from "@prisma/client";
 import useSWR from "swr";
 import { CompilationResultType } from "@/lib/models/compilation";
 import { Editor } from "@monaco-editor/react";
 import { RecordPersistentData } from "@/lib/models/recordPersistent";
+import { TestPointViewModel } from "@/lib/models/testPoint";
+
+function convertToUpperUnderlineToNormalWords(input: string) {
+	return input
+		// Split the string into words based on underscores
+		.split('_')
+		// Convert each word to lowercase and capitalize the first letter
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+		// Join the words back into a single string with spaces
+		.join(' ');
+}
+
+function addSpaceBetweenWords(input: string): string {
+	let output =  input
+		// Insert a space before all caps
+		.replace(/([a-z])([A-Z])/g, '$1 $2')
+		// Make the whole string lowercase
+		.toLowerCase();
+	// Capitalize the first letter
+	output = output.charAt(0).toUpperCase() + output.slice(1);
+	return output;
+}
 
 const fetcher = (url: string) => fetch(url).then((res: Response) => res.json());
 
@@ -42,7 +64,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
 	const { data: compilationResult } = useSWR<{ compilationOutput: string, compilationResult: CompilationResultType }>(`/api/record/${params.id}/compilation`, fetcher, /*{ isPaused(): boolean { return !recordFinished } }*/);
 	const { data: statusResult } = useSWR<{ status: RecordStatus }>(`/api/record/${params.id}/status`, fetcher, /*{ isPaused(): boolean { return !recordFinished } }*/);
-	const { data: testPoints } = useSWR<recordTestPoint[]>(`/api/record/${params.id}/testPoints`, fetcher, /*{ isPaused(): boolean { return !recordFinished } }*/);
+	const { data: testPoints } = useSWR<TestPointViewModel[]>(`/api/record/${params.id}/testPoints`, fetcher, /*{ isPaused(): boolean { return !recordFinished } }*/);
 
 	useEffect(() => {
 		setRecordFinished(statusResult !== undefined && isRecordFinished(statusResult.status));
@@ -64,7 +86,7 @@ export default function Page({ params }: { params: { id: string } }) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Steps</CardTitle>
-						<CardDescription>{statusResult?.status}</CardDescription>
+						<CardDescription>{convertToUpperUnderlineToNormalWords(statusResult?.status.toString() || '')}</CardDescription>
 					</CardHeader>
 					<CardContent className="flex flex-col space-y-1">
 						<QueueIndicator status={statusResult?.status || RecordStatus.UNKNOWN} />
@@ -95,11 +117,11 @@ export default function Page({ params }: { params: { id: string } }) {
 						</div>
 						<div>
 							<h4>Status & Result</h4>
-							<p className="ml-2 font-mono text-sm">{statusResult?.status}</p>
+							<p className="ml-2 font-mono text-sm">{convertToUpperUnderlineToNormalWords(statusResult?.status.toString() || '')}</p>
 						</div>
 						<div>
 							<h4>Rate</h4>
-							<p className="ml-2 font-mono text-sm">3 / 8</p>
+							<p className="ml-2 font-mono text-sm">{(testPoints || []).filter(t => t.resultType === RecordTestPointStatus.Accepted).length || NaN} / {testPoints?.length || NaN}</p>
 						</div>
 					</CardContent>
 				</Card>
@@ -117,7 +139,7 @@ export default function Page({ params }: { params: { id: string } }) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Compilation output</CardTitle>
-						<CardDescription>{compilationResult?.compilationResult}</CardDescription>
+						<CardDescription>{convertToUpperUnderlineToNormalWords(compilationResult?.compilationResult || '')}</CardDescription>
 					</CardHeader>
 					<Editor className="p-6 pt-0" height="30vh" language="plaintext" value={compilationResult?.compilationOutput || '[No output captured]'} options={{ readOnly: true }} />
 				</Card>
@@ -132,7 +154,7 @@ export default function Page({ params }: { params: { id: string } }) {
 									<CardTitle>Time consumption</CardTitle>
 								</CardHeader>
 								<CardContent>
-									{/* <TimeChart /> */}
+									<TimeChart data={testPoints || []} />
 								</CardContent>
 							</Card>
 							<Card className="flex-grow">
@@ -140,32 +162,28 @@ export default function Page({ params }: { params: { id: string } }) {
 									<CardTitle>Memory consumption</CardTitle>
 								</CardHeader>
 								<CardContent>
-									{/* <MemoryChart /> */}
+									<MemoryChart data={testPoints || []} />
 								</CardContent>
 							</Card>
 						</div>
 						<Table>
 							<TableHeader>
 								<TableRow>
-									<TableHead className="w-[100px]">Id</TableHead>
+									<TableHead className="w-[100px]">Order</TableHead>
 									<TableHead>Result</TableHead>
 									<TableHead>Memory</TableHead>
 									<TableHead>Time</TableHead>
 								</TableRow>
 							</TableHeader>
 							<TableBody>
-								<TableRow>
-									<TableCell>1</TableCell>
-									<TableCell>Correct</TableCell>
-									<TableCell>42 Bytes</TableCell>
-									<TableCell>374.13ms</TableCell>
-								</TableRow>
-								<TableRow>
-									<TableCell>2</TableCell>
-									<TableCell>Wrong Answer</TableCell>
-									<TableCell>82 Bytes</TableCell>
-									<TableCell>443.12ms</TableCell>
-								</TableRow>
+								{testPoints?.map((testPoint, index) => (
+									<TableRow key={index}>
+										<TableCell>{testPoint.order}</TableCell>
+										<TableCell>{addSpaceBetweenWords(testPoint.resultType)}</TableCell>
+										<TableCell>{testPoint.actualPeakMemoryBytes} bytes</TableCell>
+										<TableCell>{testPoint.actualTimeMs} ms</TableCell>
+									</TableRow>
+								))}
 							</TableBody>
 						</Table>
 					</CardContent>
@@ -224,9 +242,9 @@ function TestIndicator(props: { status: RecordStatus }) {
 				<span>Test</span>
 			</p>
 		)
-	} else if (props.status === RecordStatus.ERROR) {
+	} else if (props.status === RecordStatus.ERROR || props.status === RecordStatus.FAILED) {
 		return (
-			<p className="flex flex-row gap-x-1 items-center">
+			<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
 				<AlertTriangle size={15} />
 				<span>Test</span>
 			</p>
@@ -239,4 +257,38 @@ function TestIndicator(props: { status: RecordStatus }) {
 			</p>
 		)
 	}
+}
+
+function TimeChart(props: { data: TestPointViewModel[] }) {
+	return (
+		<>
+			<BarChart width={300} height={300} data={props.data}>
+				<CartesianGrid strokeDasharray="3 3" />
+				<XAxis dataKey="name" />
+				<YAxis />
+				<Tooltip />
+				<Legend />
+				<Bar dataKey="actualTimeMs" name="Actual" fill="#82ca9d" />
+				<Bar dataKey="averageTimeMs" name="Average" fill="#800080" />
+				{/* <ReferenceLine y={128} stroke="red" label="Limit" /> */}
+			</BarChart>
+		</>
+	)
+}
+
+function MemoryChart(props: { data: TestPointViewModel[] }) {
+	return (
+		<>
+			<BarChart width={300} height={300} data={props.data}>
+				<CartesianGrid strokeDasharray="3 3" />
+				<XAxis dataKey="order" />
+				<YAxis />
+				<Tooltip />
+				<Legend />
+				<Bar dataKey="actualPeakMemoryBytes" name="Actual" fill="#82ca9d" />
+				<Bar dataKey="averagePeakMemoryBytes" name="Average" fill="#800080" />
+				{/* <ReferenceLine y={128} stroke="red" label="Limit" /> */}
+			</BarChart>
+		</>
+	)
 }
