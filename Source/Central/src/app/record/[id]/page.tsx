@@ -23,14 +23,12 @@ import {
 	ReferenceLine,
 } from 'recharts';
 import { useEffect, useState } from "react";
-import { codeToHtml } from 'shiki/bundle/full'
-import { GetRecordPersistentData, RecordPersistentData } from "./server";
 import dayjs from "dayjs";
 import { RecordStatus, recordTestPoint } from "@prisma/client";
 import useSWR from "swr";
-
-import './style.css';
 import { CompilationResultType } from "@/lib/models/compilation";
+import { Editor } from "@monaco-editor/react";
+import { RecordPersistentData } from "@/lib/models/recordPersistent";
 
 const fetcher = (url: string) => fetch(url).then((res: Response) => res.json());
 
@@ -40,38 +38,25 @@ function isRecordFinished(status: RecordStatus) {
 
 export default function Page({ params }: { params: { id: string } }) {
 	const [persistentData, setPersistentData] = useState<RecordPersistentData | null>(null);
-	const [sourceCodeHtml, setSourceCodeHtml] = useState<string | null>(null);
 	const [recordFinished, setRecordFinished] = useState<boolean>(false);
 
-	const { data: status } = useSWR<RecordStatus>(`/api/record/${params.id}/status`, fetcher, { isPaused(): boolean { return !recordFinished } });
-	const { data: testPoints } = useSWR<recordTestPoint>(`/api/record/${params.id}/testPoints`, fetcher, { isPaused(): boolean { return !recordFinished } });
-	const { data: compilationResult } = useSWR<{ compilationOutput: string, compilationResult: CompilationResultType }>(`/api/record/${params.id}/compilation`, fetcher, { isPaused(): boolean { return status !== undefined && isRecordFinished(status) } });
+	const { data: compilationResult } = useSWR<{ compilationOutput: string, compilationResult: CompilationResultType }>(`/api/record/${params.id}/compilation`, fetcher, /*{ isPaused(): boolean { return !recordFinished } }*/);
+	const { data: statusResult } = useSWR<{ status: RecordStatus }>(`/api/record/${params.id}/status`, fetcher, /*{ isPaused(): boolean { return !recordFinished } }*/);
+	const { data: testPoints } = useSWR<recordTestPoint[]>(`/api/record/${params.id}/testPoints`, fetcher, /*{ isPaused(): boolean { return !recordFinished } }*/);
 
 	useEffect(() => {
-		setRecordFinished(status !== undefined && isRecordFinished(status));
-	}, [status]);
+		setRecordFinished(statusResult !== undefined && isRecordFinished(statusResult.status));
+	}, [statusResult]);
 
 	useEffect(() => {
 		async function fetchPersistentData() {
-			const data = await GetRecordPersistentData(params.id);
-			setPersistentData(JSON.parse(data) as RecordPersistentData);
+			const response = await fetch(`/api/record/${params.id}/persistent`);
+			const data = (await response.json()) as RecordPersistentData;
+			setPersistentData(data);
 		}
 
 		fetchPersistentData();
 	}, []);
-
-	useEffect(() => {
-		async function highlightCode() {
-			const html = await codeToHtml(persistentData?.sourceCode || '', {
-				lang: persistentData?.language || '',
-				theme: 'github-light',
-			});
-
-			setSourceCodeHtml(html);
-		}
-
-		highlightCode();
-	}, [persistentData]);
 
 	return (
 		<div className="grid grid-cols-3 w-full gap-4">
@@ -79,12 +64,12 @@ export default function Page({ params }: { params: { id: string } }) {
 				<Card>
 					<CardHeader>
 						<CardTitle>Steps</CardTitle>
+						<CardDescription>{statusResult?.status}</CardDescription>
 					</CardHeader>
 					<CardContent className="flex flex-col space-y-1">
-						<QueueIndicator status={status || RecordStatus.UNKNOWN} />
-						<CompileIndicator status={status || RecordStatus.UNKNOWN} />
-						<TestIndicator status={status || RecordStatus.UNKNOWN} />
-						<FinishIndicator status={status || RecordStatus.UNKNOWN} />
+						<QueueIndicator status={statusResult?.status || RecordStatus.UNKNOWN} />
+						<CompileIndicator status={statusResult?.status || RecordStatus.UNKNOWN} />
+						<TestIndicator status={statusResult?.status || RecordStatus.UNKNOWN} />
 					</CardContent>
 				</Card>
 				<Card>
@@ -110,7 +95,7 @@ export default function Page({ params }: { params: { id: string } }) {
 						</div>
 						<div>
 							<h4>Status & Result</h4>
-							<p className="ml-2 font-mono text-sm">{status}</p>
+							<p className="ml-2 font-mono text-sm">{statusResult?.status}</p>
 						</div>
 						<div>
 							<h4>Rate</h4>
@@ -127,20 +112,14 @@ export default function Page({ params }: { params: { id: string } }) {
 							<Badge variant={'secondary'}>{persistentData?.language}</Badge>
 						</CardTitle>
 					</CardHeader>
-					<CardContent>
-						{sourceCodeHtml && <div dangerouslySetInnerHTML={{ __html: sourceCodeHtml }} />}
-					</CardContent>
+					<Editor className="p-6 pt-0" height="30vh" language={persistentData?.language} value={persistentData?.sourceCode} options={{ readOnly: true }} />
 				</Card>
 				<Card>
 					<CardHeader>
 						<CardTitle>Compilation output</CardTitle>
 						<CardDescription>{compilationResult?.compilationResult}</CardDescription>
 					</CardHeader>
-					<CardContent>
-						<p className="font-mono">
-							{compilationResult?.compilationResult === CompilationResultType.Unknown ? 'Waiting...' : compilationResult?.compilationOutput || 'None'}
-						</p>
-					</CardContent>
+					<Editor className="p-6 pt-0" height="30vh" language="plaintext" value={compilationResult?.compilationOutput || '[No output captured]'} options={{ readOnly: true }} />
 				</Card>
 				<Card>
 					<CardHeader>
@@ -153,7 +132,7 @@ export default function Page({ params }: { params: { id: string } }) {
 									<CardTitle>Time consumption</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<TimeChart />
+									{/* <TimeChart /> */}
 								</CardContent>
 							</Card>
 							<Card className="flex-grow">
@@ -161,7 +140,7 @@ export default function Page({ params }: { params: { id: string } }) {
 									<CardTitle>Memory consumption</CardTitle>
 								</CardHeader>
 								<CardContent>
-									<MemoryChart />
+									{/* <MemoryChart /> */}
 								</CardContent>
 							</Card>
 						</div>
@@ -245,6 +224,13 @@ function TestIndicator(props: { status: RecordStatus }) {
 				<span>Test</span>
 			</p>
 		)
+	} else if (props.status === RecordStatus.ERROR) {
+		return (
+			<p className="flex flex-row gap-x-1 items-center">
+				<AlertTriangle size={15} />
+				<span>Test</span>
+			</p>
+		)
 	} else {
 		return (
 			<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
@@ -253,87 +239,4 @@ function TestIndicator(props: { status: RecordStatus }) {
 			</p>
 		)
 	}
-}
-
-function FinishIndicator(props: { status: RecordStatus }) {
-	if (props.status === RecordStatus.FAILED || props.status === RecordStatus.PASSED) {
-		if (props.status === RecordStatus.FAILED) {
-			return (
-				<p className="flex flex-row gap-x-1 items-center">
-					<AlertTriangle size={15} />
-					<span>Finished</span>
-				</p>
-			)
-		} else {
-			return (
-				<p className="flex flex-row gap-x-1 items-center">
-					<Check size={15} />
-					<span>Finish</span>
-				</p>
-			)
-		}
-	} else {
-		return (
-			<p className="flex flex-row gap-x-1 items-center text-muted-foreground">
-				<Loader size={15} opacity={0} />
-				<span>Finish</span>
-			</p>
-		)
-	}
-}
-
-function TimeChart() {
-	const data = [
-		{ name: '1', actual: 42.85, average: 42.95 },
-		{ name: '2', actual: 43.12, average: 42.65 },
-		{ name: '3', actual: 42.93, average: 44.85 },
-		{ name: '4', actual: 42.82, average: 40.85 },
-		{ name: '5', actual: 42.95, average: 42.85 },
-		{ name: '6', actual: 42.78, average: 41.85 },
-		{ name: '7', actual: 42.92, average: 47.85 },
-		{ name: '8', actual: 43.12, average: 42.25 },
-	];
-
-	return (
-		<>
-			<BarChart width={300} height={300} data={data}>
-				<CartesianGrid strokeDasharray="3 3" />
-				<XAxis dataKey="name" />
-				<YAxis />
-				<Tooltip />
-				<Legend />
-				<Bar dataKey="actual" fill="#82ca9d" />
-				<Bar dataKey="average" fill="#800080" />
-				<ReferenceLine y={128} stroke="red" label="Limit" />
-			</BarChart>
-		</>
-	)
-}
-
-function MemoryChart() {
-	const data = [
-		{ name: '1', actual: 42.85, average: 42.95 },
-		{ name: '2', actual: 43.12, average: 42.65 },
-		{ name: '3', actual: 42.93, average: 44.85 },
-		{ name: '4', actual: 42.82, average: 40.85 },
-		{ name: '5', actual: 42.95, average: 42.85 },
-		{ name: '6', actual: 42.78, average: 41.85 },
-		{ name: '7', actual: 42.92, average: 47.85 },
-		{ name: '8', actual: 43.12, average: 42.25 },
-	];
-
-	return (
-		<>
-			<BarChart width={300} height={300} data={data}>
-				<CartesianGrid strokeDasharray="3 3" />
-				<XAxis dataKey="name" />
-				<YAxis />
-				<Tooltip />
-				<Legend />
-				<Bar dataKey="actual" fill="#82ca9d" />
-				<Bar dataKey="average" fill="#800080" />
-				<ReferenceLine y={128} stroke="red" label="Limit" />
-			</BarChart>
-		</>
-	)
 }
