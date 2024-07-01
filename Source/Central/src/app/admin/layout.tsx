@@ -1,25 +1,7 @@
 import { RootNavBar } from "@/components/nav/rootNavBar"
-import { serverPrisma } from "@/lib/serverSidePrisma"
-import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 import Link from "next/link"
-import { redirect } from "next/navigation";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-	const supabase = createSupabaseServerSideClient();
-	const user = (await supabase.auth.getUser()).data.user;
-
-	const prismaUser = await serverPrisma.user.findFirst({
-		where: {
-			id: user?.id,
-		},
-		select: {
-			isAdmin: true,
-		},
-	});
-	if (!prismaUser?.isAdmin) {
-		redirect("/auth/unauthorized");
-	}
-
 	return (
 		<div className="flex min-h-screen w-full flex-col">
 			<RootNavBar />
