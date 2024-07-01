@@ -21,19 +21,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { HandleSubmission } from "./server";
 import { serialize } from "object-to-formdata";
 import { useRouter } from "next/navigation";
+import ProgrammingLanguagePair from "@/lib/programmingLanguagePair";
 
 export default function Page({ params }: { params: { id: string } }) {
-	const [availableLangs, setAvailableLangs] = useState<AvailableLanguage[]>([]);
-	useEffect(() => {
-		async function fetchLangs() {
-			const res = await fetch(`/api/submit/lang`);
-			const langs = await res.json() as AvailableLanguage[];
-			setAvailableLangs(langs);
-		}
-		
-		fetchLangs();
-	}, []);
-
 	const form = useForm<ProblemSubmissionForm>({
 		resolver: zodResolver(ProblemSubmissionSchema),
 		defaultValues: {
@@ -84,7 +74,7 @@ export default function Page({ params }: { params: { id: string } }) {
 													<SelectValue placeholder="Select language" />
 												</SelectTrigger>
 												<SelectContent>
-													{availableLangs.map((lang) => (
+													{ProgrammingLanguagePair.filter(x => x.id !== "unknown").map((lang) => (
 														<SelectItem key={lang.id} value={lang.id}>{lang.name}</SelectItem>
 													))}
 												</SelectContent>

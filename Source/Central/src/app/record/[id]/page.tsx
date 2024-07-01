@@ -30,6 +30,7 @@ import { CompilationResultType } from "@/lib/models/compilation";
 import { Editor } from "@monaco-editor/react";
 import { RecordPersistentData } from "@/lib/models/recordPersistent";
 import { TestPointViewModel } from "@/lib/models/testPoint";
+import ProgrammingLanguagePair from "@/lib/programmingLanguagePair";
 
 function convertToUpperUnderlineToNormalWords(input: string) {
 	return input
@@ -42,7 +43,7 @@ function convertToUpperUnderlineToNormalWords(input: string) {
 }
 
 function addSpaceBetweenWords(input: string): string {
-	let output =  input
+	let output = input
 		// Insert a space before all caps
 		.replace(/([a-z])([A-Z])/g, '$1 $2')
 		// Make the whole string lowercase
@@ -62,9 +63,11 @@ export default function Page({ params }: { params: { id: string } }) {
 	const [persistentData, setPersistentData] = useState<RecordPersistentData | null>(null);
 	const [recordFinished, setRecordFinished] = useState<boolean>(false);
 
-	const { data: compilationResult } = useSWR<{ compilationOutput: string, compilationResult: CompilationResultType }>(`/api/record/${params.id}/compilation`, fetcher, /*{ isPaused(): boolean { return !recordFinished } }*/);
-	const { data: statusResult } = useSWR<{ status: RecordStatus }>(`/api/record/${params.id}/status`, fetcher, /*{ isPaused(): boolean { return !recordFinished } }*/);
-	const { data: testPoints } = useSWR<TestPointViewModel[]>(`/api/record/${params.id}/testPoints`, fetcher, /*{ isPaused(): boolean { return !recordFinished } }*/);
+	const swrOptions = { isPaused(): boolean { return recordFinished }, refreshInterval: 100 };
+
+	const { data: compilationResult } = useSWR<{ compilationOutput: string, compilationResult: CompilationResultType }>(`/api/record/${params.id}/compilation`, fetcher, swrOptions);
+	const { data: statusResult } = useSWR<{ status: RecordStatus }>(`/api/record/${params.id}/status`, fetcher, swrOptions);
+	const { data: testPoints } = useSWR<TestPointViewModel[]>(`/api/record/${params.id}/testPoints`, fetcher, swrOptions);
 
 	useEffect(() => {
 		setRecordFinished(statusResult !== undefined && isRecordFinished(statusResult.status));
@@ -131,7 +134,7 @@ export default function Page({ params }: { params: { id: string } }) {
 					<CardHeader>
 						<CardTitle className="flex flex-row space-x-2 items-center">
 							<span>Source code</span>
-							<Badge variant={'secondary'}>{persistentData?.language}</Badge>
+							<Badge variant={'secondary'}>{ProgrammingLanguagePair.filter(x => x.id === persistentData?.language || 'unknown').at(0)?.name || 'N/A'}</Badge>
 						</CardTitle>
 					</CardHeader>
 					<Editor className="p-6 pt-0" height="30vh" language={persistentData?.language} value={persistentData?.sourceCode} options={{ readOnly: true }} />
