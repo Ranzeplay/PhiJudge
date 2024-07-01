@@ -134,7 +134,7 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async Task SendHeartbeatSignalAsync()
         {
-            await HttpClient.GetAsync($"/api/agent/heartbeat/{Environment.GetEnvironmentVariable("AGENT_ID")}");
+            await HttpClient.GetAsync($"/api/agent/heartbeat");
             _logger.LogInformation("Heartbeat signal sent");
         }
 
