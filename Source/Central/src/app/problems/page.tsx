@@ -20,9 +20,17 @@ import {
 	TableRow,
 } from "@/components/ui/table";
 import { serverPrisma } from "@/lib/serverSidePrisma";
+import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 import Link from "next/link";
 export default async function Page() {
 	const problems = await serverPrisma.problem.findMany({ orderBy: { id: 'asc' } });
+
+	const supaUser = (await createSupabaseServerSideClient().auth.getUser()).data?.user;
+	const prismaUser = await serverPrisma.user.findUnique({
+		where: {
+			id: supaUser?.id
+		}
+	});
 
 	return (
 		<>
@@ -95,6 +103,18 @@ export default async function Page() {
 								<Button>Submit</Button>
 							</CardContent>
 						</Card>
+						{prismaUser?.isAdmin && (
+							<Card>
+								<CardHeader>
+									<CardTitle>Admin area</CardTitle>
+								</CardHeader>
+								<CardContent className="space-y-2">
+									<Button variant={'link'} className="text-blue-500" asChild>
+										<Link href="/problem/create">Create new</Link>
+									</Button>
+								</CardContent>
+							</Card>
+						)}
 					</div>
 				</div>
 			</main>

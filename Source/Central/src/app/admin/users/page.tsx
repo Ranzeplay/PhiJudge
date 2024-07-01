@@ -1,16 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { UserView } from "@/lib/models/user";
 import { serverPrisma } from "@/lib/serverSidePrisma";
-import { createSupabaseServerSideClient } from "@/lib/supabase/server";
+import { createSupabaseServiceRoleClient } from "@/lib/supabase/server";
 import Link from "next/link";
 
 export default async function Page() {
 	let users: UserView[] = [];
 	const dbUsers = await serverPrisma.user.findMany();
 
-	const supabase = createSupabaseServerSideClient();
+	const supabase = createSupabaseServiceRoleClient();
 	for (const user of dbUsers) {
 		const supabaseUser = await supabase.auth.admin.getUserById(user.id);
 		users.push({

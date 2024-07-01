@@ -8,11 +8,19 @@ import { Flag, Send } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge"
 import { serverPrisma } from "@/lib/serverSidePrisma";
+import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 
 export default async function Page({ params }: { params: { id: string } }) {
 	const problem = await serverPrisma.problem.findUnique({ where: { id: parseInt(params.id) } });
 	const testPointCount = await serverPrisma.problemTestData.count({ where: { problemId: parseInt(params.id) } });
 	const exampleData = await serverPrisma.problemTestData.findFirst({ where: { problemId: parseInt(params.id), order: 0 } });
+
+	const supaUser = (await createSupabaseServerSideClient().auth.getUser()).data?.user;
+	const prismaUser = await serverPrisma.user.findUnique({
+		where: {
+			id: supaUser?.id
+		}
+	});
 
 	return (
 		<div className="grid grid-cols-3 w-full gap-4">
@@ -84,14 +92,26 @@ export default async function Page({ params }: { params: { id: string } }) {
 								<span>Submit</span>
 							</Link>
 						</Button>
-						<Button className="text-blue-500 hover:underline w-min" variant={'link'} asChild>
-							<Link className="flex flex-row space-x-2" href={`/problem/${params.id}/report`}>
+						<Button className="text-blue-200 w-min cursor-not-allowed" variant={'link'} asChild disabled>
+							<Link className="flex flex-row space-x-2" href={"#"}>
 								<Flag size={14} />
 								<span>Report</span>
 							</Link>
 						</Button>
 					</CardContent>
 				</Card>
+				{prismaUser?.isAdmin && (
+					<Card>
+						<CardHeader>
+							<CardTitle>Admin area</CardTitle>
+						</CardHeader>
+						<CardContent className="space-y-2">
+							<Button variant={'link'} className="text-blue-500" asChild>
+								<Link href={`/problem/${params.id}/edit/general`}>Edit</Link>
+							</Button>
+						</CardContent>
+					</Card>
+				)}
 			</div>
 		</div>
 	);
