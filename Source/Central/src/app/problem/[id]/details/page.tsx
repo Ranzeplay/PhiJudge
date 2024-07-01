@@ -94,7 +94,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 value={
                   problem?.totalSubmits === 0
                     ? 0
-                    : (problem?.totalPassed || 0) / (problem?.totalSubmits || 0)
+                    : (problem?.totalPassed || 0) / (problem?.totalSubmits || 0) * 100
                 }
               />
             </div>
