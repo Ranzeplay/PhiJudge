@@ -21,9 +21,13 @@ import { UpdateLanguage } from "./server";
 export default function Page() {
 	const [lang, setLang] = useState<LanguageView[]>([]);
 	useEffect(() => {
-		fetch(`/api/submit/lang`)
-			.then((res) => res.json())
-			.then((data) => setLang(data));
+		async function fetchLang() {
+			const res = await fetch(`/api/lang`);
+			const data = await res.json();
+			setLang(data);
+		}
+
+		fetchLang();
 	}, []);
 
 	return (
@@ -65,7 +69,7 @@ export default function Page() {
 				setName(currentLang.name);
 				setEnabled(currentLang.enabled);
 			}
-		}, [lang]);
+		}, [props.id]);
 
 		const [name, setName] = useState<string>('');
 		const [enabled, setEnabled] = useState<boolean>(false);

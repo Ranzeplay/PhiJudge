@@ -30,12 +30,15 @@ import { availableProgrammingLanguage } from '@prisma/client';
 import { useEffect, useState } from 'react';
 
 export default function Page({ params }: { params: { id: string } }) {
-  const [availableProgrammingLanguage, setAvailableProgrammingLanguage] =
-    useState<availableProgrammingLanguage[]>([]);
+  const [availableProgrammingLanguages, setAvailableProgrammingLanguages] = useState<availableProgrammingLanguage[]>([]);
   useEffect(() => {
-    fetch(`/api/submit/lang`)
-      .then((res) => res.json())
-      .then((data) => setAvailableProgrammingLanguage(data));
+    async function fetchLang() {
+      const res = await fetch(`/api/lang`);
+      const data = await res.json();
+      setAvailableProgrammingLanguages(data);
+    }
+
+    fetchLang();
   }, []);
 
   const form = useForm<ProblemSubmissionForm>({
@@ -99,7 +102,7 @@ export default function Page({ params }: { params: { id: string } }) {
                             <SelectValue placeholder='Select language' />
                           </SelectTrigger>
                           <SelectContent>
-                            {availableProgrammingLanguage
+                            {availableProgrammingLanguages
                               .filter((x) => x.id !== 'unknown')
                               .map((lang) => (
                                 <SelectItem key={lang.id} value={lang.id}>
