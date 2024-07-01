@@ -26,8 +26,10 @@ export function RootNavBar() {
 			<nav className="flex flex-row flex-grow gap-x-3 items-center">
 				<NavBarLink href="/" caption="PhiJudge" className="text-black mr-2 font-medium text-base font-serif" />
 				<NavBarLink href="/problems" caption="Problems" className="text-muted-foreground" />
-				<NavBarLink href="/contests" caption="Contests" className="text-muted-foreground" />
+				<NavBarLink href="#" caption="Contests" className="text-muted-foreground" />
 				<NavBarLink href="/records" caption="Records" className="text-muted-foreground" />
+				<NavBarLink href="#" caption="Community" className="text-muted-foreground" />
+				<NavBarLink href="#" caption="Status" className="text-muted-foreground" />
 			</nav>
 			<nav className="flex flex-grow-0 gap-x-3 items-center mr-4">
 				{authStatus.isLoggedIn ? (
