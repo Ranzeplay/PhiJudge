@@ -151,7 +151,7 @@ export default function Page({ params }: { params: { id: string } }) {
 						<div className="flex flex-row space-x-2">
 							<Card className="flex-grow">
 								<CardHeader>
-									<CardTitle>Time consumption</CardTitle>
+									<CardTitle>Time consumption (ms)</CardTitle>
 								</CardHeader>
 								<CardContent>
 									<TimeChart data={testPoints || []} />
@@ -159,7 +159,7 @@ export default function Page({ params }: { params: { id: string } }) {
 							</Card>
 							<Card className="flex-grow">
 								<CardHeader>
-									<CardTitle>Memory consumption</CardTitle>
+									<CardTitle>Memory consumption (bytes)</CardTitle>
 								</CardHeader>
 								<CardContent>
 									<MemoryChart data={testPoints || []} />
