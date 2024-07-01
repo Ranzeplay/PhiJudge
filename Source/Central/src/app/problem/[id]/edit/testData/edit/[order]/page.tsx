@@ -26,7 +26,7 @@ export default function Page({ params }: { params: { id: string, order: string }
 			setExpectedOutputData(testData.expectedOutput);
 			setTestDataId(testData.id);
 		});
-	}, []);
+	}, [params.id, params.order]);
 
 	const router = useRouter();
 	function DeleteCurrent() {

@@ -80,7 +80,7 @@ export default function Page({ params }: { params: { id: string } }) {
 		}
 
 		fetchPersistentData();
-	}, []);
+	}, [params.id]);
 
 	return (
 		<div className="grid grid-cols-3 w-full gap-4">
