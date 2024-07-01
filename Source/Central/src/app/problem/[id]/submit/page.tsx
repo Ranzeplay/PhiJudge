@@ -33,7 +33,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const [availableProgrammingLanguages, setAvailableProgrammingLanguages] = useState<availableProgrammingLanguage[]>([]);
   useEffect(() => {
     async function fetchLang() {
-      const res = await fetch(`/api/lang`);
+      const res = await fetch(`/api/v0/lang`);
       const data = await res.json();
       setAvailableProgrammingLanguages(data);
     }

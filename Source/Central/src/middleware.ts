@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
     url: request.nextUrl.pathname,
     ip: request.ip || 'unknown',
     timestamp: new Date(),
-    isApiRoute: request.nextUrl.pathname.startsWith('/api'),
+    isApiRoute: request.nextUrl.pathname.startsWith('/api/v0'),
   });
 
   if (request.nextUrl.pathname.startsWith('/admin')) {
@@ -30,7 +30,7 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  if (request.nextUrl.pathname.startsWith('/api/agent')) {
+  if (request.nextUrl.pathname.startsWith('/api/v0/agent')) {
     const agent = await serverSupabase
       .from('agents')
       .select('id')

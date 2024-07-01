@@ -17,7 +17,7 @@ export function RootNavBar() {
   });
   useEffect(() => {
     async function fetchAuthStatus() {
-      const response = await fetch('/api/auth/status');
+      const response = await fetch('/api/v0/auth/status');
       const data = (await response.json()) as AuthenticationStatus;
       setAuthStatus(data);
     }

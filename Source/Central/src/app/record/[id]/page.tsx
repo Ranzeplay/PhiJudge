@@ -85,14 +85,14 @@ export default function Page({ params }: { params: { id: string } }) {
   const { data: compilationResult } = useSWR<{
     compilationOutput: string;
     compilationResult: CompilationResultType;
-  }>(`/api/record/${params.id}/compilation`, fetcher, swrOptions);
+  }>(`/api/v0/record/${params.id}/compilation`, fetcher, swrOptions);
   const { data: statusResult } = useSWR<{ status: RecordStatus }>(
-    `/api/record/${params.id}/status`,
+    `/api/v0/record/${params.id}/status`,
     fetcher,
     swrOptions
   );
   const { data: testPoints } = useSWR<TestPointViewModel[]>(
-    `/api/record/${params.id}/testPoints`,
+    `/api/v0/record/${params.id}/testPoints`,
     fetcher,
     swrOptions
   );
@@ -105,7 +105,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     async function fetchPersistentData() {
-      const response = await fetch(`/api/record/${params.id}/persistent`);
+      const response = await fetch(`/api/v0/record/${params.id}/persistent`);
       const data = (await response.json()) as RecordPersistentData;
       setPersistentData(data);
     }

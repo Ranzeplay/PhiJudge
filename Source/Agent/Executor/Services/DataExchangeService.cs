@@ -70,7 +70,7 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async Task<RecordData> FetchRecordAsync(long recordId)
         {
-            var response = await HttpClient.GetAsync($"/api/agent/record/{recordId}");
+            var response = await HttpClient.GetAsync($"/api/v0/agent/record/{recordId}");
             var content = await response.Content.ReadAsStringAsync();
 
             var recordData = JsonSerializer.Deserialize<RecordData>(content)!;
@@ -81,7 +81,7 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async Task<ProblemData> FetchProblemAsync(long problemId)
         {
-            var response = await HttpClient.GetAsync($"/api/agent/problem/{problemId}");
+            var response = await HttpClient.GetAsync($"/api/v0/agent/problem/{problemId}");
             var content = await response.Content.ReadAsStringAsync();
 
             var problemData = JsonSerializer.Deserialize<ProblemData>(content)!;
@@ -92,31 +92,31 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async Task BeginCompilationAsync(long recordId)
         {
-            var response = await HttpClient.GetAsync($"/api/agent/record/{recordId}/compilation/begin");
+            var response = await HttpClient.GetAsync($"/api/v0/agent/record/{recordId}/compilation/begin");
             _logger.LogInformation("Compilation started for record {0}", recordId);
         }
 
         public async Task<bool> PushCompilationResultAsync(long recordId, CompilationResult compilationResult)
         {
-            var response = await HttpClient.PostAsync($"/api/agent/record/{recordId}/compilation", JsonContent.Create(compilationResult));
+            var response = await HttpClient.PostAsync($"/api/v0/agent/record/{recordId}/compilation", JsonContent.Create(compilationResult));
             return response.IsSuccessStatusCode;
         }
 
         public async Task BeginExecutionAsync(long recordId)
         {
-            await HttpClient.GetAsync($"/api/agent/record/{recordId}/execution/begin");
+            await HttpClient.GetAsync($"/api/v0/agent/record/{recordId}/execution/begin");
             _logger.LogInformation("Execution started for record {0}", recordId);
         }
 
         public async Task<bool> PushExecutionResultAsync(long recordId, ExecutionResult executionResult)
         {
-            var response = await HttpClient.PostAsync($"/api/agent/record/{recordId}/execution", JsonContent.Create(executionResult));
+            var response = await HttpClient.PostAsync($"/api/v0/agent/record/{recordId}/execution", JsonContent.Create(executionResult));
             return response.IsSuccessStatusCode;
         }
 
         public async Task FinishExecutionAsync(long recordId)
         {
-            await HttpClient.GetAsync($"/api/agent/record/{recordId}/execution/finish");
+            await HttpClient.GetAsync($"/api/v0/agent/record/{recordId}/execution/finish");
             _logger.LogInformation("Finished execution for record {0}", recordId);
         }
 
@@ -134,13 +134,13 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async Task SendHeartbeatSignalAsync()
         {
-            await HttpClient.GetAsync($"/api/agent/heartbeat");
+            await HttpClient.GetAsync($"/api/v0/agent/heartbeat");
             _logger.LogInformation("Heartbeat signal sent");
         }
 
         public async void UpdateSupportedLanguagesAsync(IEnumerable<string> languages)
         {
-            await HttpClient.PostAsync($"/api/agent/languages", JsonContent.Create(languages));
+            await HttpClient.PostAsync($"/api/v0/agent/languages", JsonContent.Create(languages));
             _logger.LogInformation("Updated supported languages on server side");
         }
     }

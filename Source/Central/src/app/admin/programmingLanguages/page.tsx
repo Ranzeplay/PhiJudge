@@ -22,7 +22,7 @@ export default function Page() {
 	const [lang, setLang] = useState<LanguageView[]>([]);
 	useEffect(() => {
 		async function fetchLang() {
-			const res = await fetch(`/api/lang`);
+			const res = await fetch(`/api/v0/lang`);
 			const data = await res.json();
 			setLang(data);
 		}
