@@ -30,7 +30,6 @@ import { CompilationResultType } from "@/lib/models/compilation";
 import { Editor } from "@monaco-editor/react";
 import { RecordPersistentData } from "@/lib/models/recordPersistent";
 import { TestPointViewModel } from "@/lib/models/testPoint";
-import ProgrammingLanguagePair from "@/lib/programmingLanguagePair";
 
 function convertToUpperUnderlineToNormalWords(input: string) {
 	return input
@@ -124,7 +123,7 @@ export default function Page({ params }: { params: { id: string } }) {
 						</div>
 						<div>
 							<h4>Rate</h4>
-							<p className="ml-2 font-mono text-sm">{(testPoints || []).filter(t => t.resultType === RecordTestPointStatus.Accepted).length || NaN} / {testPoints?.length || NaN}</p>
+							<p className="ml-2 font-mono text-sm">{(testPoints || []).filter(t => t.resultType === RecordTestPointStatus.ACCEPTED).length || NaN} / {testPoints?.length || NaN}</p>
 						</div>
 					</CardContent>
 				</Card>
@@ -134,10 +133,10 @@ export default function Page({ params }: { params: { id: string } }) {
 					<CardHeader>
 						<CardTitle className="flex flex-row space-x-2 items-center">
 							<span>Source code</span>
-							<Badge variant={'secondary'}>{ProgrammingLanguagePair.filter(x => x.id === persistentData?.language || 'unknown').at(0)?.name || 'N/A'}</Badge>
+							<Badge variant={'secondary'}>{persistentData?.language.name}</Badge>
 						</CardTitle>
 					</CardHeader>
-					<Editor className="p-6 pt-0" height="30vh" language={persistentData?.language} value={persistentData?.sourceCode} options={{ readOnly: true }} />
+					<Editor className="p-6 pt-0" height="30vh" language={persistentData?.language.id} value={persistentData?.sourceCode} options={{ readOnly: true }} />
 				</Card>
 				<Card>
 					<CardHeader>

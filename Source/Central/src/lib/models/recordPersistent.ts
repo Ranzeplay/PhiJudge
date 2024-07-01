@@ -7,6 +7,9 @@ export type RecordPersistentData = {
   };
   agentId: string;
   sourceCode: string;
-  language: string;
+  language: {
+    id: string;
+    name: string;
+  };
   submitTime: Date;
 };

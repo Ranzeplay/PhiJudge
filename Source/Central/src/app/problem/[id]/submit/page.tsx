@@ -12,18 +12,24 @@ import {
 } from "@/components/ui/select";
 import Editor from "@monaco-editor/react";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { ProblemSubmissionForm, ProblemSubmissionSchema } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AvailableLanguage } from "@/app/api/submit/lang/route";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { HandleSubmission } from "./server";
 import { serialize } from "object-to-formdata";
 import { useRouter } from "next/navigation";
-import ProgrammingLanguagePair from "@/lib/programmingLanguagePair";
+import { availableProgrammingLanguage } from "@prisma/client";
+import { useEffect, useState } from "react";
 
 export default function Page({ params }: { params: { id: string } }) {
+	const [availableProgrammingLanguage, setAvailableProgrammingLanguage] = useState<availableProgrammingLanguage[]>([]);
+	useEffect(() => {
+		fetch(`/api/submit/lang`)
+			.then((res) => res.json())
+			.then((data) => setAvailableProgrammingLanguage(data));
+	}, []);
+
 	const form = useForm<ProblemSubmissionForm>({
 		resolver: zodResolver(ProblemSubmissionSchema),
 		defaultValues: {
@@ -74,7 +80,7 @@ export default function Page({ params }: { params: { id: string } }) {
 													<SelectValue placeholder="Select language" />
 												</SelectTrigger>
 												<SelectContent>
-													{ProgrammingLanguagePair.filter(x => x.id !== "unknown").map((lang) => (
+													{availableProgrammingLanguage.filter(x => x.id !== "unknown").map((lang) => (
 														<SelectItem key={lang.id} value={lang.id}>{lang.name}</SelectItem>
 													))}
 												</SelectContent>

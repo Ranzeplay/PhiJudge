@@ -36,7 +36,6 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
 
   const record = await serverPrisma.record.create({
     data: {
-      languageId: data.languageId,
       sourceCode: data.code,
       enableOptimization: data.enableOptimization,
       warningAsError: data.warningAsError,
@@ -54,6 +53,11 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
         connect: {
           id: agent?.id,
         }
+      },
+      language: {
+        connect: {
+          id: data.languageId,
+        },
       }
     },
   });

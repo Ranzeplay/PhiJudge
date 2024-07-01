@@ -1,7 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["driverAdapters"]
-  engineType = "library"
 }
 
 datasource db {
@@ -15,6 +13,8 @@ model user {
   problemsCreated problem[]
   records         record[]
   isAdmin         Boolean   @default(false)
+
+  @@map("users")
 }
 
 model problem {
@@ -25,13 +25,15 @@ model problem {
   totalPassed  Int    @default(0)
   author       user   @relation(fields: [authorId], references: [id])
 
-  testData problemTestData[]
+  testData problemTestPoint[]
   records  record[]
 
   authorId String
+
+  @@map("problems")
 }
 
-model problemTestData {
+model problemTestPoint {
   id             Int     @id @default(autoincrement())
   problemId      Int
   input          String
@@ -41,6 +43,8 @@ model problemTestData {
 
   timeLimitMs      Int
   memoryLimitBytes Int
+
+  @@map("problemTestPoints")
 }
 
 enum RecordStatus {
@@ -62,32 +66,35 @@ enum CompilationStatus {
 }
 
 model record {
-  id                 Int               @id @default(autoincrement())
-  problem            problem           @relation(fields: [problemId], references: [id])
+  id                 Int                          @id @default(autoincrement())
+  problem            problem                      @relation(fields: [problemId], references: [id])
   problemId          Int
   recordTestPoint    recordTestPoint[]
-  status             RecordStatus      @default(PENDING)
-  submitter          user              @relation(fields: [submitterId], references: [id])
+  status             RecordStatus                 @default(PENDING)
+  submitter          user                         @relation(fields: [submitterId], references: [id])
   submitterId        String
-  agent              agent?            @relation(fields: [agentId], references: [id])
+  agent              agent?                       @relation(fields: [agentId], references: [id])
   agentId            String
+  language           availableProgrammingLanguage @relation(fields: [languageId], references: [id])
   languageId         String
   sourceCode         String
-  compilationResult  CompilationStatus @default(PENDING)
-  compilationOutput  String            @default("")
-  enableOptimization Boolean           @default(false)
-  warningAsError     Boolean           @default(false)
-  submitTime         DateTime          @default(now())
+  compilationResult  CompilationStatus            @default(PENDING)
+  compilationOutput  String                       @default("")
+  enableOptimization Boolean                      @default(false)
+  warningAsError     Boolean                      @default(false)
+  submitTime         DateTime                     @default(now())
+
+  @@map("records")
 }
 
 enum RecordTestPointStatus {
-  Accepted
-  WrongAnswer
-  TimeLimitExceeded
-  MemoryLimitExceeded
-  OutputLimitExceeded
-  RuntimeError
-  Unknown
+  ACCEPTED
+  WRONG_ANSWER
+  TIME_LIMIT_EXCEEDED
+  MEMORY_LIMIT_EXCEEDED
+  OUTPUT_LIMIT_EXCEEDED
+  RUNTIME_ERROR
+  UNKNOWN
 }
 
 model recordTestPoint {
@@ -100,6 +107,8 @@ model recordTestPoint {
   actualTimeMs          Int
   actualPeakMemoryBytes Int
   status                RecordTestPointStatus
+
+  @@map("recordTestPoints")
 }
 
 enum AgentStatus {
@@ -112,10 +121,12 @@ model agent {
   id                  String      @id @default(cuid())
   name                String
   status              AgentStatus @default(DISCONNECTED)
-  lastHeartbeat       DateTime    @default(now())
+  lastHeartbeatTime   DateTime    @default(now())
   lastNetworkAddress  String      @default("Unknown")
   records             record[]
   availableLanguageId String[]
+
+  @@map("agents")
 }
 
 model requestLog {
@@ -124,4 +135,15 @@ model requestLog {
   ip         String
   isApiRoute Boolean
   timestamp  DateTime @default(now())
+
+  @@map("requestLogs")
+}
+
+model availableProgrammingLanguage {
+  id      String   @id @unique
+  name    String
+  enabled Boolean  @default(true)
+  record  record[]
+
+  @@map("availableProgrammingLanguages")
 }

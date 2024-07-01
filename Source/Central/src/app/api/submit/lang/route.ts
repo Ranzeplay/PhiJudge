@@ -1,17 +1,11 @@
+import { serverPrisma } from "@/lib/serverSidePrisma";
 import { NextRequest, NextResponse } from "next/server";
 
-export type AvailableLanguage = {
-	id: string;
-	name: string;
-};
+export async function GET(_request: NextRequest) {
+	const lang = await serverPrisma.availableProgrammingLanguage.findMany({
+		select: { id: true, name: true },
+		where: { enabled: true },
+	});
 
-export function GET(_request: NextRequest) {
-	return NextResponse.json([
-		{ id: "c", name: "C" },
-		{ id: "cpp", name: "C++" },
-		{ id: "csharp", name: "C#" },
-		{ id: "rust", name: "Rust" },
-		{ id: "java", name: "Java" },
-		{ id: "kotlin", name: "Kotlin" },
-	]);
+	return NextResponse.json(lang);
 }

@@ -16,7 +16,12 @@ export async function GET(
           author: true,
         },
       },
-      agent: true,
+      agent: {
+        select: {
+          id: true,
+        }
+      },
+      language: true
     },
   });
 
@@ -29,7 +34,7 @@ export async function GET(
     },
     agentId: record!.agent!.id,
     sourceCode: record!.sourceCode,
-    language: record!.languageId,
+    language: record!.language,
     submitTime: record!.submitTime,
   };
 

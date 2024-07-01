@@ -74,11 +74,11 @@ export async function GET(
         order: testPoint.order,
         resultType: testPoint.status,
         actualTimeMs: testPoint.actualTimeMs,
-        averageTimeMs: avgResult._avg.actualTimeMs ?? -1,
-        timeLimitMs: testData?.timeLimitMs ?? NaN,
+        averageTimeMs: avgResult._avg.actualTimeMs ?? 0,
+        timeLimitMs: testData?.timeLimitMs ?? 0,
         actualPeakMemoryBytes: testPoint.actualPeakMemoryBytes,
-        averagePeakMemoryBytes: avgResult._avg.actualPeakMemoryBytes ?? -1,
-        memoryLimitBytes: testData?.memoryLimitBytes ?? NaN,
+        averagePeakMemoryBytes: avgResult._avg.actualPeakMemoryBytes ?? 0,
+        memoryLimitBytes: testData?.memoryLimitBytes ?? 0,
       });
     }
   }
