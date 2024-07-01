@@ -6,11 +6,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
 ) {
   const result = await serverPrisma.agent.update({
     where: {
-      id: params.id,
+      id: request.headers.get("Authorization") || '',
     },
     data: {
       lastHeartbeat: new Date(),
@@ -21,7 +20,7 @@ export async function GET(
   if (result.status === AgentStatus.DISCONNECTED) {
     await serverPrisma.agent.update({
       where: {
-        id: params.id,
+        id: request.headers.get("Authorization") || '',
       },
       data: {
         status: AgentStatus.AVAILABLE,

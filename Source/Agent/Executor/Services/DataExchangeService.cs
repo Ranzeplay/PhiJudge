@@ -2,8 +2,8 @@
 using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
 using PhiJudge.Agent.Executor.Communication;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
 
 namespace PhiJudge.Agent.Executor.Services
@@ -30,7 +30,13 @@ namespace PhiJudge.Agent.Executor.Services
 
             HttpClient = new()
             {
-                BaseAddress = new Uri(Environment.GetEnvironmentVariable("CENTRAL_SERVER_URL")!)
+                BaseAddress = new Uri(Environment.GetEnvironmentVariable("CENTRAL_SERVER_URL")!),
+                DefaultRequestHeaders =
+                {
+                    Authorization = new AuthenticationHeaderValue(Environment.GetEnvironmentVariable("AGENT_ID") ?? string.Empty),
+                    Accept = { new MediaTypeWithQualityHeaderValue("application/json") },
+                    UserAgent = { { new ProductInfoHeaderValue("PhiJudge-Agent", "0.1") } }
+                }
             };
 
             _logger = logger;

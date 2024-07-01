@@ -1,16 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
-import { createSupabaseServerSideClient } from "./lib/supabase/server";
+import { createSupabaseServerSideClient, createSupabaseServiceRoleClient } from "./lib/supabase/server";
 import { updateSession } from "./lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  const serverSupabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-    {
-      db: { schema: "phijudge" },
-    }
-  );
+  const serverSupabase = createSupabaseServiceRoleClient();
   await serverSupabase.from("requestLog").insert({
     url: request.nextUrl.pathname,
     ip: request.ip || "unknown",
