@@ -14,6 +14,11 @@ export async function GET(
     },
     select: {
       status: true,
+      record: {
+        select: {
+          problemId: true
+        }
+      }
     },
   });
 
@@ -24,6 +29,17 @@ export async function GET(
     where: { id: parseInt(params.id) },
     data: {
       status: allTestPointsPassed ? RecordStatus.PASSED : RecordStatus.FAILED,
+    },
+  });
+
+  await serverPrisma.problem.update({
+    where: {
+      id: testPoints[0].record.problemId,
+    },
+    data: {
+      totalPassed: {
+        increment: allTestPointsPassed ? 1 : 0,
+      },
     },
   });
 

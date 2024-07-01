@@ -39,6 +39,7 @@ export async function POST(
     },
   });
 
+  // End the whole record testing since the compilation failed
   if(resultType === CompilationStatus.FAILED_WITH_ERRORS) {
     await serverPrisma.record.update({
       where: { id: parseInt(params.id) },
@@ -47,23 +48,6 @@ export async function POST(
       },
     });
   }
-
-  const channel = createSupabaseServerSideClient().realtime.channel(
-    `phijudge.record.${params.id}`
-  );
-  channel.subscribe((status) => {
-    if (status === 'SUBSCRIBED') {
-      channel.send({
-        type: 'broadcast',
-        event: 'compilationResult',
-        payload: {
-          type: body.type,
-          output: body.output,
-        },
-      });
-    }
-  });
-  channel.unsubscribe();
 
   return NextResponse.json({});
 }

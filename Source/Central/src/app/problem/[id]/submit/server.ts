@@ -62,6 +62,17 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
     },
   });
 
+  await serverPrisma.problem.update({
+    where: {
+      id: data.problemId,
+    },
+    data: {
+      totalSubmits: {
+        increment: 1,
+      },
+    },
+  });
+
   const channel = supabase.channel('phijudge.record.alloc');
   channel.send({
     type: 'broadcast',
