@@ -5,11 +5,12 @@ import { useEffect, useState } from "react";
 
 type AuthenticationStatus = {
 	isLoggedIn: boolean | undefined,
-	userName: string | undefined
+	userName: string | undefined,
+	isAdmin: boolean,
 };
 
 export function RootNavBar() {
-	const [authStatus, setAuthStatus] = useState<AuthenticationStatus>({ isLoggedIn: undefined, userName: undefined });
+	const [authStatus, setAuthStatus] = useState<AuthenticationStatus>({ isLoggedIn: undefined, userName: undefined, isAdmin: false });
 	useEffect(() => {
 		async function fetchAuthStatus() {
 			const response = await fetch('/api/auth/status');
@@ -32,6 +33,7 @@ export function RootNavBar() {
 				{authStatus.isLoggedIn ? (
 					<>
 						<NavBarLink href="/user/my" caption={`Hello, ${authStatus.userName || 'undefined'}`} className="text-muted-foreground" />
+						{authStatus.isAdmin && <NavBarLink href="/admin/overview" caption="Admin" className="text-muted-foreground" />}
 						<NavBarLink href="/auth/logout" caption="Logout" className="text-muted-foreground" />
 					</>
 				) : (
