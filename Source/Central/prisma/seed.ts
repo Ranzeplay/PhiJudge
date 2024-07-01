@@ -7,7 +7,8 @@ async function grantPrevileges() {
   await prisma.$queryRaw`GRANT SELECT ON ALL TABLES IN SCHEMA phijudge TO service_role;`;
   await prisma.$queryRaw`ALTER DEFAULT PRIVILEGES IN SCHEMA phijudge GRANT SELECT ON TABLES TO service_role;`;
 
-  await prisma.$queryRaw`GRANT INSERT ON phijudge.requestLog TO service_role;`;
+  await prisma.$queryRaw`GRANT INSERT ON phijudge."requestLogs" TO service_role;`;
+  await prisma.$queryRaw`GRANT USAGE, UPDATE ON SEQUENCE phijudge."requestLogs_id_seq" TO service_role;`;
 }
 
 async function main() {
