@@ -1,15 +1,13 @@
-"use server";
+'use server';
 
-import { serverPrisma } from "@/lib/serverSidePrisma";
-import { AgentStatus } from "@prisma/client";
-import { NextRequest, NextResponse } from "next/server";
+import { serverPrisma } from '@/lib/serverSidePrisma';
+import { AgentStatus } from '@prisma/client';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function GET(
-  request: NextRequest,
-) {
+export async function GET(request: NextRequest) {
   const result = await serverPrisma.agent.update({
     where: {
-      id: request.headers.get("Authorization") || '',
+      id: request.headers.get('Authorization') || '',
     },
     data: {
       lastHeartbeatTime: new Date(),
@@ -20,7 +18,7 @@ export async function GET(
   if (result.status === AgentStatus.DISCONNECTED) {
     await serverPrisma.agent.update({
       where: {
-        id: request.headers.get("Authorization") || '',
+        id: request.headers.get('Authorization') || '',
       },
       data: {
         status: AgentStatus.AVAILABLE,
@@ -28,5 +26,5 @@ export async function GET(
     });
   }
 
-  return NextResponse.json({ message: "Heartbeat received" });
+  return NextResponse.json({ message: 'Heartbeat received' });
 }

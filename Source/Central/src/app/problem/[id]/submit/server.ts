@@ -1,17 +1,17 @@
-"use server";
+'use server';
 
-import { ProblemSubmissionSchema } from "./schema";
-import { createSupabaseServerSideClient } from "@/lib/supabase/server";
-import { serverPrisma } from "@/lib/serverSidePrisma";
-import { AgentStatus } from "@prisma/client";
+import { ProblemSubmissionSchema } from './schema';
+import { createSupabaseServerSideClient } from '@/lib/supabase/server';
+import { serverPrisma } from '@/lib/serverSidePrisma';
+import { AgentStatus } from '@prisma/client';
 
 export async function HandleSubmission(formData: FormData): Promise<number> {
   const data = await ProblemSubmissionSchema.parseAsync({
-    languageId: formData.get("languageId") as string,
-    code: formData.get("code") as string,
-    enableOptimization: formData.get("enableOptimization") === "true",
-    warningAsError: formData.get("warningAsError") === "true",
-    problemId: parseInt(formData.get("problemId") as string),
+    languageId: formData.get('languageId') as string,
+    code: formData.get('code') as string,
+    enableOptimization: formData.get('enableOptimization') === 'true',
+    warningAsError: formData.get('warningAsError') === 'true',
+    problemId: parseInt(formData.get('problemId') as string),
   });
 
   const supabase = createSupabaseServerSideClient();
@@ -52,13 +52,13 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
       agent: {
         connect: {
           id: agent?.id,
-        }
+        },
       },
       language: {
         connect: {
           id: data.languageId,
         },
-      }
+      },
     },
   });
 
@@ -69,7 +69,7 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
     payload: {
       recordId: record.id,
       agentId: agent?.id,
-    }
+    },
   });
   channel.untrack();
 

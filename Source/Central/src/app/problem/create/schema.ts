@@ -1,27 +1,27 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 export enum TestDataModification {
-  CREATE = "CREATE",
-  UPDATE = "UPDATE",
-  DELETE = "DELETE",
+  CREATE = 'CREATE',
+  UPDATE = 'UPDATE',
+  DELETE = 'DELETE',
 }
 
 export const ProblemTestDataSchema = z.object({
   input: z.string(),
   expectedOutput: z.string(),
   timeLimitMs: z
-    .string({ required_error: "Time limit required" })
+    .string({ required_error: 'Time limit required' })
     .refine((val) => !Number.isNaN(parseInt(val, 10)), {
-      message: "Expected number, received a string",
+      message: 'Expected number, received a string',
     }),
   memoryLimitBytes: z
-    .string({ required_error: "Memory limit required" })
+    .string({ required_error: 'Memory limit required' })
     .refine((val) => !Number.isNaN(parseInt(val, 10)), {
-      message: "Expected number, received a string",
+      message: 'Expected number, received a string',
     }),
-  order: z.number({ required_error: "Order required" }).default(-1),
+  order: z.number({ required_error: 'Order required' }).default(-1),
   modificationType: z.nativeEnum(TestDataModification),
-  problemId: z.number({ required_error: "Problem ref required" }),
+  problemId: z.number({ required_error: 'Problem ref required' }),
   existingId: z.number().optional(),
 });
 
@@ -30,8 +30,8 @@ export const ProblemTestDataSeriesSchema = z.object({
 });
 
 export const ProblemCreationSchema = z.object({
-  title: z.string({ required_error: "Title required" }),
-  description: z.string({ required_error: "Description required" }),
+  title: z.string({ required_error: 'Title required' }),
+  description: z.string({ required_error: 'Description required' }),
 });
 
 export type ProblemCreation = z.infer<typeof ProblemCreationSchema>;

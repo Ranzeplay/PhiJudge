@@ -1,7 +1,7 @@
-"use server";
+'use server';
 
-import { serverPrisma } from "@/lib/serverSidePrisma";
-import { NextRequest, NextResponse } from "next/server";
+import { serverPrisma } from '@/lib/serverSidePrisma';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
@@ -9,12 +9,12 @@ export async function GET(
 ) {
   const agent = serverPrisma.agent.findUnique({
     where: {
-      id: request.headers.get("Authorization") || "",
+      id: request.headers.get('Authorization') || '',
     },
   });
 
   if (!agent) {
-    return NextResponse.json({ message: "Agent not found" }, { status: 401 });
+    return NextResponse.json({ message: 'Agent not found' }, { status: 401 });
   }
 
   const problem = await serverPrisma.problem.findUnique({
@@ -27,10 +27,10 @@ export async function GET(
   });
 
   if (!problem) {
-    return NextResponse.json({ message: "Problem not found" }, { status: 404 });
+    return NextResponse.json({ message: 'Problem not found' }, { status: 404 });
   }
 
-  const testData = problem.testData.map(t => ({
+  const testData = problem.testData.map((t) => ({
     input: t.input,
     expectedOutput: t.expectedOutput,
     timeLimitMilliseconds: t.timeLimitMs,

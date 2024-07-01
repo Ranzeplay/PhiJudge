@@ -1,5 +1,5 @@
-import { serverPrisma } from "@/lib/serverSidePrisma";
-import { NextResponse } from "next/server";
+import { serverPrisma } from '@/lib/serverSidePrisma';
+import { NextResponse } from 'next/server';
 
 export async function GET(
   _request: Request,

@@ -1,16 +1,16 @@
-"use server";
+'use server';
 
-import { createSupabaseServerSideClient } from "@/lib/supabase/server";
-import { RegisterFormSchema } from "./schema";
-import { serverPrisma } from "@/lib/serverSidePrisma";
+import { createSupabaseServerSideClient } from '@/lib/supabase/server';
+import { RegisterFormSchema } from './schema';
+import { serverPrisma } from '@/lib/serverSidePrisma';
 
 export async function HandleRegister(formData: FormData): Promise<string> {
   const data = await RegisterFormSchema.parseAsync({
-    email: formData.get("email"),
-    userName: formData.get("userName"),
+    email: formData.get('email'),
+    userName: formData.get('userName'),
     passwordScope: {
-      password: formData.get("password"),
-      confirmPassword: formData.get("password"),
+      password: formData.get('password'),
+      confirmPassword: formData.get('password'),
     },
   });
 

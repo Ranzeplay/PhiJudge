@@ -1,7 +1,7 @@
-import { serverPrisma } from "@/lib/serverSidePrisma";
-import { createSupabaseServerSideClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
-import { env } from "process";
+import { serverPrisma } from '@/lib/serverSidePrisma';
+import { createSupabaseServerSideClient } from '@/lib/supabase/server';
+import { NextResponse } from 'next/server';
+import { env } from 'process';
 
 export async function GET(_request: Request) {
   if (env.DEBUG_ENABLE_AUTH) {
@@ -28,7 +28,7 @@ export async function GET(_request: Request) {
     );
   } else {
     return NextResponse.json(
-      { isLoggedIn: true, userName: "debug" },
+      { isLoggedIn: true, userName: 'debug' },
       { status: 200 }
     );
   }

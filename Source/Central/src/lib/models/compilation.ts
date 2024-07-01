@@ -5,8 +5,8 @@ export type CompilationResult = {
 };
 
 export enum CompilationResultType {
-  PassedWithoutWarnings = "PassedWithoutWarnings",
-  PassedWithWarnings = "PassedWithWarnings",
-  FailedWithErrors = "FailedWithErrors",
-  Unknown = "Unknown",
+  PassedWithoutWarnings = 'PassedWithoutWarnings',
+  PassedWithWarnings = 'PassedWithWarnings',
+  FailedWithErrors = 'FailedWithErrors',
+  Unknown = 'Unknown',
 }

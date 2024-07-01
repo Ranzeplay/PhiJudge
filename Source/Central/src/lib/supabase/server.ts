@@ -1,6 +1,6 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
-import { createClient } from "@supabase/supabase-js";
-import { cookies } from "next/headers";
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
 
 export const createSupabaseServerSideClient = () => {
   const cookieStore = cookies();
@@ -24,7 +24,7 @@ export const createSupabaseServerSideClient = () => {
         },
         remove(name: string, options: CookieOptions) {
           try {
-            cookieStore.set({ name, value: "", ...options });
+            cookieStore.set({ name, value: '', ...options });
           } catch (error) {
             // The `delete` method was called from a Server Component.
             // This can be ignored if you have middleware refreshing
@@ -33,7 +33,7 @@ export const createSupabaseServerSideClient = () => {
         },
       },
       db: {
-        schema: "phijudge",
+        schema: 'phijudge',
       },
     }
   );
@@ -45,7 +45,7 @@ export const createSupabaseServiceRoleClient = () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
       db: {
-        schema: "phijudge",
+        schema: 'phijudge',
       },
     }
   );

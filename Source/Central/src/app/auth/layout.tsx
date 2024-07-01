@@ -1,11 +1,9 @@
 export default function MyAccountLayout({
-	children,
+  children,
 }: {
-	children: React.ReactNode
+  children: React.ReactNode;
 }) {
-	return (
-		<main className="flex h-screen w-screen items-center">
-			{children}
-		</main>
-	)
+  return (
+    <main className='flex h-screen w-screen items-center'>{children}</main>
+  );
 }

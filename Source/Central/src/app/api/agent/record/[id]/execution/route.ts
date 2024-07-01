@@ -1,7 +1,7 @@
-import { serverPrisma } from "@/lib/serverSidePrisma";
-import { createSupabaseServerSideClient } from "@/lib/supabase/server";
-import { RecordStatus, RecordTestPointStatus } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { serverPrisma } from '@/lib/serverSidePrisma';
+import { createSupabaseServerSideClient } from '@/lib/supabase/server';
+import { RecordStatus, RecordTestPointStatus } from '@prisma/client';
+import { NextResponse } from 'next/server';
 
 type ExecutionResult = {
   recordId: number;
@@ -13,13 +13,13 @@ type ExecutionResult = {
 };
 
 enum ExecutionResultType {
-  Accepted = "Accepted",
-  WrongAnswer = "WrongAnswer",
-  TimeLimitExceeded = "TimeLimitExceeded",
-  MemoryLimitExceeded = "MemoryLimitExceeded",
-  OutputLimitExceeded = "OutputLimitExceeded",
-  RuntimeError = "RuntimeError",
-  Unknown = "Unknown",
+  Accepted = 'Accepted',
+  WrongAnswer = 'WrongAnswer',
+  TimeLimitExceeded = 'TimeLimitExceeded',
+  MemoryLimitExceeded = 'MemoryLimitExceeded',
+  OutputLimitExceeded = 'OutputLimitExceeded',
+  RuntimeError = 'RuntimeError',
+  Unknown = 'Unknown',
 }
 
 export async function POST(
@@ -49,7 +49,7 @@ export async function POST(
       testPointStatus = RecordTestPointStatus.RUNTIME_ERROR;
       break;
     default:
-      throw new Error("Invalid test point status");
+      throw new Error('Invalid test point status');
   }
 
   await serverPrisma.recordTestPoint.create({
@@ -79,10 +79,10 @@ export async function POST(
   );
 
   channel.subscribe((status) => {
-    if (status === "SUBSCRIBED") {
+    if (status === 'SUBSCRIBED') {
       channel.send({
-        type: "broadcast",
-        event: "testPoint",
+        type: 'broadcast',
+        event: 'testPoint',
         payload: {
           order: body.order,
           status: testPointStatus,

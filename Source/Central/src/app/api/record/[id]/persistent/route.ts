@@ -1,6 +1,6 @@
-import { RecordPersistentData } from "@/lib/models/recordPersistent";
-import { serverPrisma } from "@/lib/serverSidePrisma";
-import { NextResponse } from "next/server";
+import { RecordPersistentData } from '@/lib/models/recordPersistent';
+import { serverPrisma } from '@/lib/serverSidePrisma';
+import { NextResponse } from 'next/server';
 
 export async function GET(
   _request: Request,
@@ -19,9 +19,9 @@ export async function GET(
       agent: {
         select: {
           id: true,
-        }
+        },
       },
-      language: true
+      language: true,
     },
   });
 

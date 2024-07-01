@@ -1,5 +1,5 @@
-import { serverPrisma } from "@/lib/serverSidePrisma";
-import { NextResponse } from "next/server";
+import { serverPrisma } from '@/lib/serverSidePrisma';
+import { NextResponse } from 'next/server';
 
 export async function GET(
   _request: Request,
@@ -15,7 +15,7 @@ export async function GET(
   });
 
   if (!recordSelectResult) {
-    return NextResponse.json({ message: "Record not found" }, { status: 404 });
+    return NextResponse.json({ message: 'Record not found' }, { status: 404 });
   }
 
   return NextResponse.json({ status: recordSelectResult.status });

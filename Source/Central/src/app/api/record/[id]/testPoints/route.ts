@@ -1,7 +1,7 @@
-import { TestPointViewModel } from "@/lib/models/testPoint";
-import { serverPrisma } from "@/lib/serverSidePrisma";
-import { RecordTestPointStatus } from "@prisma/client";
-import { NextResponse } from "next/server";
+import { TestPointViewModel } from '@/lib/models/testPoint';
+import { serverPrisma } from '@/lib/serverSidePrisma';
+import { RecordTestPointStatus } from '@prisma/client';
+import { NextResponse } from 'next/server';
 
 export async function GET(
   _request: Request,
@@ -12,7 +12,7 @@ export async function GET(
       recordId: parseInt(params.id),
     },
     orderBy: {
-      order: "asc",
+      order: 'asc',
     },
     include: {
       record: {
@@ -29,8 +29,8 @@ export async function GET(
 
   const result: TestPointViewModel[] = [];
   if (testPointsDbResult.length > 0) {
-    const problemTestPointDbResult = await serverPrisma.problemTestPoint.findMany(
-      {
+    const problemTestPointDbResult =
+      await serverPrisma.problemTestPoint.findMany({
         where: {
           problem: {
             id: testPointsDbResult[0].record.problem.id,
@@ -44,10 +44,9 @@ export async function GET(
           },
         },
         orderBy: {
-          order: "asc",
+          order: 'asc',
         },
-      }
-    );
+      });
 
     for (const testPoint of testPointsDbResult) {
       const testData = problemTestPointDbResult.find(

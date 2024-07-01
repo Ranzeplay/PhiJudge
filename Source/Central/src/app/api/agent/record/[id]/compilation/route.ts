@@ -1,10 +1,13 @@
 'use server';
 
-import { CompilationResult, CompilationResultType } from "@/lib/models/compilation";
-import { serverPrisma } from "@/lib/serverSidePrisma";
-import { createSupabaseServerSideClient } from "@/lib/supabase/server";
-import { CompilationStatus } from "@prisma/client";
-import { NextResponse } from "next/server";
+import {
+  CompilationResult,
+  CompilationResultType,
+} from '@/lib/models/compilation';
+import { serverPrisma } from '@/lib/serverSidePrisma';
+import { createSupabaseServerSideClient } from '@/lib/supabase/server';
+import { CompilationStatus } from '@prisma/client';
+import { NextResponse } from 'next/server';
 
 export async function POST(
   request: Request,
@@ -40,10 +43,10 @@ export async function POST(
     `phijudge.record.${params.id}`
   );
   channel.subscribe((status) => {
-    if (status === "SUBSCRIBED") {
+    if (status === 'SUBSCRIBED') {
       channel.send({
-        type: "broadcast",
-        event: "compilationResult",
+        type: 'broadcast',
+        event: 'compilationResult',
         payload: {
           type: body.type,
           output: body.output,
