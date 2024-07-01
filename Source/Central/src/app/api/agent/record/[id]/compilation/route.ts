@@ -6,7 +6,7 @@ import {
 } from '@/lib/models/compilation';
 import { serverPrisma } from '@/lib/serverSidePrisma';
 import { createSupabaseServerSideClient } from '@/lib/supabase/server';
-import { CompilationStatus } from '@prisma/client';
+import { CompilationStatus, RecordStatus } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
 export async function POST(
@@ -38,6 +38,15 @@ export async function POST(
       compilationResult: resultType,
     },
   });
+
+  if(resultType === CompilationStatus.FAILED_WITH_ERRORS) {
+    await serverPrisma.record.update({
+      where: { id: parseInt(params.id) },
+      data: {
+        status: RecordStatus.FAILED,
+      },
+    });
+  }
 
   const channel = createSupabaseServerSideClient().realtime.channel(
     `phijudge.record.${params.id}`

@@ -140,7 +140,7 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async void UpdateSupportedLanguagesAsync(IEnumerable<string> languages)
         {
-            await HttpClient.PostAsync($"/api/agent/languages/{Environment.GetEnvironmentVariable("AGENT_ID")}", JsonContent.Create(languages));
+            await HttpClient.PostAsync($"/api/agent/languages", JsonContent.Create(languages));
             _logger.LogInformation("Updated supported languages on server side");
         }
     }

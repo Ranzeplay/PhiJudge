@@ -5,7 +5,7 @@ export default function Page() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>Display</CardTitle>
+          <CardTitle>Overview</CardTitle>
         </CardHeader>
       </Card>
     </>

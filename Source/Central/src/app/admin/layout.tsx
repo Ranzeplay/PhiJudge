@@ -18,11 +18,8 @@ export default async function AdminLayout({
             className='grid gap-4 text-sm text-muted-foreground'
             x-chunk='dashboard-04-chunk-0'
           >
-            <Link href='/admin/overview' className='font-semibold text-primary'>
+            <Link href='/admin/overview' className='hover:underline'>
               Overview
-            </Link>
-            <Link href='/admin/general' className='hover:underline'>
-              General
             </Link>
             <Link href='/admin/users' className='hover:underline'>
               Users
@@ -35,6 +32,9 @@ export default async function AdminLayout({
             </Link>
             <Link href='/admin/agents' className='hover:underline'>
               Agents
+            </Link>
+            <Link href='/admin/programmingLanguages' className='hover:underline'>
+              Programming languages
             </Link>
             <Link href='/admin/maintenance' className='hover:underline'>
               Maintenance
