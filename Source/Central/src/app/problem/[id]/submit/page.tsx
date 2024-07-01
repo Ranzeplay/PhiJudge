@@ -103,7 +103,7 @@ export default function Page({ params }: { params: { id: string } }) {
                           </SelectTrigger>
                           <SelectContent>
                             {availableProgrammingLanguages
-                              .filter((x) => x.id !== 'unknown')
+                              .filter((x) => x.id !== 'unknown' && x.enabled)
                               .map((lang) => (
                                 <SelectItem key={lang.id} value={lang.id}>
                                   {lang.name}
