@@ -1,14 +1,13 @@
 import { serverPrisma } from "@/lib/serverSidePrisma";
-import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 
 export async function GET(
-  request: NextApiRequest,
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   const agent = serverPrisma.agent.findUnique({
 	where: {
-	  id: request.headers.authorization,
+	  id: request.headers.get("Authorization") || '',
 	},
   });
 

@@ -5,7 +5,7 @@ import { serverPrisma } from "@/lib/serverSidePrisma";
 import Link from "next/link";
 
 export default async function Page({ params }: { params: { id: string } }) {
-	const existingTestData = await serverPrisma.problemTestData.findMany({
+	const existingTestData = await serverPrisma.problemTestPoint.findMany({
 		where: {
 			problemId: parseInt(params.id)
 		},
@@ -28,21 +28,21 @@ export default async function Page({ params }: { params: { id: string } }) {
 					<CardTitle>Existing test data</CardTitle>
 				</CardHeader>
 				<CardContent className="flex flex-col space-y-2">
-					{existingTestData.map((testData, order) => (
+					{existingTestData.map((testPoint, order) => (
 						<Card key={order}>
 							<CardHeader>
 								<CardTitle className="text-blue-500 hover:underline cursor-pointer">
-									<Link href={`testData/edit/${testData.order}`}>#{order}</Link>
+									<Link href={`testData/edit/${testPoint.order}`}>#{order}</Link>
 								</CardTitle>
 								{order === 0 && (
 									<CardDescription>Example data</CardDescription>
 								)}
 							</CardHeader>
 							<CardContent className="space-x-1">
-								<Badge variant={'destructive'}>{testData.timeLimitMs}ms</Badge>
-								<Badge variant={'destructive'}>{testData.memoryLimitBytes}bytes</Badge>
-								<Badge>Input length: {testData.input.length}</Badge>
-								<Badge>Output length: {testData.expectedOutput.length}</Badge>
+								<Badge variant={'destructive'}>{testPoint.timeLimitMs}ms</Badge>
+								<Badge variant={'destructive'}>{testPoint.memoryLimitBytes}bytes</Badge>
+								<Badge>Input length: {testPoint.input.length}</Badge>
+								<Badge>Output length: {testPoint.expectedOutput.length}</Badge>
 							</CardContent>
 						</Card>
 					))}

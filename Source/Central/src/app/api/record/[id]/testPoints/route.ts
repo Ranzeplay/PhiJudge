@@ -29,7 +29,7 @@ export async function GET(
 
   const result: TestPointViewModel[] = [];
   if (testPointsDbResult.length > 0) {
-    const problemTestDataDbResult = await serverPrisma.problemTestData.findMany(
+    const problemTestPointDbResult = await serverPrisma.problemTestPoint.findMany(
       {
         where: {
           problem: {
@@ -50,7 +50,7 @@ export async function GET(
     );
 
     for (const testPoint of testPointsDbResult) {
-      const testData = problemTestDataDbResult.find(
+      const testData = problemTestPointDbResult.find(
         (x) => x.order === testPoint.order
       );
 
@@ -62,7 +62,7 @@ export async function GET(
             },
           },
           order: testPoint.order,
-          status: RecordTestPointStatus.Accepted,
+          status: RecordTestPointStatus.ACCEPTED,
         },
         _avg: {
           actualTimeMs: true,

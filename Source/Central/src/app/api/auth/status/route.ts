@@ -1,10 +1,9 @@
 import { serverPrisma } from "@/lib/serverSidePrisma";
 import { createSupabaseServerSideClient } from "@/lib/supabase/server";
-import { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
 import { env } from "process";
 
-export async function GET(request: NextApiRequest) {
+export async function GET(_request: Request) {
   if (env.DEBUG_ENABLE_AUTH) {
     const supabase = createSupabaseServerSideClient();
     const supabaseUser = await supabase.auth.getUser();

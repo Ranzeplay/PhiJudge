@@ -12,8 +12,8 @@ import { createSupabaseServerSideClient } from "@/lib/supabase/server";
 
 export default async function Page({ params }: { params: { id: string } }) {
 	const problem = await serverPrisma.problem.findUnique({ where: { id: parseInt(params.id) } });
-	const testPointCount = await serverPrisma.problemTestData.count({ where: { problemId: parseInt(params.id) } });
-	const exampleData = await serverPrisma.problemTestData.findFirst({ where: { problemId: parseInt(params.id), order: 0 } });
+	const testPointCount = await serverPrisma.problemTestPoint.count({ where: { problemId: parseInt(params.id) } });
+	const exampleData = await serverPrisma.problemTestPoint.findFirst({ where: { problemId: parseInt(params.id), order: 0 } });
 
 	const supaUser = (await createSupabaseServerSideClient().auth.getUser()).data?.user;
 	const prismaUser = await serverPrisma.user.findUnique({

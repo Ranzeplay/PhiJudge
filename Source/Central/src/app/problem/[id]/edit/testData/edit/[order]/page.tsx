@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DeleteTestData, FetchOriginalData, UpdateExpectedOutputData, UpdateInputData, UpdateLimits } from "./server";
-import { problemTestData } from "@prisma/client";
+import { problemTestPoint } from "@prisma/client";
 import { useRouter } from "next/navigation";
 
 export default function Page({ params }: { params: { id: string, order: string } }) {
@@ -19,7 +19,7 @@ export default function Page({ params }: { params: { id: string, order: string }
 
 	useEffect(() => {
 		FetchOriginalData(parseInt(params.id), parseInt(params.order)).then(data => {
-			const testData = JSON.parse(data) as problemTestData;
+			const testData = JSON.parse(data) as problemTestPoint;
 			setTimeLimit(testData.timeLimitMs);
 			setMemoryLimit(testData.memoryLimitBytes);
 			setInputData(testData.input);

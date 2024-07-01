@@ -31,22 +31,22 @@ export async function POST(
   let testPointStatus: RecordTestPointStatus;
   switch (body.type) {
     case ExecutionResultType.Accepted:
-      testPointStatus = RecordTestPointStatus.Accepted;
+      testPointStatus = RecordTestPointStatus.ACCEPTED;
       break;
     case ExecutionResultType.WrongAnswer:
-      testPointStatus = RecordTestPointStatus.WrongAnswer;
+      testPointStatus = RecordTestPointStatus.WRONG_ANSWER;
       break;
     case ExecutionResultType.TimeLimitExceeded:
-      testPointStatus = RecordTestPointStatus.TimeLimitExceeded;
+      testPointStatus = RecordTestPointStatus.TIME_LIMIT_EXCEEDED;
       break;
     case ExecutionResultType.MemoryLimitExceeded:
-      testPointStatus = RecordTestPointStatus.MemoryLimitExceeded;
+      testPointStatus = RecordTestPointStatus.MEMORY_LIMIT_EXCEEDED;
       break;
     case ExecutionResultType.OutputLimitExceeded:
-      testPointStatus = RecordTestPointStatus.OutputLimitExceeded;
+      testPointStatus = RecordTestPointStatus.OUTPUT_LIMIT_EXCEEDED;
       break;
     case ExecutionResultType.RuntimeError:
-      testPointStatus = RecordTestPointStatus.RuntimeError;
+      testPointStatus = RecordTestPointStatus.RUNTIME_ERROR;
       break;
     default:
       throw new Error("Invalid test point status");

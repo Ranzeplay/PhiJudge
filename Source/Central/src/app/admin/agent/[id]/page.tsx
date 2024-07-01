@@ -41,7 +41,7 @@ export default async function Page({ params }: { params: { id: string } }) {
 							</TableRow>
 							<TableRow>
 								<TableCell>Last heartbeat time</TableCell>
-								<TableCell>{dayjs(agent?.lastHeartbeat).format('YYYY-M-D H:mm:ss')}</TableCell>
+								<TableCell>{dayjs(agent?.lastHeartbeatTime).format('YYYY-M-D H:mm:ss')}</TableCell>
 							</TableRow>
 							<TableRow>
 								<TableCell>Last network address</TableCell>

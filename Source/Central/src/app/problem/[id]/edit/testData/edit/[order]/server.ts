@@ -3,7 +3,7 @@
 import { serverPrisma } from "@/lib/serverSidePrisma";
 
 export async function FetchOriginalData(problemId: number, order: number) {
-	const testData = await serverPrisma.problemTestData.findFirst({
+	const testData = await serverPrisma.problemTestPoint.findFirst({
 		where: {
 			order: order,
 			problem: {
@@ -16,7 +16,7 @@ export async function FetchOriginalData(problemId: number, order: number) {
 }
 
 export async function UpdateLimits(testDataId: number, timeLimit: number, memoryLimit: number) {
-	await serverPrisma.problemTestData.update({
+	await serverPrisma.problemTestPoint.update({
 		where: {
 			id: testDataId
 		},
@@ -28,7 +28,7 @@ export async function UpdateLimits(testDataId: number, timeLimit: number, memory
 }
 
 export async function UpdateInputData(testDataId: number, inputData: string) {
-	await serverPrisma.problemTestData.update({
+	await serverPrisma.problemTestPoint.update({
 		where: {
 			id: testDataId
 		},
@@ -39,7 +39,7 @@ export async function UpdateInputData(testDataId: number, inputData: string) {
 }
 
 export async function UpdateExpectedOutputData(testDataId: number, expectedOutputData: string) {
-	await serverPrisma.problemTestData.update({
+	await serverPrisma.problemTestPoint.update({
 		where: {
 			id: testDataId
 		},
@@ -50,7 +50,7 @@ export async function UpdateExpectedOutputData(testDataId: number, expectedOutpu
 }
 
 export async function DeleteTestData(testDataId: number) {
-	await serverPrisma.problemTestData.delete({
+	await serverPrisma.problemTestPoint.delete({
 		where: {
 			id: testDataId
 		}

@@ -14,7 +14,7 @@ export async function GET(_request: Request, { params }: { params: { id: string 
 	}
   });
 
-  const allTestPointsPassed = testPoints.every(testPoint => testPoint.status === RecordTestPointStatus.Accepted);
+  const allTestPointsPassed = testPoints.every(testPoint => testPoint.status === RecordTestPointStatus.ACCEPTED);
   await serverPrisma.record.update({
 	where: { id: parseInt(params.id) },
 	data: {

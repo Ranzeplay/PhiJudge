@@ -3,13 +3,13 @@
 import { serverPrisma } from "@/lib/serverSidePrisma";
 
 export async function HandleTestDataAddition(problemId: number, timeLimit: number, memoryLimit: number, inputData: string, expectedOutputData: string) {
-	const pushBackOrder = await serverPrisma.problemTestData.count({
+	const pushBackOrder = await serverPrisma.problemTestPoint.count({
 		where: {
 			problemId: problemId
 		}
 	});
 
-	await serverPrisma.problemTestData.create({
+	await serverPrisma.problemTestPoint.create({
 		data: {
 			timeLimitMs: timeLimit,
 			memoryLimitBytes: memoryLimit,

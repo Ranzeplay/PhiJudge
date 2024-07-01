@@ -12,7 +12,7 @@ export async function GET(
       id: request.headers.get("Authorization") || '',
     },
     data: {
-      lastHeartbeat: new Date(),
+      lastHeartbeatTime: new Date(),
       lastNetworkAddress: request.ip,
     },
   });

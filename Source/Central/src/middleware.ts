@@ -4,7 +4,7 @@ import { updateSession } from "./lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
   const serverSupabase = createSupabaseServiceRoleClient();
-  await serverSupabase.from("requestLog").insert({
+  await serverSupabase.from("requestLogs").insert({
     url: request.nextUrl.pathname,
     ip: request.ip || "unknown",
     timestamp: new Date(),
@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
     const user = (await createSupabaseServerSideClient().auth.getUser()).data
       .user;
     const supaUser = await serverSupabase
-      .from("user")
+      .from("users")
       .select("isAdmin")
       .eq("id", user?.id)
       .single();
@@ -29,7 +29,7 @@ export async function middleware(request: NextRequest) {
 
   if (request.nextUrl.pathname.startsWith("/api/agent")) {
     const agent = await serverSupabase
-      .from("agent")
+      .from("agents")
       .select("id")
       .eq("id", request.headers.get("Authorization") || "")
       .single();
