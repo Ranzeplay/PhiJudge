@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
-using System.Text.Json;
 
 namespace PhiJudge.Agent.Executor.Services
 {

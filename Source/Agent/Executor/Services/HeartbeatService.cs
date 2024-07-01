@@ -1,11 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PhiJudge.Agent.Executor.Services
+﻿namespace PhiJudge.Agent.Executor.Services
 {
     internal class HeartbeatService : IHeartbeatService
     {
@@ -19,7 +12,7 @@ namespace PhiJudge.Agent.Executor.Services
             Thread = new Thread(async () =>
             {
                 var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
-                while(await timer.WaitForNextTickAsync())
+                while (await timer.WaitForNextTickAsync())
                 {
                     await _dataExchangeService.SendHeartbeatSignalAsync();
                 }

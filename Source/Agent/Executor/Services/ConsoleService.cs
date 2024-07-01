@@ -17,11 +17,11 @@ namespace PhiJudge.Agent.Executor.Services
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            while(!stoppingToken.IsCancellationRequested)
+            while (!stoppingToken.IsCancellationRequested)
             {
                 string commandText = Console.ReadLine()!;
 
-                if(commandText.StartsWith("run "))
+                if (commandText.StartsWith("run "))
                 {
                     var recordId = commandText.Split(" ")[1];
                     await _executionService.RunAsync(int.Parse(recordId));

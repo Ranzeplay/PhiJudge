@@ -2,7 +2,6 @@
 using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System.Diagnostics;
-using System.Text.Json;
 
 namespace PhiJudge.Plugin.Language.C
 {
