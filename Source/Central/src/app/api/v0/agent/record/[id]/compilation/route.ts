@@ -5,7 +5,6 @@ import {
   CompilationResultType,
 } from '@/lib/models/compilation';
 import { serverPrisma } from '@/lib/serverSidePrisma';
-import { createSupabaseServerSideClient } from '@/lib/supabase/server';
 import { CompilationStatus, RecordStatus } from '@prisma/client';
 import { NextResponse } from 'next/server';
 
