@@ -4,6 +4,8 @@ title: Interface
 
 # Interfaces
 
+> They are written in C#.
+
 ## For plugin development
 
 - [`IPluginEntrypoint`](entrypoint) : The entrypoint of a plugin.
