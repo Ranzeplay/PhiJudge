@@ -1,0 +1,38 @@
+name: phijudge-apps
+version: "3.8"
+
+services:
+  phijudge-nginx:
+    image: phijudge.nginx
+    ports:
+      - "80:80"
+    networks:
+      - default-network:
+          ipv4_address: 172.16.254.100
+  phijudge-central:
+    image: phijudge.central
+    ports:
+      - "3000:3000"
+    networks:
+      - default-network:
+          ipv4_address: 172.16.254.101
+  phijudge-docs:
+    image: phijudge.docs
+    ports:
+      - "80:80"
+    networks:
+      - default-network:
+          ipv4_address: 172.16.254.102
+  phijudge-agent:
+    image: phijudge.agent
+    networks:
+      - default-network:
+          ipv4_address: 172.16.254.103
+    volumes:
+      - phijudge-executor-plugins:/plugins
+networks:
+  phijudge-apps-network:
+    name: phijudge-network
+    external: true
+volumes:
+  phijudge-executor-plugins:
