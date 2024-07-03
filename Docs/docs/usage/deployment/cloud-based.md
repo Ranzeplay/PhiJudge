@@ -10,7 +10,7 @@ Deploy by yourself, or create an instance on [Supabase](https://supabase.com/).
 
 ### Set environment variables
 
-See [Usage/Build](build#steps-2).
+See [Usage/Build](../build#steps-2).
 
 ## Central
 
