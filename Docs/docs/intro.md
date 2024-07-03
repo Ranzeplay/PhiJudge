@@ -5,22 +5,22 @@ title: 'Introduction'
 
 # Introduction to PhiJudge
 
-PhiJudge is a continuity of [Semicolon.OnlineJudge](https://github.com/Ranzeplay/Semicolon.OnlineJudge).
+PhiJudge is a continuity of [Semicolon.OnlineJudge](https://github.com/Ranzeplay/Semicolon.OnlineJudge). Providing open judge service.
 
-## Features
-
-- Separated components
-  - Central server
-  - Agent
-  - Frontend web app
-- Container support
+> Under development.
 
 ## Components
 
-### Central server
+- Central server
+- Agent
+  - Executor
+  - Plugin API
+  - Example plugins
+- Supabase instance
 
-### Agent
+## Features
 
-### Frontend web app
-
-### Supabase (db, auth, etc.)
+- Use services provided by Supabase, such as Database, Auth and Realtime.
+- Use .NET C# to develop Agent, and it's container-based.
+- Plugins are dynamically loaded. To enable them, just put them into the plugins directory without rebuilding the whole Agent.
+- Versioned Web API interface (currently v0).
