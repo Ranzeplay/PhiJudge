@@ -10,6 +10,8 @@ import { serverPrisma } from '@/lib/serverSidePrisma';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   const agents = await serverPrisma.agent.findMany();
 

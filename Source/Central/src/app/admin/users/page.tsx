@@ -13,6 +13,8 @@ import { serverPrisma } from '@/lib/serverSidePrisma';
 import { createSupabaseServiceRoleClient } from '@/lib/supabase/server';
 import Link from 'next/link';
 
+export const dynamic = "force-dynamic";
+
 export default async function Page() {
   let users: UserView[] = [];
   const dbUsers = await serverPrisma.user.findMany();
