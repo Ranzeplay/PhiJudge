@@ -7,26 +7,29 @@ import { updateSession } from './lib/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
   const serverSupabase = createSupabaseServiceRoleClient();
-  await serverSupabase.from('requestLogs').insert({
-    url: request.nextUrl.pathname,
-    ip: request.ip || 'unknown',
-    timestamp: new Date(),
-    isApiRoute: request.nextUrl.pathname.startsWith('/api/v0'),
-  });
 
-  if (request.nextUrl.pathname.startsWith('/admin')) {
-    const user = (await createSupabaseServerSideClient().auth.getUser()).data
-      .user;
-    const supaUser = await serverSupabase
-      .from('users')
-      .select('isAdmin')
-      .eq('id', user?.id)
-      .single();
+  if (process.env.NEXT_PUBLIC_ENABLE_REQUEST_LOGGING === 'true') {
+    await serverSupabase.from('requestLogs').insert({
+      url: request.nextUrl.pathname,
+      ip: request.ip || 'unknown',
+      timestamp: new Date(),
+      isApiRoute: request.nextUrl.pathname.startsWith('/api/v0'),
+    });
 
-    if (!supaUser.data?.isAdmin) {
-      return NextResponse.redirect(
-        new URL('/auth/unauthorized', request.nextUrl)
-      );
+    if (request.nextUrl.pathname.startsWith('/admin')) {
+      const user = (await createSupabaseServerSideClient().auth.getUser()).data
+        .user;
+      const supaUser = await serverSupabase
+        .from('users')
+        .select('isAdmin')
+        .eq('id', user?.id)
+        .single();
+
+      if (!supaUser.data?.isAdmin) {
+        return NextResponse.redirect(
+          new URL('/auth/unauthorized', request.nextUrl)
+        );
+      }
     }
   }
 

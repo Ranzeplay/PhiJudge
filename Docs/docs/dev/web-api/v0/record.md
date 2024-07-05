@@ -99,7 +99,7 @@ Get the compilation output & result of a certain record.
 #### Schema definition
 
 ```typescript
-{
+export type CompilationData = {
     compilationResult: $Enums.CompilationStatus;
     compilationOutput: string;
 }
@@ -156,5 +156,5 @@ export type TestPointViewModel = {
   - `OUTPUT_LIMIT_EXCEEDED`: The program output too much output that's impossible.
   - `RUNTIME_ERROR`: The program triggered a runtime error.
   - `UNKNOWN`: Unknown status.
-`averageTimeMs`: The average time consumed by all `ACCEPTED` programs in this test point.
-`averagePeakMemoryBytes`: The average peak memory consumed by all `ACCEPTED` programs in this test point.
+- `averageTimeMs`: The average time consumed by all `ACCEPTED` programs in this test point.
+- `averagePeakMemoryBytes`: The average peak memory consumed by all `ACCEPTED` programs in this test point.

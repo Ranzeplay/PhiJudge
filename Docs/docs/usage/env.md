@@ -12,6 +12,7 @@ title: Enviroment
 - `NEXT_PUBLIC_SUPABASE_URL`: This variable stores the URL of your Supabase instance.
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`: This variable contains the anonymous key for your Supabase instance.
 - `SUPABASE_SERVICE_ROLE_KEY`: This variable holds the service role key for your Supabase instance.
+- `NEXT_PUBLIC_ENABLE_REQUEST_LOGGING`: This variable decides whether the request logging should be enabled when handling incoming requests.
 
 ### Agent
 
