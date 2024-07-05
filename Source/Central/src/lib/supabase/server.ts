@@ -32,9 +32,6 @@ export const createSupabaseServerSideClient = () => {
           }
         },
       },
-      db: {
-        schema: 'phijudge',
-      },
     }
   );
 };
