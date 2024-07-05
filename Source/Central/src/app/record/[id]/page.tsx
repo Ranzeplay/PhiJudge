@@ -242,7 +242,7 @@ export default function Page({ params }: { params: { id: string } }) {
                   <TableRow key={index}>
                     <TableCell>{testPoint.order}</TableCell>
                     <TableCell>
-                      {addSpaceBetweenWords(testPoint.resultType)}
+                      {convertToUpperUnderlineToNormalWords(testPoint.resultType)}
                     </TableCell>
                     <TableCell>
                       {testPoint.actualPeakMemoryBytes} bytes
