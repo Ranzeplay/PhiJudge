@@ -16,6 +16,7 @@ import {
 import { useState } from 'react';
 import { AddNewAgent } from './server';
 import { useRouter } from 'next/navigation';
+import { toast } from '@/components/ui/use-toast';
 
 export function AddAgentSheet() {
   const [name, setName] = useState('');
@@ -25,6 +26,11 @@ export function AddAgentSheet() {
     if (name.trim() != '') {
       const agentId = await AddNewAgent(name);
       router.push(`/admin/agent/${agentId}`);
+    } else {
+      toast({
+        title: 'Error',
+        description: 'Please fill in the agent name field',
+      });
     }
   }
 

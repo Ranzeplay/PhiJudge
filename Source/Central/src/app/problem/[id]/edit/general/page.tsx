@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Editor } from '@monaco-editor/react';
 import { useEffect, useState } from 'react';
 import { GetProblemBasicInfo, UpdateDescription, UpdateTitle } from './server';
+import { LoaderCircle } from 'lucide-react';
 
 export default function Page({ params }: { params: { id: string } }) {
   const problemId = parseInt(params.id);
@@ -32,6 +33,20 @@ export default function Page({ params }: { params: { id: string } }) {
     getInitialValue();
   }, [problemId]);
 
+  const [isUpdatingDescription, setUpdatingDescription] = useState(false);
+  async function updateDescription() {
+    setUpdatingDescription(true);
+    await UpdateDescription(problemId, description);
+    setUpdatingDescription(false);
+  }
+
+  const [isUpdatingTitle, setUpdatingTitle] = useState(false);
+  async function updateTitle() {
+    setUpdatingTitle(true);
+    await UpdateTitle(problemId, description);
+    setUpdatingTitle(false);
+  }
+
   return (
     <>
       <Card>
@@ -45,7 +60,13 @@ export default function Page({ params }: { params: { id: string } }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
           />
-          <Button onClick={() => UpdateTitle(problemId, title)}>Update</Button>
+          <Button disabled={isUpdatingDescription} onClick={async () => await updateDescription()}>
+            <LoaderCircle
+              className={isUpdatingDescription ? 'animate-spin' : 'hidden'}
+              size={14}
+            />
+            Update
+          </Button>
         </CardContent>
       </Card>
       <Card>
@@ -60,8 +81,12 @@ export default function Page({ params }: { params: { id: string } }) {
             value={description}
             onChange={(e) => setDescription(e!)}
           />
-          <Button onClick={() => UpdateDescription(problemId, description)}>
-            Update
+          <Button disabled={isUpdatingTitle} onClick={async () => await updateTitle()}>
+            <LoaderCircle
+              className={isUpdatingTitle ? 'animate-spin' : 'hidden'}
+              size={14}
+            />
+            uPDATE
           </Button>
         </CardContent>
       </Card>

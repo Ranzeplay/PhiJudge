@@ -28,6 +28,7 @@ import { serialize } from 'object-to-formdata';
 import { useRouter } from 'next/navigation';
 import { availableProgrammingLanguage } from '@prisma/client';
 import { useEffect, useState } from 'react';
+import { LoaderCircle } from 'lucide-react';
 
 export default function Page({ params }: { params: { id: string } }) {
   const [availableProgrammingLanguages, setAvailableProgrammingLanguages] = useState<availableProgrammingLanguage[]>([]);
@@ -48,10 +49,13 @@ export default function Page({ params }: { params: { id: string } }) {
     },
   });
 
+  const [isSubmitting, setSubmitting] = useState(false);
   const router = useRouter();
   async function onSubmit(data: ProblemSubmissionForm) {
+    setSubmitting(true);
     const recordId = await HandleSubmission(serialize(data));
     router.push(`/record/${recordId}`);
+    setSubmitting(false);
   }
 
   return (
@@ -161,7 +165,13 @@ export default function Page({ params }: { params: { id: string } }) {
                 </div>
               </CardContent>
             </Card>
-            <Button className='flex w-full'>Submit</Button>
+            <Button disabled={isSubmitting}>
+              <LoaderCircle
+                className={isSubmitting ? 'animate-spin' : 'hidden'}
+                size={14}
+              />
+              Submit
+            </Button>
           </div>
         </div>
       </form>
