@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     },
     data: {
       lastHeartbeatTime: new Date(),
-      lastNetworkAddress: request.ip,
+      lastNetworkAddress: (request.headers.get('X-Forwarded-For') || request.ip || 'unknown').split(',').at(0),
     },
   });
 

@@ -11,7 +11,7 @@ export async function middleware(request: NextRequest) {
   if (process.env.NEXT_PUBLIC_ENABLE_REQUEST_LOGGING === 'true') {
     await serverSupabase.from('requestLogs').insert({
       url: request.nextUrl.pathname,
-      ip: request.ip || 'unknown',
+      ip: (request.headers.get('X-Forwarded-For') || request.ip || 'unknown').split(',').at(0),
       timestamp: new Date(),
       isApiRoute: request.nextUrl.pathname.startsWith('/api/v0'),
     });
