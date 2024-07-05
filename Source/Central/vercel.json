@@ -4,5 +4,11 @@
       "path": "/api/v0/keep-alive/supabase",
       "schedule": "0 0 * * *"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/docs/:path*",
+      "destination": "https://docs.phijudge.ranzeplay.space/:path*"
+    }
   ]
 }

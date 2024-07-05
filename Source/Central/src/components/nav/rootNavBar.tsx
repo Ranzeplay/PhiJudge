@@ -58,6 +58,11 @@ export function RootNavBar() {
           caption='Status'
           className='text-muted-foreground'
         />
+        <NavBarLink
+          href='/docs'
+          caption='Docs'
+          className='text-muted-foreground'
+        />
       </nav>
       <nav className='mr-4 flex flex-grow-0 items-center gap-x-3'>
         {authStatus.isLoggedIn ? (
