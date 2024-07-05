@@ -1,4 +1,4 @@
-import { RecordPersistentData } from '@/lib/models/recordPersistent';
+import { RecordPersistentData } from '@/lib/models/record/persistent';
 import { serverPrisma } from '@/lib/serverSidePrisma';
 import { NextResponse } from 'next/server';
 

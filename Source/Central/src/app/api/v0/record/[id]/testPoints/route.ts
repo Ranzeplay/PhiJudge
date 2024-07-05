@@ -1,4 +1,4 @@
-import { TestPointViewModel } from '@/lib/models/testPoint';
+import { TestPointViewModel } from '@/lib/models/record/testPoint';
 import { serverPrisma } from '@/lib/serverSidePrisma';
 import { RecordTestPointStatus } from '@prisma/client';
 import { NextResponse } from 'next/server';

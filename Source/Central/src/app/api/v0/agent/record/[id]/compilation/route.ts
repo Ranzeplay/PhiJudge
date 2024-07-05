@@ -3,7 +3,7 @@
 import {
   CompilationResult,
   CompilationResultType,
-} from '@/lib/models/compilation';
+} from '@/lib/models/record/compilation';
 import { serverPrisma } from '@/lib/serverSidePrisma';
 import { CompilationStatus, RecordStatus } from '@prisma/client';
 import { NextResponse } from 'next/server';

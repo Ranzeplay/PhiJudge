@@ -32,33 +32,11 @@ import { useEffect, useState } from 'react';
 import dayjs from 'dayjs';
 import { RecordStatus, RecordTestPointStatus } from '@prisma/client';
 import useSWR from 'swr';
-import { CompilationResultType } from '@/lib/models/compilation';
+import { CompilationResultType } from '@/lib/models/record/compilation';
 import { Editor } from '@monaco-editor/react';
-import { RecordPersistentData } from '@/lib/models/recordPersistent';
-import { TestPointViewModel } from '@/lib/models/testPoint';
-
-function convertToUpperUnderlineToNormalWords(input: string) {
-  return (
-    input
-      // Split the string into words based on underscores
-      .split('_')
-      // Convert each word to lowercase and capitalize the first letter
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-      // Join the words back into a single string with spaces
-      .join(' ')
-  );
-}
-
-function addSpaceBetweenWords(input: string): string {
-  let output = input
-    // Insert a space before all caps
-    .replace(/([a-z])([A-Z])/g, '$1 $2')
-    // Make the whole string lowercase
-    .toLowerCase();
-  // Capitalize the first letter
-  output = output.charAt(0).toUpperCase() + output.slice(1);
-  return output;
-}
+import { RecordPersistentData } from '@/lib/models/record/persistent';
+import { TestPointViewModel } from '@/lib/models/record/testPoint';
+import { addSpaceBetweenWords, convertToUpperUnderlineToNormalWords } from '@/lib/utils';
 
 const fetcher = (url: string) => fetch(url).then((res: Response) => res.json());
 
