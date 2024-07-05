@@ -12,10 +12,11 @@
             Thread = new Thread(async () =>
             {
                 var timer = new PeriodicTimer(TimeSpan.FromMinutes(5));
-                while (await timer.WaitForNextTickAsync())
+                do
                 {
                     await _dataExchangeService.SendHeartbeatSignalAsync();
                 }
+                while (await timer.WaitForNextTickAsync());
             });
         }
 
