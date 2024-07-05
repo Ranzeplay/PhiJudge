@@ -56,10 +56,13 @@ namespace PhiJudge.Agent.Executor.Services
 
                 if (response != null)
                 {
-                    if (response.Payload!["agentId"] as string == Environment.GetEnvironmentVariable("AGENT_ID"))
+                    if (response.Event == "centralBroadcast")
                     {
-                        _logger.LogInformation("Running tests for record {0}", response.Payload!["recordId"]);
-                        RecordAllocationBroadcastReceived?.Invoke(this, (long)response.Payload!["recordId"]);
+                        if (response.Payload!["agentId"] as string == Environment.GetEnvironmentVariable("AGENT_ID"))
+                        {
+                            _logger.LogInformation("Running tests for record {0}", response.Payload!["recordId"]);
+                            RecordAllocationBroadcastReceived?.Invoke(this, (long)response.Payload!["recordId"]);
+                        }
                     }
                 }
             });

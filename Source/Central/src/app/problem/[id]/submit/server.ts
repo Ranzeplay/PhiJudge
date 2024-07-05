@@ -74,15 +74,23 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
   });
 
   const channel = supabase.channel('phijudge.record.alloc');
-  channel.send({
-    type: 'broadcast',
-    event: 'centralBroadcast',
-    payload: {
-      recordId: record.id,
-      agentId: agent?.id,
-    },
+  channel.subscribe(status => {
+    if (status !== 'SUBSCRIBED') {
+      return null;
+    }
+
+    channel.send({
+      type: 'broadcast',
+      event: 'centralBroadcast',
+      payload: {
+        recordId: record.id,
+        agentId: agent?.id,
+      },
+    });
+
+    channel.unsubscribe();
+    channel.untrack();
   });
-  channel.untrack();
 
   return record.id;
 }
