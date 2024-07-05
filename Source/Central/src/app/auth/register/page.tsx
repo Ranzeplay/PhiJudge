@@ -60,7 +60,11 @@ export default function Page() {
     if (result.error) {
       setErrorText(result.error.message);
     } else {
-      router.push('/auth/login');
+      if (result.data?.user?.role !== 'authenticated') {
+        router.push('/auth/confirmation');
+      } else {
+        router.push('/auth/login');
+      }
     }
 
     setSignInState(false);
