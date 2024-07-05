@@ -14,7 +14,7 @@ export async function GET() {
 
   // Keep Supabase alive
   const supabase = createSupabaseServiceRoleClient();
-  await supabase.from('requestLogs').select('id').single();
+  await supabase.from('requestLogs').select('id').maybeSingle();
 
   return NextResponse.json({}, { status: 200 });
 }
