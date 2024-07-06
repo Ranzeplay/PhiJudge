@@ -1,3 +1,5 @@
+'use client';
+
 import { RootNavBar } from '@/components/nav/rootNavBar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -19,24 +21,42 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { serverPrisma } from '@/lib/serverSidePrisma';
-import { createSupabaseServerSideClient } from '@/lib/supabase/server';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { GetProblems } from './server';
+import { ProblemIndexView } from './schema';
+import { AuthenticationStatus, fetchUserAuthStatus } from '@/lib/clientUserUtils';
 
-export const dynamic = "force-dynamic";
+export default function Page() {
+  const [problemIndex, setProblemIndex] = useState<ProblemIndexView | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
 
-export default async function Page() {
-  const problems = await serverPrisma.problem.findMany({
-    orderBy: { id: 'asc' },
+  const [searchInputText, setSearchInputText] = useState<string>('');
+
+  useEffect(() => {
+    GetProblems(searchText, page, 20).then((result) => {
+      setProblemIndex(result)
+    });
+  }, [searchText, page]);
+
+  function performSearch() {
+    setPage(1);
+    setSearchText(searchInputText);
+  }
+
+  const [authStatus, setAuthStatus] = useState<AuthenticationStatus>({
+    isLoggedIn: undefined,
+    userName: undefined,
+    isAdmin: false,
   });
+  useEffect(() => {
+    async function fetchAuthStatus() {
+      setAuthStatus(await fetchUserAuthStatus());
+    }
 
-  const supaUser = (await createSupabaseServerSideClient().auth.getUser()).data
-    ?.user;
-  const prismaUser = await serverPrisma.user.findUnique({
-    where: {
-      id: supaUser?.id,
-    },
-  });
+    fetchAuthStatus();
+  }, []);
 
   return (
     <>
@@ -60,7 +80,7 @@ export default async function Page() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {problems.map((problem) => (
+                    {problemIndex?.problems.map((problem) => (
                       <TableRow key={problem.id}>
                         <TableCell className='font-medium'>
                           {problem.id}
@@ -83,22 +103,9 @@ export default async function Page() {
                     ))}
                   </TableBody>
                 </Table>
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious href='#' />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href='#'>1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href='#' />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+                <ProblemIndexPagination
+                  currentPage={problemIndex?.page || 1}
+                  totalPages={problemIndex?.totalPages || 1} />
               </CardContent>
             </Card>
           </div>
@@ -108,11 +115,11 @@ export default async function Page() {
                 <CardTitle>Search</CardTitle>
               </CardHeader>
               <CardContent className='space-y-2'>
-                <Input placeholder='Text' />
-                <Button>Submit</Button>
+                <Input value={searchInputText} onChange={(e) => setSearchInputText(e.target.value)} placeholder='Text' />
+                <Button onClick={() => performSearch()}>Submit</Button>
               </CardContent>
             </Card>
-            {prismaUser?.isAdmin && (
+            {authStatus.isAdmin && (
               <Card>
                 <CardHeader>
                   <CardTitle>Admin area</CardTitle>
@@ -129,4 +136,61 @@ export default async function Page() {
       </main>
     </>
   );
+
+  function ProblemIndexPagination(props: { currentPage: number; totalPages: number }) {
+    function trySetPage(newPage: number) {
+      if (newPage >= 1 && newPage <= props.totalPages && newPage != props.currentPage) {
+        setPage(newPage);
+      }
+    }
+
+    function onManualInputPage(e: React.KeyboardEvent<HTMLInputElement>) {
+      if (e.key === 'Enter') {
+        trySetPage(parseInt(e.currentTarget.value));
+      }
+    }
+
+    return (
+      <Pagination>
+        <PaginationContent>
+          {page != 1 && (
+            <>
+              <PaginationItem>
+                <PaginationPrevious href='#' onClick={() => trySetPage(page - 1)} />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#' onClick={() => trySetPage(1)}>1</PaginationLink>
+              </PaginationItem>
+            </>
+          )}
+          {page > 2 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+          <PaginationItem>
+            <PaginationLink href='#' isActive>{props.currentPage}</PaginationLink>
+          </PaginationItem>
+          {page < props.totalPages - 1 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+          {page != props.totalPages && (
+            <>
+              <PaginationItem>
+                <PaginationLink href='#' onClick={() => trySetPage(props.totalPages)}>{props.totalPages}</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext href='#' onClick={() => trySetPage(page + 1)} />
+              </PaginationItem>
+            </>
+          )}
+          <PaginationItem className='flex flex-row space-x-1'>
+            <Input placeholder='Go to page (Enter)' onKeyDown={onManualInputPage} />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+  }
 }

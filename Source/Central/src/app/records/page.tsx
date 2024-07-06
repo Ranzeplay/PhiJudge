@@ -1,3 +1,5 @@
+'use client';
+
 import { RootNavBar } from '@/components/nav/rootNavBar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -20,29 +22,25 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { serverPrisma } from '@/lib/serverSidePrisma';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { RecordIndexView } from './schema';
+import { GetRecords } from './server';
 
-export const dynamic = 'force-dynamic';
+export default function Page() {
+  const [recordIndex, setRecordIndex] = useState<RecordIndexView | null>(null);
 
-export default async function Page() {
-  const records = await serverPrisma.record.findMany({
-    orderBy: { id: 'desc' },
-    include: {
-      problem: {
-        select: {
-          id: true,
-          title: true,
-        },
-      },
-      submitter: {
-        select: {
-          id: true,
-          userName: true,
-        },
-      },
-    },
-  });
+  const [searchText, setSearchText] = useState<string>('');
+  const [page, setPage] = useState<number>(1);
+
+  useEffect(() => {
+    async function fetchRecords() {
+      const data = await GetRecords(page, 20);
+      setRecordIndex(data);
+    }
+
+    fetchRecords();
+  }, [page]);
 
   return (
     <>
@@ -66,7 +64,7 @@ export default async function Page() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {records.map((record) => (
+                    {recordIndex?.records.map((record) => (
                       <TableRow key={record.id}>
                         <TableCell className='font-medium'>
                           <Link
@@ -100,33 +98,22 @@ export default async function Page() {
                     ))}
                   </TableBody>
                 </Table>
-                <Pagination>
-                  <PaginationContent>
-                    <PaginationItem>
-                      <PaginationPrevious href='#' />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationLink href='#'>1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                      <PaginationNext href='#' />
-                    </PaginationItem>
-                  </PaginationContent>
-                </Pagination>
+                <RecordIndexPagination
+                  currentPage={recordIndex?.page || 1}
+                  totalPages={recordIndex?.totalPages || 1} />
               </CardContent>
             </Card>
           </div>
           <div className='space-y-2'>
             <Card>
               <CardHeader>
-                <CardTitle>Search</CardTitle>
+                <CardTitle>Go to a specific record</CardTitle>
               </CardHeader>
               <CardContent className='space-y-2'>
-                <Input placeholder='Text' />
-                <Button>Submit</Button>
+                <Input value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder='Record id' type='number' />
+                <Button asChild>
+                  <Link href={`/record/${searchText}`}>Go</Link>
+                </Button>
               </CardContent>
             </Card>
           </div>
@@ -134,4 +121,61 @@ export default async function Page() {
       </main>
     </>
   );
+
+  function RecordIndexPagination(props: { currentPage: number; totalPages: number }) {
+    function trySetPage(newPage: number) {
+      if (newPage >= 1 && newPage <= props.totalPages && newPage != props.currentPage) {
+        setPage(newPage);
+      }
+    }
+
+    function onManualInputPage(e: React.KeyboardEvent<HTMLInputElement>) {
+      if (e.key === 'Enter') {
+        trySetPage(parseInt(e.currentTarget.value));
+      }
+    }
+
+    return (
+      <Pagination>
+        <PaginationContent>
+          {page != 1 && (
+            <>
+              <PaginationItem>
+                <PaginationPrevious href='#' onClick={() => trySetPage(page - 1)} />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationLink href='#' onClick={() => trySetPage(1)}>1</PaginationLink>
+              </PaginationItem>
+            </>
+          )}
+          {page > 2 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+          <PaginationItem>
+            <PaginationLink href='#' isActive>{props.currentPage}</PaginationLink>
+          </PaginationItem>
+          {page < props.totalPages - 1 && (
+            <PaginationItem>
+              <PaginationEllipsis />
+            </PaginationItem>
+          )}
+          {page != props.totalPages && (
+            <>
+              <PaginationItem>
+                <PaginationLink href='#' onClick={() => trySetPage(props.totalPages)}>{props.totalPages}</PaginationLink>
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext href='#' onClick={() => trySetPage(page + 1)} />
+              </PaginationItem>
+            </>
+          )}
+          <PaginationItem className='flex flex-row space-x-1'>
+            <Input placeholder='Go to page (Enter)' onKeyDown={onManualInputPage} />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+  }
 }

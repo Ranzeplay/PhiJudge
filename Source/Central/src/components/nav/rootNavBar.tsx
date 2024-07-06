@@ -1,13 +1,8 @@
 'use client';
 
+import { AuthenticationStatus, fetchUserAuthStatus } from '@/lib/clientUserUtils';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-
-type AuthenticationStatus = {
-  isLoggedIn: boolean | undefined;
-  userName: string | undefined;
-  isAdmin: boolean;
-};
 
 export function RootNavBar() {
   const [authStatus, setAuthStatus] = useState<AuthenticationStatus>({
@@ -17,9 +12,7 @@ export function RootNavBar() {
   });
   useEffect(() => {
     async function fetchAuthStatus() {
-      const response = await fetch('/api/v0/auth/status');
-      const data = (await response.json()) as AuthenticationStatus;
-      setAuthStatus(data);
+      setAuthStatus(await fetchUserAuthStatus());
     }
 
     fetchAuthStatus();
