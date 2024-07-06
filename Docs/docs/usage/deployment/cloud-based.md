@@ -14,7 +14,7 @@ See [Usage/Build](../build#steps-2).
 
 ## Central
 
-You can deploy it to Vercel.
+You can deploy it to [Vercel](https://vercel.com/).
 
 ## Agent
 

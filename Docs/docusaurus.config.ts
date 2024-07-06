@@ -82,11 +82,19 @@ const config: Config = {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'Content',
           items: [
             {
-              label: 'Tutorial',
+              label: 'Introduction',
               to: '/docs/intro',
+            },
+            {
+              label: 'Development',
+              to: '/docs/dev',
+            },
+            {
+              label: 'Cloud-based deployment',
+              to: '/docs/usage/deployment/cloud-based',
             },
           ],
         },
@@ -94,18 +102,14 @@ const config: Config = {
           title: 'Community',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'Issues',
+              href: 'https://github.com/Ranzeplay/PhiJudge/issues',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: 'Discussions',
+              href: 'https://github.com/Ranzeplay/PhiJudge/discussions',
             },
-            {
-              label: 'Twitter',
-              href: 'https://twitter.com/docusaurus',
-            },
-          ],
+          ]
         },
         {
           title: 'More',
@@ -116,7 +120,7 @@ const config: Config = {
             },
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/Ranzeplay/PhiJudge',
             },
           ],
         },
