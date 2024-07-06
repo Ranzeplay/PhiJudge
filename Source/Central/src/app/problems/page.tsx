@@ -27,16 +27,19 @@ import { GetProblems } from './server';
 import { ProblemIndexView } from './schema';
 import { AuthenticationStatus, getUserAuthStatus } from '@/lib/clientUserUtils';
 import { toast } from '@/components/ui/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 
 export default function Page() {
   const [problemIndex, setProblemIndex] = useState<ProblemIndexView | null>(null);
   const [searchText, setSearchText] = useState<string>('');
   const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(20);
 
   const [searchInputText, setSearchInputText] = useState<string>('');
 
   useEffect(() => {
-    GetProblems(searchText, page, 20).then((result) => {
+    GetProblems(searchText, page, pageSize).then((result) => {
       setProblemIndex(result);
       toast({
         title: 'Success',
@@ -49,7 +52,7 @@ export default function Page() {
       });
       console.log(err);
     });
-  }, [searchText, page]);
+  }, [searchText, page, pageSize]);
 
   function performSearch() {
     setPage(1);
@@ -130,11 +133,27 @@ export default function Page() {
           <div className='space-y-2'>
             <Card>
               <CardHeader>
-                <CardTitle>Search</CardTitle>
+                <CardTitle>Query</CardTitle>
               </CardHeader>
-              <CardContent className='space-y-2'>
-                <Input value={searchInputText} onChange={(e) => setSearchInputText(e.target.value)} placeholder='Text' onKeyDown={e => performSearchOnEnter(e)} />
-                <Button onClick={() => performSearch()}>Submit</Button>
+              <CardContent className='space-y-4'>
+                <div>
+                  <Label>Page size</Label>
+                  <Select value={pageSize.toString()} onValueChange={(e) => setPageSize(parseInt(e))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Page size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="20">20</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className='space-y-1'>
+                  <Label>Search</Label>
+                  <Input value={searchInputText} onChange={(e) => setSearchInputText(e.target.value)} placeholder='Text' onKeyDown={e => performSearchOnEnter(e)} />
+                  <Button onClick={() => performSearch()} className='mt-1'>Submit</Button>
+                </div>
               </CardContent>
             </Card>
             {authStatus.isAdmin && (

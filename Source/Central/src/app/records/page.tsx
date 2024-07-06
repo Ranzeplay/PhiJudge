@@ -26,21 +26,23 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { RecordIndexView } from './schema';
 import { GetRecords } from './server';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function Page() {
   const [recordIndex, setRecordIndex] = useState<RecordIndexView | null>(null);
 
   const [searchText, setSearchText] = useState<string>('');
   const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(20);
 
   useEffect(() => {
     async function fetchRecords() {
-      const data = await GetRecords(page, 20);
+      const data = await GetRecords(page, pageSize);
       setRecordIndex(data);
     }
 
     fetchRecords();
-  }, [page]);
+  }, [page, pageSize]);
 
   return (
     <>
@@ -106,6 +108,23 @@ export default function Page() {
             </Card>
           </div>
           <div className='space-y-2'>
+            <Card>
+              <CardHeader>
+                <CardTitle>Page size</CardTitle>
+              </CardHeader>
+              <CardContent>
+                  <Select value={pageSize.toString()} onValueChange={(e) => setPageSize(parseInt(e))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Page size" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="10">10</SelectItem>
+                      <SelectItem value="20">20</SelectItem>
+                      <SelectItem value="50">50</SelectItem>
+                    </SelectContent>
+                  </Select>
+              </CardContent>
+            </Card>
             <Card>
               <CardHeader>
                 <CardTitle>Go to a specific record</CardTitle>
