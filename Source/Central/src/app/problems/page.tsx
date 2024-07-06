@@ -22,10 +22,11 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { KeyboardEvent, useEffect, useState } from 'react';
 import { GetProblems } from './server';
 import { ProblemIndexView } from './schema';
 import { AuthenticationStatus, fetchUserAuthStatus } from '@/lib/clientUserUtils';
+import { toast } from '@/components/ui/use-toast';
 
 export default function Page() {
   const [problemIndex, setProblemIndex] = useState<ProblemIndexView | null>(null);
@@ -36,7 +37,17 @@ export default function Page() {
 
   useEffect(() => {
     GetProblems(searchText, page, 20).then((result) => {
-      setProblemIndex(result)
+      setProblemIndex(result);
+      toast({
+        title: 'Success',
+        description: 'Problems fetched.',
+      });
+    }).catch((err) => {
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch problems, check console log.',
+      });
+      console.log(err);
     });
   }, [searchText, page]);
 
@@ -58,8 +69,15 @@ export default function Page() {
     fetchAuthStatus();
   }, []);
 
+  function performSearchOnEnter(e: KeyboardEvent<HTMLInputElement>): void {
+    if (e.key === 'Enter') {
+      performSearch();
+    }
+  }
+
   return (
     <>
+      <title>Problems | PhiJudge</title>
       <RootNavBar />
       <main className='container mt-4 flex w-full flex-col space-y-2'>
         <h1 className='text-3xl font-bold'>Problems</h1>
@@ -115,7 +133,7 @@ export default function Page() {
                 <CardTitle>Search</CardTitle>
               </CardHeader>
               <CardContent className='space-y-2'>
-                <Input value={searchInputText} onChange={(e) => setSearchInputText(e.target.value)} placeholder='Text' />
+                <Input value={searchInputText} onChange={(e) => setSearchInputText(e.target.value)} placeholder='Text' onKeyDown={e => performSearchOnEnter(e)} />
                 <Button onClick={() => performSearch()}>Submit</Button>
               </CardContent>
             </Card>

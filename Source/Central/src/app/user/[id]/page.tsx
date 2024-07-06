@@ -1,3 +1,7 @@
 export default function Page() {
-  return <></>;
+  return (
+    <>
+      <title>User details | PhiJudge</title>
+    </>
+  );
 }

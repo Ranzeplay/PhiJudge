@@ -92,170 +92,173 @@ export default function Page({ params }: { params: { id: string } }) {
   }, [params.id]);
 
   return (
-    <div className='grid w-full grid-cols-3 gap-4'>
-      <div className='col-span-1 space-y-4'>
-        <Card>
-          <CardHeader>
-            <CardTitle>Steps</CardTitle>
-            <CardDescription>
-              {convertToUpperUnderlineToNormalWords(
-                statusResult?.status.toString() || ''
-              )}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className='flex flex-col space-y-1'>
-            <QueueIndicator
-              status={statusResult?.status || RecordStatus.UNKNOWN}
-            />
-            <CompileIndicator
-              status={statusResult?.status || RecordStatus.UNKNOWN}
-            />
-            <TestIndicator
-              status={statusResult?.status || RecordStatus.UNKNOWN}
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Overview</CardTitle>
-          </CardHeader>
-          <CardContent className='flex flex-col space-y-1'>
-            <div>
-              <h4>Id</h4>
-              <p className='ml-2 font-mono text-sm'>{params.id}</p>
-            </div>
-            <div>
-              <h4>Time</h4>
-              <p className='ml-2 font-mono text-sm'>
-                {dayjs(persistentData?.submitTime).format('YYYY/M/D H:mm')}
-              </p>
-            </div>
-            <div>
-              <h4>Problem</h4>
-              <Link
-                className='ml-2 flex text-sm text-blue-500 hover:underline'
-                href={`/problem/${persistentData?.problem.id}/details`}
-              >
-                {persistentData?.problem.title}
-              </Link>
-            </div>
-            <div>
-              <h4>Author</h4>
-              <Link
-                className='ml-2 flex text-sm text-blue-500 hover:underline'
-                href={`/user/${persistentData?.problem.authorId}`}
-              >
-                {persistentData?.problem.author}
-              </Link>
-            </div>
-            <div>
-              <h4>Status & Result</h4>
-              <p className='ml-2 font-mono text-sm'>
+    <>
+      <title>Record details | PhiJudge</title>
+      <div className='grid w-full grid-cols-3 gap-4'>
+        <div className='col-span-1 space-y-4'>
+          <Card>
+            <CardHeader>
+              <CardTitle>Steps</CardTitle>
+              <CardDescription>
                 {convertToUpperUnderlineToNormalWords(
                   statusResult?.status.toString() || ''
                 )}
-              </p>
-            </div>
-            <div>
-              <h4>Rate</h4>
-              <p className='ml-2 font-mono text-sm'>
-                {(testPoints || []).filter(
-                  (t) => t.resultType === RecordTestPointStatus.ACCEPTED
-                ).length || NaN}{' '}
-                / {testPoints?.length || NaN}
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-      <div className='col-span-2 space-y-4'>
-        <Card>
-          <CardHeader>
-            <CardTitle className='flex flex-row items-center space-x-2'>
-              <span>Source code</span>
-              <Badge variant={'secondary'}>
-                {persistentData?.language.name}
-              </Badge>
-            </CardTitle>
-          </CardHeader>
-          <Editor
-            className='p-6 pt-0'
-            height='30vh'
-            language={persistentData?.language.id}
-            value={persistentData?.sourceCode}
-            options={{ readOnly: true }}
-          />
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Compilation output</CardTitle>
-            <CardDescription>
-              {convertToUpperUnderlineToNormalWords(
-                compilationResult?.compilationResult || ''
-              )}
-            </CardDescription>
-          </CardHeader>
-          <Editor
-            className='p-6 pt-0'
-            height='30vh'
-            language='plaintext'
-            value={
-              compilationResult?.compilationOutput || '[No output captured]'
-            }
-            options={{ readOnly: true }}
-          />
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Test points</CardTitle>
-          </CardHeader>
-          <CardContent className='flex flex-col space-y-4'>
-            <div className='flex flex-row space-x-2'>
-              <Card className='flex-grow'>
-                <CardHeader>
-                  <CardTitle>Time consumption (ms)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <TimeChart data={testPoints || []} />
-                </CardContent>
-              </Card>
-              <Card className='flex-grow'>
-                <CardHeader>
-                  <CardTitle>Memory consumption (bytes)</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <MemoryChart data={testPoints || []} />
-                </CardContent>
-              </Card>
-            </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className='w-[100px]'>Order</TableHead>
-                  <TableHead>Result</TableHead>
-                  <TableHead>Memory</TableHead>
-                  <TableHead>Time</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {testPoints?.map((testPoint, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{testPoint.order}</TableCell>
-                    <TableCell>
-                      {convertToUpperUnderlineToNormalWords(testPoint.resultType)}
-                    </TableCell>
-                    <TableCell>
-                      {testPoint.actualPeakMemoryBytes} bytes
-                    </TableCell>
-                    <TableCell>{testPoint.actualTimeMs} ms</TableCell>
+              </CardDescription>
+            </CardHeader>
+            <CardContent className='flex flex-col space-y-1'>
+              <QueueIndicator
+                status={statusResult?.status || RecordStatus.UNKNOWN}
+              />
+              <CompileIndicator
+                status={statusResult?.status || RecordStatus.UNKNOWN}
+              />
+              <TestIndicator
+                status={statusResult?.status || RecordStatus.UNKNOWN}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Overview</CardTitle>
+            </CardHeader>
+            <CardContent className='flex flex-col space-y-1'>
+              <div>
+                <h4>Id</h4>
+                <p className='ml-2 font-mono text-sm'>{params.id}</p>
+              </div>
+              <div>
+                <h4>Time</h4>
+                <p className='ml-2 font-mono text-sm'>
+                  {dayjs(persistentData?.submitTime).format('YYYY/M/D H:mm')}
+                </p>
+              </div>
+              <div>
+                <h4>Problem</h4>
+                <Link
+                  className='ml-2 flex text-sm text-blue-500 hover:underline'
+                  href={`/problem/${persistentData?.problem.id}/details`}
+                >
+                  {persistentData?.problem.title}
+                </Link>
+              </div>
+              <div>
+                <h4>Author</h4>
+                <Link
+                  className='ml-2 flex text-sm text-blue-500 hover:underline'
+                  href={`/user/${persistentData?.problem.authorId}`}
+                >
+                  {persistentData?.problem.author}
+                </Link>
+              </div>
+              <div>
+                <h4>Status & Result</h4>
+                <p className='ml-2 font-mono text-sm'>
+                  {convertToUpperUnderlineToNormalWords(
+                    statusResult?.status.toString() || ''
+                  )}
+                </p>
+              </div>
+              <div>
+                <h4>Rate</h4>
+                <p className='ml-2 font-mono text-sm'>
+                  {(testPoints || []).filter(
+                    (t) => t.resultType === RecordTestPointStatus.ACCEPTED
+                  ).length || NaN}{' '}
+                  / {testPoints?.length || NaN}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        <div className='col-span-2 space-y-4'>
+          <Card>
+            <CardHeader>
+              <CardTitle className='flex flex-row items-center space-x-2'>
+                <span>Source code</span>
+                <Badge variant={'secondary'}>
+                  {persistentData?.language.name}
+                </Badge>
+              </CardTitle>
+            </CardHeader>
+            <Editor
+              className='p-6 pt-0'
+              height='30vh'
+              language={persistentData?.language.id}
+              value={persistentData?.sourceCode}
+              options={{ readOnly: true }}
+            />
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Compilation output</CardTitle>
+              <CardDescription>
+                {convertToUpperUnderlineToNormalWords(
+                  compilationResult?.compilationResult || ''
+                )}
+              </CardDescription>
+            </CardHeader>
+            <Editor
+              className='p-6 pt-0'
+              height='30vh'
+              language='plaintext'
+              value={
+                compilationResult?.compilationOutput || '[No output captured]'
+              }
+              options={{ readOnly: true }}
+            />
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Test points</CardTitle>
+            </CardHeader>
+            <CardContent className='flex flex-col space-y-4'>
+              <div className='flex flex-row space-x-2'>
+                <Card className='flex-grow'>
+                  <CardHeader>
+                    <CardTitle>Time consumption (ms)</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <TimeChart data={testPoints || []} />
+                  </CardContent>
+                </Card>
+                <Card className='flex-grow'>
+                  <CardHeader>
+                    <CardTitle>Memory consumption (bytes)</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <MemoryChart data={testPoints || []} />
+                  </CardContent>
+                </Card>
+              </div>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className='w-[100px]'>Order</TableHead>
+                    <TableHead>Result</TableHead>
+                    <TableHead>Memory</TableHead>
+                    <TableHead>Time</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+                </TableHeader>
+                <TableBody>
+                  {testPoints?.map((testPoint, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{testPoint.order}</TableCell>
+                      <TableCell>
+                        {convertToUpperUnderlineToNormalWords(testPoint.resultType)}
+                      </TableCell>
+                      <TableCell>
+                        {testPoint.actualPeakMemoryBytes} bytes
+                      </TableCell>
+                      <TableCell>{testPoint.actualTimeMs} ms</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
 

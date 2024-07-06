@@ -57,6 +57,8 @@ export default function Page() {
   };
 
   return (
+    <>
+    <title>Login | PhiJudge</title>
     <Card className='mx-auto flex w-96 flex-col space-y-2'>
       <CardHeader>
         <CardTitle>Login</CardTitle>
@@ -114,5 +116,6 @@ export default function Page() {
         </Form>
       </CardContent>
     </Card>
+    </>
   );
 }

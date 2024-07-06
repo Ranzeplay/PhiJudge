@@ -41,62 +41,65 @@ export default function Page() {
   };
 
   return (
-    <div className='container flex flex-col space-y-2'>
-      <Card className='w-full'>
-        <CardHeader>
-          <CardTitle>Basic information</CardTitle>
-          <CardDescription>Title & description</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...basicInfoForm}>
-            <form className='flex flex-col space-y-2'>
-              <FormField
-                control={basicInfoForm.control}
-                name='title'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Title</FormLabel>
-                    <FormControl className='-mt-1'>
-                      <Input
-                        placeholder='Enter text'
-                        {...field}
-                        className='mr-8'
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={basicInfoForm.control}
-                name='description'
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl className='-mt-1'>
-                      <Editor
-                        className='rounded border'
-                        {...field}
-                        height={400}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+    <>
+      <title>Create problem | PhiJudge</title>
+      <div className='container flex flex-col space-y-2'>
+        <Card className='w-full'>
+          <CardHeader>
+            <CardTitle>Basic information</CardTitle>
+            <CardDescription>Title & description</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...basicInfoForm}>
+              <form className='flex flex-col space-y-2'>
+                <FormField
+                  control={basicInfoForm.control}
+                  name='title'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Title</FormLabel>
+                      <FormControl className='-mt-1'>
+                        <Input
+                          placeholder='Enter text'
+                          {...field}
+                          className='mr-8'
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={basicInfoForm.control}
+                  name='description'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl className='-mt-1'>
+                        <Editor
+                          className='rounded border'
+                          {...field}
+                          height={400}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-              <div className='block space-x-4'>
-                <Button onClick={basicInfoForm.handleSubmit(onSaveBasicInfo)}>
-                  Save
-                </Button>
-                <Button variant={'outline'} onClick={() => router.back()}>
-                  Discard
-                </Button>
-              </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+                <div className='block space-x-4'>
+                  <Button onClick={basicInfoForm.handleSubmit(onSaveBasicInfo)}>
+                    Save
+                  </Button>
+                  <Button variant={'outline'} onClick={() => router.back()}>
+                    Discard
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
+    </>
   );
 }

@@ -14,6 +14,8 @@ export default async function Page() {
   await supabase.auth.signOut();
 
   return (
+    <>
+    <title>Logout | PhiJudge</title>
     <Card className='mx-auto flex w-96 flex-col space-y-2'>
       <CardHeader>
         <CardTitle>Logout</CardTitle>
@@ -30,5 +32,6 @@ export default async function Page() {
         </Button>
       </CardContent>
     </Card>
+    </>
   );
 }

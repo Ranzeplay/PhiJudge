@@ -4,16 +4,19 @@ import Link from 'next/link';
 
 export default function Page() {
   return (
-    <Card className='mx-auto flex w-96 flex-col space-y-2'>
-      <CardHeader>
-        <CardTitle>Unauthorized</CardTitle>
-      </CardHeader>
-      <CardContent className='space-y-2'>
-        <p>You are not authorized to view this page.</p>
-        <Button asChild>
-          <Link href={'/'}>Go back home</Link>
-        </Button>
-      </CardContent>
-    </Card>
+    <>
+      <title>Unauthorized | PhiJudge</title>
+      <Card className='mx-auto flex w-96 flex-col space-y-2'>
+        <CardHeader>
+          <CardTitle>Unauthorized</CardTitle>
+        </CardHeader>
+        <CardContent className='space-y-2'>
+          <p>You are not authorized to view this page.</p>
+          <Button asChild>
+            <Link href={'/'}>Go back home</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    </>
   );
 }

@@ -44,6 +44,7 @@ export default function Page() {
 
   return (
     <>
+      <title>Records | PhiJudge</title>
       <RootNavBar />
       <main className='container mt-4 flex w-full flex-col space-y-2'>
         <h1 className='text-3xl font-bold'>Records</h1>

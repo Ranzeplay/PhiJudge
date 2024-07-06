@@ -71,88 +71,91 @@ export default function Page() {
   };
 
   return (
-    <Card className='mx-auto flex w-96 flex-col space-y-2'>
-      <CardHeader>
-        <CardTitle>Register</CardTitle>
-        <CardDescription>Register via email address</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form className='-mt-4' onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name='email'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder='' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='userName'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Username</FormLabel>
-                  <FormControl>
-                    <Input placeholder='' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='passwordScope.password'
-              render={({ field }) => (
-                <FormItem className='mt-3'>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder='' type='password' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='passwordScope.confirmPassword'
-              render={({ field }) => (
-                <FormItem className='mt-3'>
-                  <FormLabel>Confirm password</FormLabel>
-                  <FormControl>
-                    <Input type='password' placeholder='' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <>
+      <title>Register | PhiJudge</title>
+      <Card className='mx-auto flex w-96 flex-col space-y-2'>
+        <CardHeader>
+          <CardTitle>Register</CardTitle>
+          <CardDescription>Register via email address</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form className='-mt-4' onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name='email'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder='' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='userName'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <Input placeholder='' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='passwordScope.password'
+                render={({ field }) => (
+                  <FormItem className='mt-3'>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder='' type='password' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='passwordScope.confirmPassword'
+                render={({ field }) => (
+                  <FormItem className='mt-3'>
+                    <FormLabel>Confirm password</FormLabel>
+                    <FormControl>
+                      <Input type='password' placeholder='' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {errorText && !isSigningIn && (
-              <div className='text-sm text-red-500'>{errorText}</div>
-            )}
+              {errorText && !isSigningIn && (
+                <div className='text-sm text-red-500'>{errorText}</div>
+              )}
 
-            <div className='mt-4 flex flex-col'>
-              <Button className='gap-x-2 px-6' disabled={isSigningIn}>
-                <LoaderCircle
-                  className={isSigningIn ? 'animate-spin' : 'hidden'}
-                  size={14}
-                />
-                Submit
-              </Button>
-              <Link href='/auth/login' className='-ml-4 -mt-1'>
-                <Button variant={'link'} className='text-blue-500'>
-                  Click here to login
+              <div className='mt-4 flex flex-col'>
+                <Button className='gap-x-2 px-6' disabled={isSigningIn}>
+                  <LoaderCircle
+                    className={isSigningIn ? 'animate-spin' : 'hidden'}
+                    size={14}
+                  />
+                  Submit
                 </Button>
-              </Link>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                <Link href='/auth/login' className='-ml-4 -mt-1'>
+                  <Button variant={'link'} className='text-blue-500'>
+                    Click here to login
+                  </Button>
+                </Link>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
+    </>
   );
 }
