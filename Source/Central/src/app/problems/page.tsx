@@ -25,7 +25,7 @@ import Link from 'next/link';
 import { KeyboardEvent, useEffect, useState } from 'react';
 import { GetProblems } from './server';
 import { ProblemIndexView } from './schema';
-import { AuthenticationStatus, fetchUserAuthStatus } from '@/lib/clientUserUtils';
+import { AuthenticationStatus, getUserAuthStatus } from '@/lib/clientUserUtils';
 import { toast } from '@/components/ui/use-toast';
 
 export default function Page() {
@@ -63,7 +63,7 @@ export default function Page() {
   });
   useEffect(() => {
     async function fetchAuthStatus() {
-      setAuthStatus(await fetchUserAuthStatus());
+      setAuthStatus(await getUserAuthStatus());
     }
 
     fetchAuthStatus();

@@ -1,6 +1,6 @@
 'use client';
 
-import { AuthenticationStatus, fetchUserAuthStatus } from '@/lib/clientUserUtils';
+import { AuthenticationStatus, getUserAuthStatus } from '@/lib/clientUserUtils';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
@@ -12,7 +12,7 @@ export function RootNavBar() {
   });
   useEffect(() => {
     async function fetchAuthStatus() {
-      setAuthStatus(await fetchUserAuthStatus());
+      setAuthStatus(await getUserAuthStatus());
     }
 
     fetchAuthStatus();
