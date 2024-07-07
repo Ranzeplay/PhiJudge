@@ -5,14 +5,14 @@ authors: [ranzeplay]
 date: 2024-07-07T16:15
 ---
 
-# PhiJudge: A contiuniation of Semicolon.OnlineJudge
+# PhiJudge: A continuation of Semicolon.OnlineJudge
 
-## Intro
+## Background
 
-[PhiJudge](https://github.com/Ranzeplay/PhiJudge) is a continunation of [Semicolon.OnlineJudge](https://github.com/Ranzeplay/Semicolon.OnlineJudge),
+[PhiJudge](https://github.com/Ranzeplay/PhiJudge) is a continuation of [Semicolon.OnlineJudge](https://github.com/Ranzeplay/Semicolon.OnlineJudge),
 which is a project that I made when I was in 9th grade.
 
-I got over 3k watches from [a video](https://www.bilibili.com/video/BV1tJ411a7iP), in which I described how I done that.
+I got over 3k views from [a video](https://www.bilibili.com/video/BV1tJ411a7iP), in which I described how I did that.
 In 21.6.2023, I decided to rewrite the whole system, including both backend and frontend.
 I have to admit that it's a hard job since I have to learn new tools
 such as [Next.js](https://nextjs.org/) and [Supabase](https://supabase.com/).
@@ -24,7 +24,7 @@ Honestly speaking, the project actually back on track on 18.5.2024, on that day,
 
 ### Semicolon.OnlineJudge
 
-A centralized system.
+A centralized system:
 
 - Root
   - Central
@@ -36,14 +36,14 @@ A centralized system.
       - Admin
   - Database
 
-Except database service is separated, all other services are integrated in Central.
-As time goes, it will become hard to maintain and lose extensibility.
+Except for the database service, all other services are integrated in Central.
+As time goes on, it will become harder to maintain and lose extensibility.
 
-Also, every Track is tested in the same environment as Central, may cause danger.
+Also, every Track is tested in the same environment as Central, which may cause danger.
 
 ### PhiJudge
 
-A modualized system.
+A modularized system:
 
 - Root
   - Central
@@ -58,7 +58,7 @@ A modualized system.
 
 Services are separated, easy to maintain and add new features.
 
-Agent is containerized, running in a container makes it better to control.
+The Agent is containerized, running in a container makes it easier to control.
 
 ## Advantages of the new system
 
@@ -72,9 +72,9 @@ Agent is containerized, running in a container makes it better to control.
 - More language plugins.
 - Improve webpage performance.
 
-## Example website
+## Example websites
 
-The example website will be deployed when there's a new commit on master branch.
+The example websites will be deployed when there's a new commit on master branch.
 
-- Central: https://phijudge.ranzeplay.space
-- Docs: https://docs.phijudge.ranzeplay.space
+- Central: [https://phijudge.ranzeplay.space](https://phijudge.ranzeplay.space)
+- Docs: [https://docs.phijudge.ranzeplay.space](https://docs.phijudge.ranzeplay.space)
