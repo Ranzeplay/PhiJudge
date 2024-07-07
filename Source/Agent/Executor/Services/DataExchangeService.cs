@@ -23,7 +23,8 @@ namespace PhiJudge.Agent.Executor.Services
 
             var options = new Supabase.SupabaseOptions
             {
-                AutoConnectRealtime = true
+                AutoConnectRealtime = true,
+                AutoRefreshToken = true,
             };
 
             SupabaseClient = new Supabase.Client(url!, key, options);
