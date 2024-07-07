@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhiJudge.Plugin.Language.C"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhiJudge.Plugin.Language.Python", "Plugins\Language.Python\PhiJudge.Plugin.Language.Python.csproj", "{FE19F5F7-09BD-46B3-8E53-C95B628A9B06}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PhiJudge.Plugin.Language.Cpp", "Plugins\Language.Cpp\PhiJudge.Plugin.Language.Cpp.csproj", "{336B3CA5-DAB0-4F54-A333-A9D1E600798C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{FE19F5F7-09BD-46B3-8E53-C95B628A9B06}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FE19F5F7-09BD-46B3-8E53-C95B628A9B06}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FE19F5F7-09BD-46B3-8E53-C95B628A9B06}.Release|Any CPU.Build.0 = Release|Any CPU
+		{336B3CA5-DAB0-4F54-A333-A9D1E600798C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{336B3CA5-DAB0-4F54-A333-A9D1E600798C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{336B3CA5-DAB0-4F54-A333-A9D1E600798C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{336B3CA5-DAB0-4F54-A333-A9D1E600798C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,6 +48,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{BEC2B698-635F-48A3-A0AA-16C1403FCE79} = {D3CD57A0-394D-4A05-8A6E-FAD0C74833CD}
 		{FE19F5F7-09BD-46B3-8E53-C95B628A9B06} = {D3CD57A0-394D-4A05-8A6E-FAD0C74833CD}
+		{336B3CA5-DAB0-4F54-A333-A9D1E600798C} = {D3CD57A0-394D-4A05-8A6E-FAD0C74833CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BC773570-675C-4444-8A6A-595772CD5757}
