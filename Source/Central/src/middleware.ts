@@ -6,30 +6,44 @@ import {
 import { updateSession } from './lib/supabase/middleware';
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname;
+
   const serverSupabase = createSupabaseServiceRoleClient();
 
   if (process.env.NEXT_PUBLIC_ENABLE_REQUEST_LOGGING === 'true') {
     await serverSupabase.from('requestLogs').insert({
-      url: request.nextUrl.pathname,
+      url: pathname,
       ip: (request.headers.get('X-Forwarded-For') || request.ip || 'unknown').split(',').at(0),
       timestamp: new Date(),
-      isApiRoute: request.nextUrl.pathname.startsWith('/api/v0'),
+      isApiRoute: pathname.startsWith('/api/v0'),
     });
+  }
 
-    if (request.nextUrl.pathname.startsWith('/admin')) {
-      const user = (await createSupabaseServerSideClient().auth.getUser()).data
-        .user;
-      const supaUser = await serverSupabase
-        .from('users')
-        .select('isAdmin')
-        .eq('id', user?.id)
-        .single();
+  const user = (await createSupabaseServerSideClient().auth.getUser()).data
+      .user;
 
-      if (!supaUser.data?.isAdmin) {
-        return NextResponse.redirect(
-          new URL('/auth/unauthorized', request.nextUrl)
-        );
-      }
+  const submissionPathPattern = /^\/problem\/(\d+)\/submit$/;
+  if(submissionPathPattern.test(pathname)) {
+    if(!user) {
+      return NextResponse.redirect(
+        new URL('/auth/signin', request.nextUrl)
+      );
+    }
+  }
+
+  if (pathname.startsWith('/admin')) {
+    const supaUser = await serverSupabase
+      .from('users')
+      .select('isAdmin')
+      .eq('id', user?.id)
+      .single();
+
+    if (!supaUser.data?.isAdmin) {
+      return NextResponse.redirect(
+        new URL('/auth/unauthorized', request.nextUrl)
+      );
+    } else {
+      return NextResponse.next();
     }
   }
 
