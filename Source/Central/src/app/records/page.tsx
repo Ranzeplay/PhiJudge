@@ -129,7 +129,7 @@ export default function Page() {
               <CardHeader>
                 <CardTitle>Go to a specific record</CardTitle>
               </CardHeader>
-              <CardContent className='space-y-2'>
+              <CardContent className='flex flex-row space-x-1.5 items-center'>
                 <Input value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder='Record id' type='number' />
                 <Button asChild>
                   <Link href={`/record/${searchText}`}>Go</Link>

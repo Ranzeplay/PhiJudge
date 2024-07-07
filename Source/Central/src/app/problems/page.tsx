@@ -149,10 +149,12 @@ export default function Page() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className='space-y-1'>
+                <div>
                   <Label>Search</Label>
-                  <Input value={searchInputText} onChange={(e) => setSearchInputText(e.target.value)} placeholder='Text' onKeyDown={e => performSearchOnEnter(e)} />
-                  <Button onClick={() => performSearch()} className='mt-1'>Submit</Button>
+                  <div className='flex flex-row space-x-1.5 items-center'>
+                    <Input value={searchInputText} onChange={(e) => setSearchInputText(e.target.value)} placeholder='Text' onKeyDown={e => performSearchOnEnter(e)} />
+                    <Button onClick={() => performSearch()}>Submit</Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
