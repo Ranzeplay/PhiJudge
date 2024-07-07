@@ -25,7 +25,7 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
     },
   });
 
-  const agent = await serverPrisma.agent.findFirst({
+  const agents = await serverPrisma.agent.findMany({
     where: {
       status: AgentStatus.AVAILABLE,
       availableLanguageId: {
@@ -33,6 +33,7 @@ export async function HandleSubmission(formData: FormData): Promise<number> {
       },
     },
   });
+  const agent = agents[Math.floor(Math.random() * agents.length)];
 
   const record = await serverPrisma.record.create({
     data: {

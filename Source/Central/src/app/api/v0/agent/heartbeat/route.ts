@@ -1,7 +1,7 @@
 'use server';
 
 import { serverPrisma } from '@/lib/serverSidePrisma';
-import { AgentStatus } from '@prisma/client';
+import { AgentStatus, RecordStatus } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -48,6 +48,7 @@ export async function GET(request: NextRequest) {
         agent.status === AgentStatus.AVAILABLE &&
         new Date().getTime() - agent.lastHeartbeatTime.getTime() > 5 * 60 * 1000
       ) {
+        // Regard as agent offline
         await serverPrisma.agent.update({
           where: {
             id: agentId,
@@ -56,6 +57,37 @@ export async function GET(request: NextRequest) {
             status: AgentStatus.DISCONNECTED,
           },
         });
+
+        // Re-allocate untested records
+        const untestedRecords = await serverPrisma.record.findMany({
+          where: {
+            status: RecordStatus.PENDING,
+            agentId: agentId,
+          },
+        });
+        for (const record of untestedRecords) {
+          const agents = await serverPrisma.agent.findMany({
+            where: {
+              status: AgentStatus.AVAILABLE,
+              availableLanguageId: {
+                hasEvery: [record.languageId],
+              },
+            },
+          });
+          const agent = agents[Math.floor(Math.random() * agents.length)];
+          await serverPrisma.record.update({
+            where: {
+              id: record.id,
+            },
+            data: {
+              agent: {
+                connect: {
+                  id: agent.id,
+                },
+              },
+            },
+          });
+        }
       }
     },
     11 * 60 * 1000
