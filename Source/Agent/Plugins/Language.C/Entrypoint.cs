@@ -31,7 +31,7 @@ namespace PhiJudge.Plugin.Language.C
 
         private async Task PrepareEnvironmentAsync()
         {
-            foreach (var pkg in new string[] { "gcc", "valgrind", "busybox", "musl-dev" })
+            foreach (var pkg in new string[] { "gcc", "busybox", "musl-dev" })
             {
                 if (!await ContainerUtils.CheckPackageInstalled(pkg))
                 {
