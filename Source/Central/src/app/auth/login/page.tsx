@@ -27,6 +27,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { useRouter } from 'next/navigation';
+import { clearUserAuthStatus, getUserAuthStatus } from '@/lib/clientUserUtils';
 
 export default function Page() {
   const form = useForm<LoginForm>({
@@ -38,84 +39,84 @@ export default function Page() {
   });
   const [errorText, setErrorText] = useState<string | null>('');
 
-  const [isSigningIn, setSignInState] = useState<boolean>(false);
+  const [isSigningIn, setSigningInState] = useState<boolean>(false);
   const router = useRouter();
 
   const onSubmit = async (form: LoginForm) => {
-    setSignInState(true);
+    setSigningInState(true);
 
-    const result = JSON.parse(
-      await HandleLogin(serialize(form))
-    ) as AuthTokenResponsePassword;
+    const result = await HandleLogin(serialize(form));
+
     if (result.error) {
       setErrorText(result.error.message);
     } else {
       router.push('/');
     }
-
-    setSignInState(false);
+    
+    clearUserAuthStatus();
+    setSigningInState(false);
   };
 
   return (
     <>
-    <title>Login | PhiJudge</title>
-    <Card className='mx-auto flex w-96 flex-col space-y-2'>
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-        <CardDescription>Login via email address</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form className='-mt-4' onSubmit={form.handleSubmit(onSubmit)}>
-            <FormField
-              control={form.control}
-              name='email'
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder='' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name='password'
-              render={({ field }) => (
-                <FormItem className='mt-3'>
-                  <FormLabel>Password</FormLabel>
-                  <FormControl>
-                    <Input placeholder='' type='password' {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <title>Login | PhiJudge</title>
+      <Card className='mx-auto flex w-96 flex-col space-y-2'>
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+          <CardDescription>Login via email address</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form className='-mt-4' onSubmit={form.handleSubmit(onSubmit)}>
+              <FormField
+                control={form.control}
+                name='email'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                      <Input placeholder='' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name='password'
+                render={({ field }) => (
+                  <FormItem className='mt-3'>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input placeholder='' type='password' {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            {errorText && !isSigningIn && (
-              <div className='text-sm text-red-500'>{errorText}</div>
-            )}
+              {errorText && !isSigningIn && (
+                <div className='text-sm text-red-500'>{errorText}</div>
+              )}
 
-            <div className='mt-4 flex flex-col'>
-              <Button className='gap-x-2 px-6' disabled={isSigningIn}>
-                <LoaderCircle
-                  className={isSigningIn ? 'animate-spin' : 'hidden'}
-                  size={14}
-                />
-                Submit
-              </Button>
-              <Link href='/auth/register' className='-ml-4 -mt-1'>
-                <Button variant={'link'} className='text-blue-500'>
-                  Click here to register
+              <div className='mt-4 flex flex-col'>
+                <Button className='gap-x-2 px-6' disabled={isSigningIn}>
+                  <LoaderCircle
+                    className={isSigningIn ? 'animate-spin' : 'hidden'}
+                    size={14}
+                  />
+                  Submit
                 </Button>
-              </Link>
-            </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+                <Link href='/auth/register' className='-ml-4 -mt-1'>
+                  <Button variant={'link'} className='text-blue-500'>
+                    Click here to register
+                  </Button>
+                </Link>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </>
   );
 }

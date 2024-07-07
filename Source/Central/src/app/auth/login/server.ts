@@ -2,8 +2,9 @@
 
 import { createSupabaseServerSideClient } from '@/lib/supabase/server';
 import { LoginFormSchema } from './schema';
+import { AuthTokenResponsePassword } from '@supabase/supabase-js';
 
-export async function HandleLogin(formData: FormData): Promise<string> {
+export async function HandleLogin(formData: FormData): Promise<AuthTokenResponsePassword> {
   const data = await LoginFormSchema.parseAsync({
     email: formData.get('email') as string,
     password: formData.get('password') as string,
@@ -16,5 +17,5 @@ export async function HandleLogin(formData: FormData): Promise<string> {
     password: data.password,
   });
 
-  return JSON.stringify(result);
+  return result
 }
