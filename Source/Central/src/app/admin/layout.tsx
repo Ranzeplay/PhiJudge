@@ -1,5 +1,6 @@
 import { RootNavBar } from '@/components/nav/rootNavBar';
 import Link from 'next/link';
+import { NavLink } from '@/components/nav/navLink';
 
 export default async function AdminLayout({
   children,
@@ -20,27 +21,13 @@ export default async function AdminLayout({
               className='grid gap-4 text-sm text-muted-foreground'
               x-chunk='dashboard-04-chunk-0'
             >
-              <Link href='/admin/overview' className='hover:underline'>
-                Overview
-              </Link>
-              <Link href='/admin/users' className='hover:underline'>
-                Users
-              </Link>
-              <Link href='/problems' className='hover:underline'>
-                Problems
-              </Link>
-              <Link href='/records' className='hover:underline'>
-                Records
-              </Link>
-              <Link href='/admin/agents' className='hover:underline'>
-                Agents
-              </Link>
-              <Link href='/admin/programmingLanguages' className='hover:underline'>
-                Programming languages
-              </Link>
-              <Link href='/admin/maintenance' className='hover:underline'>
-                Maintenance
-              </Link>
+              <NavLink href='/admin/overview' title='Overview' pathRoot='/admin/overview' />
+              <NavLink href='/admin/users' title='Users' pathRoot='/admin/user' />
+              <NavLink href='/problems' title='Problems' pathRoot='//' />
+              <NavLink href='/records' title='Records' pathRoot='//' />
+              <NavLink href='/admin/agents' title='Agents' pathRoot='/admin/agent' />
+              <NavLink href='/admin/programmingLanguages' title='Programming languages' pathRoot='/admin/programmingLanguage' />
+              <NavLink href='/admin/maintenance' title='Maintenance' pathRoot='/admin/maintenance' />
             </nav>
             <div className='grid gap-6'>{children}</div>
           </div>

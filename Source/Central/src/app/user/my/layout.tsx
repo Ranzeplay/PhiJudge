@@ -1,5 +1,5 @@
 import { RootNavBar } from '@/components/nav/rootNavBar';
-import Link from 'next/link';
+import { NavLink } from '@/components/nav/navLink';
 
 export default function MyAccountLayout({
   children,
@@ -20,15 +20,9 @@ export default function MyAccountLayout({
               className='grid gap-4 text-sm text-muted-foreground'
               x-chunk='dashboard-04-chunk-0'
             >
-              <Link href='#' className='font-semibold text-primary'>
-                General
-              </Link>
-              <Link href='#' className='hover:underline'>
-                Security
-              </Link>
-              <Link href='#' className='hover:underline'>
-                Danger zone
-              </Link>
+              <NavLink href='/user/my/general' pathRoot='/user/my/general' title='General' />
+              <NavLink href='/user/my/security' pathRoot='/user/my/security' title='Security' />
+              <NavLink href='#' pathRoot='//' title='Danger zone' />
             </nav>
             <div className='grid gap-6'>{children}</div>
           </div>

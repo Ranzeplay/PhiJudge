@@ -61,7 +61,7 @@ export function RootNavBar() {
         {authStatus.isLoggedIn ? (
           <>
             <NavBarLink
-              href='/user/my'
+              href='/user/my/general'
               caption={`Hello, ${authStatus.userName || 'undefined'}`}
               className='text-muted-foreground'
             />
