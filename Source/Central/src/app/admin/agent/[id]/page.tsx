@@ -1,3 +1,5 @@
+'use client';
+
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,15 +11,32 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { serverPrisma } from '@/lib/serverSidePrisma';
+import { agent, AgentStatus } from '@prisma/client';
 import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { DeleteAgent, FetchAgent, SwitchSuspensionState } from './server';
+import { useRouter } from 'next/navigation';
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const agent = await serverPrisma.agent.findUnique({
-    where: {
-      id: params.id,
-    },
-  });
+export default function Page({ params }: { params: { id: string } }) {
+  const [agent, setAgent] = useState<agent | null>(null);
+  useEffect(() => {
+    fetchAgent();
+  }, [params.id]);
+
+  async function fetchAgent() {
+    setAgent(await FetchAgent(params.id));
+  }
+
+  async function switchSuspensionState() {
+    await SwitchSuspensionState(params.id);
+    await fetchAgent();
+  }
+
+  const router = useRouter();
+  async function deleteAgent() {
+    await DeleteAgent(params.id);
+    router.push('/admin/agents');
+  }
 
   return (
     <>
@@ -73,8 +92,8 @@ export default async function Page({ params }: { params: { id: string } }) {
           <CardTitle>Operations</CardTitle>
         </CardHeader>
         <CardContent className='space-x-2'>
-          <Button variant={'outline'}>Suspend</Button>
-          <Button variant={'destructive'}>Delete</Button>
+          <Button variant={'outline'} onClick={async () => await switchSuspensionState()}>{agent ? (agent.status === AgentStatus.SUSPENDED ? 'Unsuspend' : 'Suspend') : 'Loading...'}</Button>
+          <Button variant={'destructive'} onClick={async () => await deleteAgent()}>Delete</Button>
         </CardContent>
       </Card>
     </>
