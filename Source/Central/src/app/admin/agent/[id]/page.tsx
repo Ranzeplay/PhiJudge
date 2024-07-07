@@ -77,9 +77,9 @@ export default function Page({ params }: { params: { id: string } }) {
               </TableRow>
               <TableRow>
                 <TableCell>Supported languages</TableCell>
-                <TableCell>
+                <TableCell className='space-x-1'>
                   {agent?.availableLanguageId.map((lang) => (
-                    <Badge key={lang}>{lang}</Badge>
+                    <Badge key={lang} variant="secondary">{lang}</Badge>
                   ))}
                 </TableCell>
               </TableRow>
