@@ -25,7 +25,7 @@ export default async function Page({ params }: { params: { id: string } }) {
     ?.user;
   const prismaUser = await serverPrisma.user.findUnique({
     where: {
-      id: supaUser?.id,
+      id: (supaUser || { id: '' }).id,
     },
   });
 
