@@ -1,3 +1,5 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -14,17 +16,32 @@ import {
   TableCell,
   Table,
 } from '@/components/ui/table';
-import { serverPrisma } from '@/lib/serverSidePrisma';
-import { createSupabaseServiceRoleClient } from '@/lib/supabase/server';
+import { UserView } from '@/lib/models/user';
+import { useEffect, useState } from 'react';
+import { DeleteUser, FetchUser, SwitchUserAdminState } from './server';
+import { useRouter } from 'next/navigation';
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const dbUser = await serverPrisma.user.findUnique({
-    where: {
-      id: params.id,
-    },
-  });
-  const supaUser =
-    await createSupabaseServiceRoleClient().auth.admin.getUserById(params.id);
+export default function Page({ params }: { params: { id: string } }) {
+  const [user, setUser] = useState<UserView | null>(null);
+  useEffect(() => {
+    fetchUser();
+  }, [params.id]);
+
+  async function fetchUser() {
+    const user = await FetchUser(params.id);
+    setUser(user);
+  }
+
+  const router = useRouter();
+  async function deleteUser() {
+    await DeleteUser(params.id);
+    router.push('/admin/users');
+  }
+
+  async function switchAdminState() {
+    await SwitchUserAdminState(params.id);
+    fetchUser();
+  }
 
   return (
     <>
@@ -44,15 +61,19 @@ export default async function Page({ params }: { params: { id: string } }) {
             <TableBody>
               <TableRow>
                 <TableCell>Id</TableCell>
-                <TableCell>{dbUser?.id}</TableCell>
+                <TableCell>{user?.id}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Username</TableCell>
+                <TableCell>{user?.userName}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Email address</TableCell>
-                <TableCell>{supaUser.data.user?.email}</TableCell>
+                <TableCell>{user?.email}</TableCell>
               </TableRow>
               <TableRow>
                 <TableCell>Is admin</TableCell>
-                <TableCell>{dbUser?.isAdmin ? 'true' : 'false'}</TableCell>
+                <TableCell>{user?.isAdmin ? 'true' : 'false'}</TableCell>
               </TableRow>
             </TableBody>
           </Table>
@@ -63,8 +84,8 @@ export default async function Page({ params }: { params: { id: string } }) {
           <CardTitle>Operations</CardTitle>
         </CardHeader>
         <CardContent className='space-x-2'>
-          <Button disabled>Switch admin state</Button>
-          <Button variant={'destructive'} disabled>
+          <Button onClick={async () => await switchAdminState()}>Switch admin state</Button>
+          <Button variant={'destructive'} onClick={async () => deleteUser()}>
             Delete
           </Button>
         </CardContent>
