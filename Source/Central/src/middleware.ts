@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
   if(submissionPathPattern.test(pathname)) {
     if(!user) {
       return NextResponse.redirect(
-        new URL('/auth/signin', request.nextUrl)
+        new URL('/auth/login', request.nextUrl)
       );
     }
   }
