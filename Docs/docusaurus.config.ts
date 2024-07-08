@@ -43,7 +43,14 @@ const config: Config = {
       'classic',
       {
         docs: {
-          sidebarPath: './sidebars.ts'
+          sidebarPath: './sidebars.ts',
+          lastVersion: 'current',
+          versions: {
+            current: {
+              label: 'Latest',
+              path: '',
+            },
+          },
         },
         blog: {
           showReadingTime: true
@@ -71,6 +78,12 @@ const config: Config = {
           label: 'Docs',
         },
         {to: '/blog', label: 'Blog', position: 'left'},
+        {
+          type: 'docsVersionDropdown',
+          position: 'right',
+          dropdownItemsAfter: [{to: '/versions', label: 'All versions'}],
+          dropdownActiveClassDisabled: true,
+        },
         {
           href: 'https://github.com/Ranzeplay/PhiJudge',
           label: 'GitHub',
