@@ -3,6 +3,7 @@ using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System.Collections.Immutable;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace PhiJudge.Agent.Executor.Services
 {
@@ -58,6 +59,18 @@ namespace PhiJudge.Agent.Executor.Services
                 var executionStage = types.FirstOrDefault(t => t.GetInterface(nameof(IExecutionStage)) is not null)!.GetConstructors().First().Invoke([]) as IExecutionStage;
 
                 Plugins.Add(entrypoint!.Id, new Plugin(entrypoint!, compilationStage!, executionStage!));
+
+                foreach (var method in executionStage?.GetType().GetMethods() ?? [])
+                {
+                    try
+                    {
+                        RuntimeHelpers.PrepareMethod(method.MethodHandle);
+                    }
+                    catch (Exception e)
+                    {
+                        _logger.LogError(e, "Failed to prepare method {0}", method.Name);
+                    }
+                }
                 _logger.LogInformation("Loaded plugin {0}, whose id is {1}", entrypoint.Name, entrypoint.Id);
             }
             _logger.LogInformation("Found {0} plugins", Plugins.Count);
