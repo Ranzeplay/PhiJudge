@@ -10,5 +10,8 @@ WORKDIR /app
 
 COPY --from=builder /app/target/release/execution ./execution
 
+RUN apk add --no-cache sudo
+RUN adduser -u 1001 -DH judge
+
 # Map running-related files to /app/context
 ENTRYPOINT ["./execution"]
