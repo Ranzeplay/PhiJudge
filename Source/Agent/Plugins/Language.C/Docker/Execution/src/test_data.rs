@@ -9,11 +9,10 @@ pub struct TestData {
 }
 
 pub fn get_test_point_last_index() -> usize {
-    let mut count = 0;
-    while fs::metadata(format!("/app/context/{}.in", count)).is_ok() {
-        count += 1;
-    }
-    return count;
+    let count = fs::read_dir("/app/context/test_data").unwrap().count();
+    println!("[DEBUG] Found {} entries in test_data", count);
+
+    return count / 3;
 }
 
 pub fn read_test_data(order: usize) -> TestData {
@@ -25,13 +24,9 @@ pub fn read_test_data(order: usize) -> TestData {
     let output = fs::read_to_string(output_path).expect("Failed to read output file");
     let req = fs::read_to_string(req_path).expect("Failed to read req file");
 
-    let req_split: Vec<&str> = req.split(" ").collect();
+    let req_split: Vec<&str> = req.trim().split(" ").collect();
     let mem_limit = req_split[0].parse::<usize>().unwrap();
     let time_limit = req_split[1].parse::<usize>().unwrap();
 
     return TestData { order, input, output, mem_limit, time_limit };
-}
-
-pub fn copy_executable() {
-    fs::copy("/app/context/target.o", "/app/target.o").expect("Failed to copy executable");
 }
