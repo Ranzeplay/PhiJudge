@@ -143,3 +143,12 @@ Run the following bash script to create a symbolic link for service unit file:
 ```bash
 sudo ln -s /opt/phijudge/phijudge-agent.service /etc/systemd/system/phijudge-agent.service
 ```
+
+### Run service
+
+Use the following command to start the service we just created, and also setup auto-start.
+
+```bash
+sudo systemctl start phijudge-agent
+sudo systemctl enable phijudge-agent
+```

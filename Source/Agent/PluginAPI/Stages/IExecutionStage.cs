@@ -7,6 +7,8 @@ namespace PhiJudge.Agent.API.Plugin.Stages
     /// </summary>
     public interface IExecutionStage
     {
+        public event EventHandler<SingleExecutionResultEvent> SingleExecutionReport;
+
         /// <summary>
         /// Executes the stage asynchronously.
         /// </summary>
