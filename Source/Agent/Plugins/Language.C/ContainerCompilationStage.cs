@@ -1,10 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
+using PhiJudge.Agent.API.Plugin.Attributes;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System.Diagnostics;
 
 namespace PhiJudge.Plugin.Language.C
 {
-    internal class CompilationStage : ICompilationStage
+    [ApplicationRunningOn(RunningOnType.Container)]
+    internal class ContainerCompilationStage : ICompilationStage
     {
         private ILogger _logger = null!;
 
