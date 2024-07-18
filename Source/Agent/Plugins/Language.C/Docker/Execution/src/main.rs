@@ -1,18 +1,21 @@
 use crate::context::{release_context, restrict_context};
-use crate::test_data::{copy_executable, get_test_point_last_index};
+use crate::test_data::get_test_point_last_index;
 
 mod test_data;
 mod judge;
 mod context;
 
-fn main() {
-    copy_executable();
+fn main() -> anyhow::Result<()> {
+    println!("[DEBUG] Beginning execution");
     restrict_context();
+    println!("[DEBUG] Environment prepared");
 
     let test_point_count = get_test_point_last_index();
     for i in 0..test_point_count {
-        judge::judge_with_test_data(i);
+        judge::judge_with_test_data(i)?;
     }
 
     release_context();
+
+    Ok(())
 }

@@ -3,12 +3,14 @@ WORKDIR /app
 
 COPY --link . .
 
-RUN cargo build --release
+RUN cargo build
 
 FROM alpine:3.20 AS runner
 WORKDIR /app
 
-COPY --from=builder /app/target/release/execution ./execution
+COPY --from=builder /app/target/debug/execution ./execution
+COPY ./get-mem.sh ./get-mem.sh
+RUN chmod 700 ./get-mem.sh
 
 RUN apk add --no-cache sudo
 RUN adduser -u 1001 -DH judge

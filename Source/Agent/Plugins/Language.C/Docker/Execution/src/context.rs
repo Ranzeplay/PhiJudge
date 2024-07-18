@@ -1,13 +1,21 @@
 use std::process::Command;
 
 pub fn restrict_context() {
-    Command::new("chmod 700 /app/context/")
+    println!("[DEBUG] Restricting context");
+    Command::new("chmod")
+        .arg("-R")
+        .arg("700")
+        .arg("/app/context/test_data")
         .spawn()
         .expect("Failed to restrict context");
 }
 
 pub fn release_context() {
-    Command::new("chmod 755 /app/context/")
+    println!("[DEBUG] Releasing context");
+    Command::new("chmod")
+        .arg("-R")
+        .arg("755")
+        .arg("/app/context/test_data")
         .spawn()
         .expect("Failed to release context");
 }
