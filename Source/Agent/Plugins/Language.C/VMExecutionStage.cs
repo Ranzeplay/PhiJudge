@@ -42,7 +42,7 @@ namespace PhiJudge.Plugin.Language.C
                 StartInfo = new()
                 {
                     FileName = "podman",
-                    Arguments = $"run --rm -v {directory}:/app/context:Z --network=none phi-plugin-c-execution",
+                    Arguments = $"run --rm -v {directory}:/app/context:Z --network=none localhost/phi-plugin-c-execution:latest",
                     WorkingDirectory = directory,
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,

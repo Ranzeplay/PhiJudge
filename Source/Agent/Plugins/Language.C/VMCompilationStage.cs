@@ -20,7 +20,7 @@ namespace PhiJudge.Plugin.Language.C
                 StartInfo = new()
                 {
                     FileName = "podman",
-                    Arguments = $"run --rm -v {directoryPath}:/working:Z --network=none phi-plugin-c-compilaton",
+                    Arguments = $"run --rm -v {directoryPath}:/working:Z --network=none localhost/phi-plugin-c-compilation:latest",
                     WorkingDirectory = directoryPath,
                     RedirectStandardInput = true,
                     RedirectStandardOutput = true,
@@ -31,7 +31,7 @@ namespace PhiJudge.Plugin.Language.C
             };
             process.Start();
             process.WaitForExit();
-            var output = process.StandardOutput.ReadToEnd();
+            var output = $"stdout: {process.StandardOutput.ReadToEnd()}\nstderr: {process.StandardError.ReadToEnd()}";
 
             var hasOutputFile = File.Exists(Path.Combine(directoryPath, "target.o"));
             if (hasOutputFile)
