@@ -33,9 +33,9 @@ namespace PhiJudge.Plugin.Language.C
             Directory.CreateDirectory(testDataPath);
             foreach (var tp in testPoints.OrderBy(x => x.Order))
             {
-                await File.AppendAllTextAsync(Path.Combine(testDataPath, $"{tp}.in"), tp.Input);
-                await File.AppendAllTextAsync(Path.Combine(testDataPath, $"{tp}.out"), tp.ExpectedOutput);
-                await File.AppendAllTextAsync(Path.Combine(testDataPath, $"{tp}.req"), $"{tp.MemoryLimitBytes} {tp.TimeLimitMilliseconds}");
+                await File.AppendAllTextAsync(Path.Combine(testDataPath, $"{tp.Order}.in"), tp.Input);
+                await File.AppendAllTextAsync(Path.Combine(testDataPath, $"{tp.Order}.out"), tp.ExpectedOutput);
+                await File.AppendAllTextAsync(Path.Combine(testDataPath, $"{tp.Order}.req"), $"{tp.MemoryLimitBytes} {tp.TimeLimitMilliseconds}");
             }
             _logger.LogInformation("Record {0}, test data written to disk", recordId);
 
