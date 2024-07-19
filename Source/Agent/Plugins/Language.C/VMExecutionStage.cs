@@ -6,6 +6,7 @@ using System.Diagnostics;
 
 namespace PhiJudge.Plugin.Language.C
 {
+    [ExecutionStrategy(ExecutionType.Batch)]
     [ApplicationRunningOn(RunningOnType.VirtualMachine)]
     internal class VMExecutionStage : IExecutionStage
     {
@@ -23,7 +24,7 @@ namespace PhiJudge.Plugin.Language.C
             _logger = logger;
         }
 
-        public async Task ExecuteAllAsync(string directory, IEnumerable<TestPointData> testPoints)
+        public async Task ExecuteAllAsync(string directory, long recordId, IEnumerable<TestPointData> testPoints)
         {
             // Prepare data
             foreach (var tp in testPoints.OrderBy(x => x.Order))
@@ -68,7 +69,7 @@ namespace PhiJudge.Plugin.Language.C
                     _ => ExecutionResultType.Unknown
                 };
 
-                SingleExecutionReport?.Invoke(this, new SingleExecutionResultEvent(order, type, time, memory));
+                SingleExecutionReport?.Invoke(this, new SingleExecutionResultEvent(recordId, order, type, time, memory));
             };
 
             _ = Task.Factory.StartNew(async () =>
