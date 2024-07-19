@@ -26,7 +26,7 @@ namespace PhiJudge.Plugin.Language.C
 
         public async Task ExecuteAllAsync(string directory, long recordId, IEnumerable<TestPointData> testPoints)
         {
-            _logger.LogInformation("Running tests for record {0}", recordId);
+            _logger.LogInformation("Running batch tests for record {0}", recordId);
 
             // Prepare data
             var testDataPath = Path.Combine(directory, "test_data");
@@ -53,7 +53,7 @@ namespace PhiJudge.Plugin.Language.C
                     CreateNoWindow = true
                 }
             };
-            process.Start();
+            
             process.OutputDataReceived += (sender, e) =>
             {
                 if (string.IsNullOrWhiteSpace(e.Data)) return;
@@ -74,9 +74,19 @@ namespace PhiJudge.Plugin.Language.C
                     _ => ExecutionResultType.Unknown
                 };
 
-                _logger.LogInformation("Received test result for {0}+{1}", recordId, order);
+                _logger.LogInformation("Received test output for {0}+{1}", recordId, e.Data);
                 SingleExecutionReport?.Invoke(this, new SingleExecutionResultEvent(recordId, order, type, time, memory));
             };
+
+            process.ErrorDataReceived += (sender, e) =>
+            {
+                if (string.IsNullOrWhiteSpace(e.Data)) return;
+                _logger.LogError("Error from record {0}: {1}", recordId, e.Data);
+            };
+
+            process.Start();
+            process.BeginErrorReadLine();
+            process.BeginOutputReadLine();
 
             _ = Task.Factory.StartNew(async () =>
             {

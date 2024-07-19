@@ -90,7 +90,7 @@ pub fn judge_with_test_data(order: usize) -> anyhow::Result<()> {
     profiler.wait().expect("Failed to wait on profiler");
 
     let mut result_status: String;
-    if stdout == test_data.output {
+    if stdout.trim() == test_data.output.trim() {
         result_status = "AC".to_string();
     } else {
         result_status = "WA".to_string();
