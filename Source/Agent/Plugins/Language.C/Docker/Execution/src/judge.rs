@@ -1,7 +1,6 @@
-use std::io::{Read, stdin, Stdin, Write};
+use std::io::{Read, Write};
 use std::process::{Command, Stdio};
-use fork::{daemon, Fork};
-use libc::{exit, EXIT_SUCCESS};
+
 use crate::test_data::read_test_data;
 
 pub fn judge_with_test_data(order: usize) -> anyhow::Result<()> {
@@ -90,7 +89,7 @@ pub fn judge_with_test_data(order: usize) -> anyhow::Result<()> {
     }
     profiler.wait().expect("Failed to wait on profiler");
 
-    let mut result_status = String::new();
+    let mut result_status: String;
     if stdout == test_data.output {
         result_status = "AC".to_string();
     } else {
