@@ -2,6 +2,8 @@
 using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Attributes;
 using PhiJudge.Agent.API.Plugin.Stages;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Reflection;
 
 namespace PhiJudge.Agent.Executor.Services
@@ -13,15 +15,30 @@ namespace PhiJudge.Agent.Executor.Services
         private readonly ILogger<LocalExecutionService> _logger;
         private readonly string TempDirectoryPath = Directory.CreateTempSubdirectory("PhiJudge").FullName;
         private readonly bool isInContainer;
+        private readonly ObservableCollection<long> TestQueue;
 
         public LocalExecutionService(IDataExchangeService dataExchangeService, PluginService pluginService, ILogger<LocalExecutionService> logger)
         {
             _dataExchangeService = dataExchangeService;
             _pluginService = pluginService;
             _logger = logger;
+            TestQueue = [];
             isInContainer = Environment.GetEnvironmentVariable("RUNTIME")?.ToLower() == "container";
 
+            TestQueue.CollectionChanged += TestQueue_CollectionChanged;
+
             _dataExchangeService.AddRecordAllocationHandler(RecordAllocationHandler);
+        }
+
+        private async void TestQueue_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if(e.Action == NotifyCollectionChangedAction.Remove)
+            {
+                if(e.NewItems?.Count > 0)
+                {
+                    await RunAsync((long)e.NewItems[0]!);
+                }
+            }
         }
 
         public async Task RunAsync(long recordId)
@@ -98,9 +115,9 @@ namespace PhiJudge.Agent.Executor.Services
             await _dataExchangeService.PushExecutionResultAsync(e.RecordId, new(e.Type, "lang.c ignored", e.TimeMilliseconds, e.PeakMemoryBytes));
         }
 
-        private async void RecordAllocationHandler(object? sender, long e)
+        private void RecordAllocationHandler(object? sender, long e)
         {
-            await RunAsync(e);
+            TestQueue.Add(e);
         }
 
         public void Dispose()
