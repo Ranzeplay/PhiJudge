@@ -96,7 +96,8 @@ namespace PhiJudge.Agent.Executor.Services
                 {
                     var instance = plugin.ExecutionStage.First(x => MatchStageToEnvironment(x));
                     instance.SingleExecutionReport += BatchExecutionOnSingleExecutionReport;
-                    await instance.ExecuteAllAsync(workingDirectory.FullName, recordId, data.TestPoints);
+                    var task = instance.ExecuteAllAsync(workingDirectory.FullName, recordId, data.TestPoints);
+                    task.Wait();
                     instance.SingleExecutionReport -= BatchExecutionOnSingleExecutionReport;
                 }
                 else
@@ -105,7 +106,8 @@ namespace PhiJudge.Agent.Executor.Services
                     foreach (var testPoint in data.TestPoints)
                     {
                         var executionResult = await ExecuteSingleAsync(plugin, recordId, testPoint);
-                        await _dataExchangeService.PushExecutionResultAsync(recordId, executionResult);
+                        var task = _dataExchangeService.PushExecutionResultAsync(recordId, executionResult);
+                        task.Wait();
                     }
                 }
 
