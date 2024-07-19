@@ -38,6 +38,12 @@ namespace PhiJudge.Agent.Executor.Services
                 {
                     await RunAsync((long)e.NewItems[0]!);
                 }
+            } else if (e.Action == NotifyCollectionChangedAction.Add)
+            {
+                if(e.NewItems?.Count == 1)
+                {
+                    await RunAsync((long)e.NewItems[0]!);
+                }
             }
         }
 
@@ -61,6 +67,8 @@ namespace PhiJudge.Agent.Executor.Services
             {
                 _logger.LogInformation("Failed to compile source code of record {0}", recordData.RecordId);
             }
+
+            TestQueue.Remove(recordId);
         }
 
         public async Task<CompilationResult> CompileAsync(Plugin plugin, RecordData recordData)
