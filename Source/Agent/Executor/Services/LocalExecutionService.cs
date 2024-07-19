@@ -124,7 +124,10 @@ namespace PhiJudge.Agent.Executor.Services
         private async void BatchExecutionOnSingleExecutionReport(object? sender, SingleExecutionResultEvent e)
         {
             _logger.LogInformation("Uploading results for record {0}+{1} in a batch execution", e.RecordId, e.Order);
-            await _dataExchangeService.PushExecutionResultAsync(e.RecordId, new(e.Type, "lang.c ignored", e.TimeMilliseconds, e.PeakMemoryBytes));
+            var result = new ExecutionResult(e.Type, "lang.c ignored", e.TimeMilliseconds, e.PeakMemoryBytes);
+            result.RecordId = e.RecordId;
+            result.Order = e.Order;
+            await _dataExchangeService.PushExecutionResultAsync(e.RecordId, result);
         }
 
         private void RecordAllocationHandler(object? sender, long e)
