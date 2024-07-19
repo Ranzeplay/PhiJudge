@@ -56,7 +56,7 @@ namespace PhiJudge.Plugin.Language.C
             process.Start();
             process.OutputDataReceived += (sender, e) =>
             {
-                if (e.Data is null) return;
+                if (string.IsNullOrWhiteSpace(e.Data)) return;
                 if (e.Data.StartsWith("[")) return;
                 var data = e.Data.Trim().Split(' ');
 
