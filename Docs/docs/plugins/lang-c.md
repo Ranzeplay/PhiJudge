@@ -10,7 +10,7 @@ If you are running the Agent outside of a Docker container, make sure that you h
 
 ### For compiling programs
 
-Navigate to `Source\Agent\Plugins\Language.C\Docker\Compilation`
+Navigate to `Source/Agent/Plugins/Language.C/Docker/Compilation`
 
 Run the following command:
 
@@ -20,7 +20,7 @@ podman build -t phi-plugin-c-compilation
 
 ### For executing programs
 
-Navigate to `Source\Agent\Plugins\Language.C\Docker\Execution`
+Navigate to `Source/Agent/Plugins/Language.C/Docker/Execution`
 
 Run the following command:
 
