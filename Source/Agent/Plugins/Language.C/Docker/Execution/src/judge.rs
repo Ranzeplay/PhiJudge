@@ -20,13 +20,25 @@ pub fn judge_with_test_data(order: usize) -> anyhow::Result<()> {
         .arg("time")
         .arg("-v")
         .arg("-o")
-        .arg(format!("/app/context/{}.prof", order))
+        .arg(format!("/app/profiling/{}.prof", order))
         .arg("/app/context/target.o")
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
         .spawn()
         .expect("Failed to start testing process");
+
+    if let Some(ref mut stdin) = child.stdin {
+        stdin.write_all(test_data.input.as_bytes()).expect("Failed to write to stdin");
+    }
+
+    if let Some(ref mut out) = child.stdout.take() {
+        out.read_to_string(&mut stdout)?;
+        println!("[EXEC #{}] Got stdout {}", order, stdout);
+    }
+    if let Some(ref mut err) = child.stderr.take() {
+        err.read_to_string(&mut stderr)?;
+    }
 
     println!("[DEBUG] Starting test for order {}", order);
     
@@ -55,18 +67,6 @@ pub fn judge_with_test_data(order: usize) -> anyhow::Result<()> {
             .expect("Failed to kill process");
         kill_proc.wait().expect("Failed to wait on kill process");
     });
-
-    if let Some(ref mut stdin) = child.stdin {
-        stdin.write_all(test_data.input.as_bytes()).expect("Failed to write to stdin");
-    }
-
-    if let Some(ref mut out) = child.stdout.take() {
-        out.read_to_string(&mut stdout)?;
-        println!("[EXEC #{}] Got stdout {}", order, stdout);
-    }
-    if let Some(ref mut err) = child.stderr.take() {
-        err.read_to_string(&mut stderr)?;
-    }
 
     let child_status = child.wait().expect("Failed to wait on child");
     println!("[DEBUG] Execution ended for order {}", order);

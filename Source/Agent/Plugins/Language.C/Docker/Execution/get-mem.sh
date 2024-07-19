@@ -1,4 +1,4 @@
 #!/bin/sh
 
-cat /app/context/$1.prof | grep 'Maximum resident set size' | awk '{print $6}'
+cat /app/profiling/$1.prof | grep 'Maximum resident set size' | awk '{print $6}'
 
