@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using PhiJudge.Agent.API.Plugin;
+using PhiJudge.Agent.API.Plugin.Attributes;
 using PhiJudge.Agent.API.Plugin.Stages;
 
 namespace PhiJudge.Agent.Executor.Services
@@ -62,15 +63,42 @@ namespace PhiJudge.Agent.Executor.Services
 
         public async Task ExecuteAllAsync(Plugin plugin, long recordId, ProblemData data)
         {
-            await _dataExchangeService.BeginExecutionAsync(recordId);
-            foreach (var testPoint in data.TestPoints)
+            var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordId.ToString()));
+            var strategyAttr = plugin.ExecutionStage.GetType().GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(ExecutionStrategy));
+            if (strategyAttr != null)
             {
-                var executionResult = await ExecuteSingleAsync(plugin, recordId, testPoint);
-                await _dataExchangeService.PushExecutionResultAsync(recordId, executionResult);
+                if (((ExecutionStrategy)strategyAttr).Type == ExecutionType.Batch)
+                {
+                    var instance = plugin.ExecutionStage;
+                    instance.SingleExecutionReport += BatchExecutionOnSingleExecutionReport;
+                    await instance.ExecuteAllAsync(workingDirectory.FullName, recordId, data.TestPoints);
+                    instance.SingleExecutionReport -= BatchExecutionOnSingleExecutionReport;
+                }
+
+                else
+                {
+                    await _dataExchangeService.BeginExecutionAsync(recordId);
+                    foreach (var testPoint in data.TestPoints)
+                    {
+                        var executionResult = await ExecuteSingleAsync(plugin, recordId, testPoint);
+                        await _dataExchangeService.PushExecutionResultAsync(recordId, executionResult);
+                    }
+
+                }
+
+                await _dataExchangeService.FinishExecutionAsync(recordId);
+            }
+            else
+            {
+                throw new NotImplementedException("Execution strategy not found");
             }
 
-            await _dataExchangeService.FinishExecutionAsync(recordId);
             _logger.LogInformation("Successfully finished test for record {0}", recordId);
+        }
+
+        private async void BatchExecutionOnSingleExecutionReport(object? sender, SingleExecutionResultEvent e)
+        {
+            await _dataExchangeService.PushExecutionResultAsync(e.RecordId, new(e.Type, "lang.c ignored", e.TimeMilliseconds, e.PeakMemoryBytes));
         }
 
         public async Task<ExecutionResult> ExecuteSingleAsync(Plugin plugin, long recordId, TestPointData data)

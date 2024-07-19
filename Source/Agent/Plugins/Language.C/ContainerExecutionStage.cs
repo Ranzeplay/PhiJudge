@@ -6,10 +6,18 @@ using System.Diagnostics;
 
 namespace PhiJudge.Plugin.Language.C
 {
+    [ExecutionStrategy(ExecutionType.Single)]
     [ApplicationRunningOn(RunningOnType.Container)]
     internal class ContainerExecutionStage : IExecutionStage
     {
         private ILogger _logger = null!;
+
+        public event EventHandler<SingleExecutionResultEvent>? SingleExecutionReport;
+
+        public Task ExecuteAllAsync(string directory, long recordId, IEnumerable<TestPointData> testPoints)
+        {
+            throw new NotImplementedException();
+        }
 
         public async Task<ExecutionResult> ExecuteAsync(string directory, TestPointData testPoint)
         {
