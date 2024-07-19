@@ -29,11 +29,13 @@ namespace PhiJudge.Plugin.Language.C
             _logger.LogInformation("Running tests for record {0}", recordId);
 
             // Prepare data
+            var testDataPath = Path.Combine(directory, "test_data");
+            Directory.CreateDirectory(testDataPath);
             foreach (var tp in testPoints.OrderBy(x => x.Order))
             {
-                await File.AppendAllTextAsync(Path.Combine(directory, $"{tp}.in"), tp.Input);
-                await File.AppendAllTextAsync(Path.Combine(directory, $"{tp}.out"), tp.ExpectedOutput);
-                await File.AppendAllTextAsync(Path.Combine(directory, $"{tp}.req"), $"{tp.MemoryLimitBytes} {tp.TimeLimitMilliseconds}");
+                await File.AppendAllTextAsync(Path.Combine(testDataPath, $"{tp}.in"), tp.Input);
+                await File.AppendAllTextAsync(Path.Combine(testDataPath, $"{tp}.out"), tp.ExpectedOutput);
+                await File.AppendAllTextAsync(Path.Combine(testDataPath, $"{tp}.req"), $"{tp.MemoryLimitBytes} {tp.TimeLimitMilliseconds}");
             }
             _logger.LogInformation("Record {0}, test data written to disk", recordId);
 
@@ -55,7 +57,7 @@ namespace PhiJudge.Plugin.Language.C
             process.OutputDataReceived += (sender, e) =>
             {
                 if (e.Data is null) return;
-                if (e.Data.StartsWith("[DEBUG]")) return;
+                if (e.Data.StartsWith("[")) return;
                 var data = e.Data.Trim().Split(' ');
 
                 var order = long.Parse(data[0]);

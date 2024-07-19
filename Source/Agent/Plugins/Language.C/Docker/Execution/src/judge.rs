@@ -75,7 +75,7 @@ pub fn judge_with_test_data(order: usize) -> anyhow::Result<()> {
 
     println!("[DEBUG] Starting memory-fetch for order {}", order);
     let mut profiler = Command::new("/bin/sh")
-        .arg("/app/context/get-mem.sh")
+        .arg("/app/get-mem.sh")
         .arg(order.to_string())
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
