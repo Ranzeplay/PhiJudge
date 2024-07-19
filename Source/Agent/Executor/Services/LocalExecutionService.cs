@@ -2,6 +2,7 @@
 using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Attributes;
 using PhiJudge.Agent.API.Plugin.Stages;
+using System.Reflection;
 
 namespace PhiJudge.Agent.Executor.Services
 {
@@ -11,25 +12,16 @@ namespace PhiJudge.Agent.Executor.Services
         private readonly PluginService _pluginService;
         private readonly ILogger<LocalExecutionService> _logger;
         private readonly string TempDirectoryPath = Directory.CreateTempSubdirectory("PhiJudge").FullName;
+        private readonly bool isInContainer;
 
         public LocalExecutionService(IDataExchangeService dataExchangeService, PluginService pluginService, ILogger<LocalExecutionService> logger)
         {
             _dataExchangeService = dataExchangeService;
             _pluginService = pluginService;
             _logger = logger;
+            isInContainer = Environment.GetEnvironmentVariable("RUNTIME")?.ToLower() == "container";
 
             _dataExchangeService.AddRecordAllocationHandler(RecordAllocationHandler);
-        }
-
-        private async void RecordAllocationHandler(object? sender, long e)
-        {
-            await RunAsync(e);
-        }
-
-        public void Dispose()
-        {
-            _logger.LogInformation("Deleting temporary directory");
-            Directory.Delete(TempDirectoryPath, true);
         }
 
         public async Task RunAsync(long recordId)
@@ -58,18 +50,23 @@ namespace PhiJudge.Agent.Executor.Services
         {
             await _dataExchangeService.BeginCompilationAsync(recordData.RecordId);
             var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordData.RecordId.ToString()));
-            return await plugin.CompilationStage.CompileAsync(workingDirectory.FullName, recordData.SourceCode, recordData.EnableOptimization, recordData.WarningAsError);
+            return await plugin.CompilationStage
+                .First(x => MatchStageToEnvironment(x))
+                .CompileAsync(workingDirectory.FullName, recordData.SourceCode, recordData.EnableOptimization, recordData.WarningAsError);
         }
 
         public async Task ExecuteAllAsync(Plugin plugin, long recordId, ProblemData data)
         {
             var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordId.ToString()));
-            var strategyAttr = plugin.ExecutionStage.GetType().GetCustomAttributes(true).FirstOrDefault(x => x.GetType() == typeof(ExecutionStrategy));
+            var strategyAttr = plugin.ExecutionStage.First(x => MatchStageToEnvironment(x))
+                .GetType()
+                .GetCustomAttributes(true)
+                .FirstOrDefault(x => x.GetType() == typeof(ExecutionStrategy));
             if (strategyAttr != null)
             {
                 if (((ExecutionStrategy)strategyAttr).Type == ExecutionType.Batch)
                 {
-                    var instance = plugin.ExecutionStage;
+                    var instance = plugin.ExecutionStage.First(x => MatchStageToEnvironment(x));
                     instance.SingleExecutionReport += BatchExecutionOnSingleExecutionReport;
                     await instance.ExecuteAllAsync(workingDirectory.FullName, recordId, data.TestPoints);
                     instance.SingleExecutionReport -= BatchExecutionOnSingleExecutionReport;
@@ -101,15 +98,35 @@ namespace PhiJudge.Agent.Executor.Services
             await _dataExchangeService.PushExecutionResultAsync(e.RecordId, new(e.Type, "lang.c ignored", e.TimeMilliseconds, e.PeakMemoryBytes));
         }
 
+        private async void RecordAllocationHandler(object? sender, long e)
+        {
+            await RunAsync(e);
+        }
+
+        public void Dispose()
+        {
+            _logger.LogInformation("Deleting temporary directory");
+            Directory.Delete(TempDirectoryPath, true);
+        }
+
         public async Task<ExecutionResult> ExecuteSingleAsync(Plugin plugin, long recordId, TestPointData data)
         {
             _logger.LogInformation("Executing test point {0} for record {1}", data.Order, recordId);
 
             var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordId.ToString()));
-            var result = await plugin.ExecutionStage.ExecuteAsync(workingDirectory.FullName, data);
+            var result = await plugin.ExecutionStage
+                .First(x => MatchStageToEnvironment(x))
+                .ExecuteAsync(workingDirectory.FullName, data);
             result.RecordId = recordId;
             result.Order = data.Order;
             return result;
+        }
+
+        private bool MatchStageToEnvironment<T>(T x)
+        {
+            return (x?.GetType().GetCustomAttribute<ApplicationRunningOn>()?.RunningOnType) != RunningOnType.VirtualMachine
+                ? isInContainer
+                : !isInContainer;
         }
     }
 }
