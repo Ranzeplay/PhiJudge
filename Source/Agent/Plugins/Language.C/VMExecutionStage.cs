@@ -26,6 +26,8 @@ namespace PhiJudge.Plugin.Language.C
 
         public async Task ExecuteAllAsync(string directory, long recordId, IEnumerable<TestPointData> testPoints)
         {
+            _logger.LogInformation("Running tests for record {0}", recordId);
+
             // Prepare data
             foreach (var tp in testPoints.OrderBy(x => x.Order))
             {
@@ -33,6 +35,7 @@ namespace PhiJudge.Plugin.Language.C
                 await File.AppendAllTextAsync(Path.Combine(directory, $"{tp}.out"), tp.ExpectedOutput);
                 await File.AppendAllTextAsync(Path.Combine(directory, $"{tp}.req"), $"{tp.MemoryLimitBytes} {tp.TimeLimitMilliseconds}");
             }
+            _logger.LogInformation("Record {0}, test data written to disk", recordId);
 
             var process = new Process
             {
@@ -69,16 +72,22 @@ namespace PhiJudge.Plugin.Language.C
                     _ => ExecutionResultType.Unknown
                 };
 
+                _logger.LogInformation("Received test result for {0}+{1}", recordId, order);
                 SingleExecutionReport?.Invoke(this, new SingleExecutionResultEvent(recordId, order, type, time, memory));
             };
 
             _ = Task.Factory.StartNew(async () =>
             {
                 await Task.Delay((int)testPoints.Sum(x => x.TimeLimitMilliseconds) + 3000);
-                if (!process.HasExited) process.Kill();
+                if (!process.HasExited)
+                {
+                    _logger.LogInformation("Record {0} ran out of time, killing process", recordId);
+                    process.Kill();
+                }
             });
 
             process.WaitForExit();
+            _logger.LogInformation("Record {0} finished testing", recordId);
         }
     }
 }
