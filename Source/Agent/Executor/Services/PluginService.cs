@@ -54,9 +54,15 @@ namespace PhiJudge.Agent.Executor.Services
                 var assembly = Assembly.LoadFile(file);
                 var types = assembly.GetTypes();
 
-                var entrypoint = types.FirstOrDefault(t => t.GetInterface(nameof(IPluginEntrypoint)) is not null)!.GetConstructors().First().Invoke([]) as IPluginEntrypoint;
-                var compilationStage = types.FirstOrDefault(t => t.GetInterface(nameof(ICompilationStage)) is not null)!.GetConstructors().First().Invoke([]) as ICompilationStage;
-                var executionStage = types.FirstOrDefault(t => t.GetInterface(nameof(IExecutionStage)) is not null)!.GetConstructors().First().Invoke([]) as IExecutionStage;
+                var entrypoint = types.FirstOrDefault(t => t.GetInterface(nameof(IPluginEntrypoint)) is not null)!
+                    .GetConstructors()
+                    .First()
+                    .Invoke([])
+                    as IPluginEntrypoint;
+                var compilationStage = types.ToList().FindAll(t => t.GetInterface(nameof(ICompilationStage)) is not null)!
+                    .ConvertAll(t => t.GetConstructors().First().Invoke([]) as ICompilationStage);
+                var executionStage = types.ToList().FindAll(t => t.GetInterface(nameof(IExecutionStage)) is not null)
+                    .ConvertAll(t => t.GetConstructors().First().Invoke([]) as IExecutionStage);
 
                 Plugins.Add(entrypoint!.Id, new Plugin(entrypoint!, compilationStage!, executionStage!));
 
@@ -85,8 +91,8 @@ namespace PhiJudge.Agent.Executor.Services
                 var pluginLogger = _loggerFactory.CreateLogger(plugin.PluginEntrypoint.Id);
 
                 plugin.PluginEntrypoint.Load(pluginLogger);
-                plugin.CompilationStage.SetLogger(pluginLogger);
-                plugin.ExecutionStage.SetLogger(pluginLogger);
+                plugin.CompilationStage.ToList().ForEach(X => X.SetLogger(pluginLogger));
+                plugin.ExecutionStage.ToList().ForEach(x => x.SetLogger(pluginLogger));
             }
 
             _logger.LogInformation("Loaded {0} plugins", Plugins.Count);
