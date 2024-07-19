@@ -32,16 +32,19 @@ namespace PhiJudge.Agent.Executor.Services
 
         private async void TestQueue_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
-            if(e.Action == NotifyCollectionChangedAction.Remove)
+            if (e.Action == NotifyCollectionChangedAction.Remove)
             {
-                if(e.NewItems?.Count > 0)
+                if (e.NewItems?.Count > 0)
                 {
+                    _logger.LogInformation("There are tests running currently, inserted to queue");
                     await RunAsync((long)e.NewItems[0]!);
                 }
-            } else if (e.Action == NotifyCollectionChangedAction.Add)
+            }
+            else if (e.Action == NotifyCollectionChangedAction.Add)
             {
-                if(e.NewItems?.Count == 1)
+                if (e.NewItems?.Count == 1)
                 {
+                    _logger.LogInformation("Queue is empty, running tests for record {0} immediately", e.NewItems[0]!);
                     await RunAsync((long)e.NewItems[0]!);
                 }
             }
@@ -120,11 +123,13 @@ namespace PhiJudge.Agent.Executor.Services
 
         private async void BatchExecutionOnSingleExecutionReport(object? sender, SingleExecutionResultEvent e)
         {
+            _logger.LogInformation("Uploading results for record {0}+{1} in a batch execution", e.RecordId, e.Order);
             await _dataExchangeService.PushExecutionResultAsync(e.RecordId, new(e.Type, "lang.c ignored", e.TimeMilliseconds, e.PeakMemoryBytes));
         }
 
         private void RecordAllocationHandler(object? sender, long e)
         {
+            _logger.LogInformation("Received record allocation event for record {0}, inserting to test queue", e);
             TestQueue.Add(e);
         }
 
