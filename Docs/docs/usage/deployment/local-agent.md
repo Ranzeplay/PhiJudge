@@ -125,6 +125,7 @@ TimeoutStopSec=30s
 Restart=on-failure
 RestartSec=10
 Environment="PLUGINS_DIR=/opt/phijudge/plugins"
+Environment="RUNTIME=vm"
 Environment="SUPABASE_URL="                            # Fill with yours
 Environment="SUPABASE_KEY="                            # Fill with yours
 Environment="CENTRAL_SERVER_URL="                      # Fill with yours

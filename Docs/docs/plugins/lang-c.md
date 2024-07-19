@@ -15,7 +15,7 @@ Navigate to `Source/Agent/Plugins/Language.C/Docker/Compilation`
 Run the following command:
 
 ```bash
-podman build -t phi-plugin-c-compilation
+podman build -t phi-plugin-c-compilation .
 ```
 
 ### For executing programs
@@ -25,5 +25,5 @@ Navigate to `Source/Agent/Plugins/Language.C/Docker/Execution`
 Run the following command:
 
 ```bash
-podman build -t phi-plugin-c-execution
+podman build -t phi-plugin-c-execution .
 ```
