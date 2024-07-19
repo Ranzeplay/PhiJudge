@@ -12,10 +12,7 @@ namespace PhiJudge.Plugin.Language.C
 
         public Task<CompilationResult> CompileAsync(string directoryPath, string sourceCode, bool enableOptimization, bool warningAsError)
         {
-            var stream = File.Create(Path.Combine(directoryPath, "source.c"));
-            var writer = new StreamWriter(stream);
-            writer.WriteLine(sourceCode);
-            stream.Close();
+            File.AppendAllText(Path.Combine(directoryPath, "source.c"), sourceCode);
 
             _logger.LogInformation($"Compiling source code in {directoryPath}");
             var process = new Process
