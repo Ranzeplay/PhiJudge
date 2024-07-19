@@ -99,7 +99,6 @@ namespace PhiJudge.Agent.Executor.Services
                     await instance.ExecuteAllAsync(workingDirectory.FullName, recordId, data.TestPoints);
                     instance.SingleExecutionReport -= BatchExecutionOnSingleExecutionReport;
                 }
-
                 else
                 {
                     await _dataExchangeService.BeginExecutionAsync(recordId);
@@ -108,7 +107,6 @@ namespace PhiJudge.Agent.Executor.Services
                         var executionResult = await ExecuteSingleAsync(plugin, recordId, testPoint);
                         await _dataExchangeService.PushExecutionResultAsync(recordId, executionResult);
                     }
-
                 }
 
                 await _dataExchangeService.FinishExecutionAsync(recordId);
