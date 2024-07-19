@@ -64,19 +64,22 @@ namespace PhiJudge.Agent.Executor.Services
                 var executionStage = types.ToList().FindAll(t => t.GetInterface(nameof(IExecutionStage)) is not null)
                     .ConvertAll(t => t.GetConstructors().First().Invoke([]) as IExecutionStage);
 
-                Plugins.Add(entrypoint!.Id, new Plugin(entrypoint!, compilationStage!, executionStage!));
-
-                foreach (var method in executionStage?.GetType().GetMethods() ?? [])
+                foreach (var entry in executionStage)
                 {
-                    try
+                    foreach (var method in entry?.GetType().GetMethods() ?? [])
                     {
-                        RuntimeHelpers.PrepareMethod(method.MethodHandle);
-                    }
-                    catch (Exception e)
-                    {
-                        _logger.LogError(e, "Failed to prepare method {0}", method.Name);
+                        try
+                        {
+                            RuntimeHelpers.PrepareMethod(method.MethodHandle);
+                        }
+                        catch (Exception e)
+                        {
+                            _logger.LogError(e, "Failed to prepare method {0}", method.Name);
+                        }
                     }
                 }
+
+                Plugins.Add(entrypoint!.Id, new Plugin(entrypoint!, compilationStage!, executionStage!));
                 _logger.LogInformation("Loaded plugin {0}, whose id is {1}", entrypoint.Name, entrypoint.Id);
             }
             _logger.LogInformation("Found {0} plugins", Plugins.Count);
