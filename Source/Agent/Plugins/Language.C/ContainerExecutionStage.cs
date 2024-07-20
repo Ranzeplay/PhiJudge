@@ -1,25 +1,16 @@
 ﻿using Microsoft.Extensions.Logging;
 using PhiJudge.Agent.API.Plugin;
-using PhiJudge.Agent.API.Plugin.Attributes;
+using PhiJudge.Agent.API.Plugin.Enums;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System.Diagnostics;
 
 namespace PhiJudge.Plugin.Language.C
 {
-    [ExecutionStrategy(ExecutionType.Single)]
-    [ApplicationRunningOn(RunningOnType.Container)]
-    internal class ContainerExecutionStage : IExecutionStage
+    internal class ContainerExecutionStage(ILogger logger) : SingleExecutionStageBase(logger)
     {
-        private ILogger _logger = null!;
+        public override EnvironmentType EnvironmentType => EnvironmentType.Container;
 
-        public event EventHandler<SingleExecutionResultEvent>? SingleExecutionReport;
-
-        public Task ExecuteAllAsync(string directory, long recordId, IEnumerable<TestPointData> testPoints)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<ExecutionResult> ExecuteAsync(string directory, TestPointData testPoint)
+        public override async Task<ExecutionResult> ExecuteSingleAsync(string directory, long recordId, TestPointData testPoint)
         {
             _logger.LogInformation("Executing test point {0}+{1} in {2} from compiled target", new DirectoryInfo(directory).Name, testPoint.Order, directory);
 
@@ -99,7 +90,5 @@ namespace PhiJudge.Plugin.Language.C
 
             return new(resultType, output, stopwatch.ElapsedMilliseconds, memoryUsageNum);
         }
-
-        public void SetLogger(ILogger logger) => _logger = logger;
     }
 }

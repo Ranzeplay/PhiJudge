@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Attributes;
+using PhiJudge.Agent.API.Plugin.Enums;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -79,45 +80,54 @@ namespace PhiJudge.Agent.Executor.Services
             await _dataExchangeService.BeginCompilationAsync(recordData.RecordId);
             var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordData.RecordId.ToString()));
             return await plugin.CompilationStage
-                .First(x => MatchStageToEnvironment(x))
+                .First(x => MatchCompilationStageToEnvironment(x))
                 .CompileAsync(workingDirectory.FullName, recordData.SourceCode, recordData.EnableOptimization, recordData.WarningAsError);
         }
 
         public async Task ExecuteAllAsync(Plugin plugin, long recordId, ProblemData data)
         {
-            var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordId.ToString()));
-            var strategyAttr = plugin.ExecutionStage.First(x => MatchStageToEnvironment(x))
-                .GetType()
-                .GetCustomAttributes(true)
-                .FirstOrDefault(x => x.GetType() == typeof(ExecutionStrategy));
-            if (strategyAttr != null)
+            await _dataExchangeService.BeginExecutionAsync(recordId);
+
+            var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordId.ToString())).FullName;
+            var executionStage = plugin.ExecutionStage.First(x => MatchExecutionStageToEnvironment(x));
+
+            if (executionStage is SingleExecutionStageBase single)
             {
-                if (((ExecutionStrategy)strategyAttr).Type == ExecutionType.Batch)
+                single.OnTestPointFinishAsync = async (result) =>
                 {
-                    var instance = plugin.ExecutionStage.First(x => MatchStageToEnvironment(x));
-                    instance.SingleExecutionReport += BatchExecutionOnSingleExecutionReport;
-                    var task = instance.ExecuteAllAsync(workingDirectory.FullName, recordId, data.TestPoints);
-                    task.Wait();
-                    instance.SingleExecutionReport -= BatchExecutionOnSingleExecutionReport;
+                    await _dataExchangeService.PushExecutionResultAsync(recordId, (ExecutionResult)result);
+                };
+
+                var tasks = new List<Task<ExecutionResult>>();
+                foreach (var testPoint in data.TestPoints)
+                {
+                    var task = single.ExecuteSingleAsync(workingDirectory, recordId, testPoint);
+                    tasks.Add(task);
                 }
-                else
+                Task.WaitAll(tasks.ToArray());
+            }
+            else if (executionStage is BatchExecutionStageBase batch)
+            {
+                if (batch.ReportMode == ExecutionReportMode.AfterEach)
                 {
-                    await _dataExchangeService.BeginExecutionAsync(recordId);
-                    foreach (var testPoint in data.TestPoints)
+                    batch.OnTestPointFinishAsync = async (result) =>
                     {
-                        var executionResult = await ExecuteSingleAsync(plugin, recordId, testPoint);
-                        var task = _dataExchangeService.PushExecutionResultAsync(recordId, executionResult);
-                        task.Wait();
+                        await _dataExchangeService.PushExecutionResultAsync(recordId, (ExecutionResult)result);
+                    };
+                }
+
+                var result = await batch.ExecuteAsync(workingDirectory, recordId, data.TestPoints);
+
+                if(batch.ReportMode == ExecutionReportMode.AfterAll)
+                {
+                    foreach (var testPoint in result)
+                    {
+                        await _dataExchangeService.PushExecutionResultAsync(recordId, testPoint);
                     }
                 }
-
-                await _dataExchangeService.FinishExecutionAsync(recordId);
-            }
-            else
-            {
-                throw new NotImplementedException("Execution strategy not found");
             }
 
+            await _dataExchangeService.FinishExecutionAsync(recordId);
             _logger.LogInformation("Successfully finished test for record {0}", recordId);
         }
 
@@ -142,24 +152,23 @@ namespace PhiJudge.Agent.Executor.Services
             Directory.Delete(TempDirectoryPath, true);
         }
 
-        public async Task<ExecutionResult> ExecuteSingleAsync(Plugin plugin, long recordId, TestPointData data)
+        public Task<ExecutionResult> ExecuteSingleAsync(Plugin plugin, long recordId, TestPointData data)
         {
-            _logger.LogInformation("Executing test point {0} for record {1}", data.Order, recordId);
-
-            var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordId.ToString()));
-            var result = await plugin.ExecutionStage
-                .First(x => MatchStageToEnvironment(x))
-                .ExecuteAsync(workingDirectory.FullName, data);
-            result.RecordId = recordId;
-            result.Order = data.Order;
-            return result;
+            throw new NotImplementedException();
         }
 
-        private bool MatchStageToEnvironment<T>(T x)
+        private bool MatchExecutionStageToEnvironment<T>(T x) where T : ExecutionStageBase
         {
-            return (x?.GetType().GetCustomAttribute<ApplicationRunningOn>()?.RunningOnType) != RunningOnType.VirtualMachine
+            return x.EnvironmentType == EnvironmentType.Container
                 ? isInContainer
                 : !isInContainer;
+        }
+
+        private bool MatchCompilationStageToEnvironment<T>(T x) where T : ICompilationStage
+        {
+            return (x?.GetType().GetCustomAttribute<ApplicationRunningOn>()?.RunningOnType) == RunningOnType.VirtualMachine
+                ? !isInContainer
+                : isInContainer;
         }
     }
 }
