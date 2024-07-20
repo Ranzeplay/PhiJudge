@@ -6,24 +6,24 @@ export async function GET(
   _request: Request,
   { params }: { params: { id: string } }
 ) {
-  const testPoints = await serverPrisma.recordTestPoint.findMany({
-    where: {
-      record: {
-        id: parseInt(params.id),
+  const record = await serverPrisma.record.findUnique({
+    where: { id: parseInt(params.id) },
+    include: {
+      recordTestPoint: true,
+      problem: {
+        include: {
+          testData: true,
+        },
       },
-    },
-    select: {
-      status: true,
-      record: {
-        select: {
-          problemId: true
-        }
-      }
     },
   });
 
-  const allTestPointsPassed = testPoints.every(
-    (testPoint) => testPoint.status === RecordTestPointStatus.ACCEPTED
+  if (record?.recordTestPoint.length !== record?.problem.testData.length) {
+    return NextResponse.json({ message: 'Test has not completed yet!' }, { status: 400 });
+  }
+
+  const allTestPointsPassed = record?.recordTestPoint.every(
+    (tp) => tp.status === RecordTestPointStatus.ACCEPTED
   );
   await serverPrisma.record.update({
     where: { id: parseInt(params.id) },
@@ -34,7 +34,7 @@ export async function GET(
 
   await serverPrisma.problem.update({
     where: {
-      id: testPoints[0].record.problemId,
+      id: record?.problemId,
     },
     data: {
       totalPassed: {
