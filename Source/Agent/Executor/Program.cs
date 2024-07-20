@@ -11,7 +11,7 @@ builder.Services.AddSingleton<IExecutionService, LocalExecutionService>();
 builder.Services.AddSingleton<IHeartbeatService, HeartbeatService>();
 
 // Enable console input if the environment variable is set
-if(Environment.GetEnvironmentVariable("ENABLE_CONSOLE_INPUT")?.ToLower() == "true")
+if (Environment.GetEnvironmentVariable("ENABLE_CONSOLE_INPUT")?.ToLower() == "true")
 {
     builder.Services.AddHostedService<ConsoleService>();
 }

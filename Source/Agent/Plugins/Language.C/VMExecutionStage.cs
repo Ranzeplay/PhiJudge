@@ -1,30 +1,17 @@
 ﻿using Microsoft.Extensions.Logging;
 using PhiJudge.Agent.API.Plugin;
-using PhiJudge.Agent.API.Plugin.Attributes;
+using PhiJudge.Agent.API.Plugin.Enums;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System.Diagnostics;
 
 namespace PhiJudge.Plugin.Language.C
 {
-    [ExecutionStrategy(ExecutionType.Batch)]
-    [ApplicationRunningOn(RunningOnType.VirtualMachine)]
-    internal class VMExecutionStage : IExecutionStage
+    internal class VMExecutionStage(ILogger logger) : BatchExecutionStageBase(logger)
     {
-        private ILogger _logger = null!;
+        public override ExecutionReportMode ReportMode => ExecutionReportMode.AfterEach;
+        public override EnvironmentType EnvironmentType => EnvironmentType.Host;
 
-        public event EventHandler<SingleExecutionResultEvent>? SingleExecutionReport;
-
-        public Task<ExecutionResult> ExecuteAsync(string directory, TestPointData testPoint)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetLogger(ILogger logger)
-        {
-            _logger = logger;
-        }
-
-        public async Task ExecuteAllAsync(string directory, long recordId, IEnumerable<TestPointData> testPoints)
+        public override async Task<IEnumerable<ExecutionResult>> ExecuteAsync(string directory, long recordId, IEnumerable<TestPointData> testPoints)
         {
             _logger.LogInformation("Running batch tests for record {0}", recordId);
 
@@ -39,6 +26,7 @@ namespace PhiJudge.Plugin.Language.C
             }
             _logger.LogInformation("Record {0}, test data written to disk", recordId);
 
+            var results = new List<ExecutionResult>();
             var process = new Process
             {
                 StartInfo = new()
@@ -53,8 +41,8 @@ namespace PhiJudge.Plugin.Language.C
                     CreateNoWindow = true
                 }
             };
-            
-            process.OutputDataReceived += (sender, e) =>
+
+            process.OutputDataReceived += async (sender, e) =>
             {
                 if (string.IsNullOrWhiteSpace(e.Data)) return;
                 if (e.Data.StartsWith("[")) return;
@@ -75,7 +63,10 @@ namespace PhiJudge.Plugin.Language.C
                 };
 
                 _logger.LogInformation("Received test output for {0}+{1}", recordId, e.Data);
-                SingleExecutionReport?.Invoke(this, new SingleExecutionResultEvent(recordId, order, type, time, memory));
+                var result = new SingleExecutionResultEvent(recordId, order, type, time, memory);
+                await OnTestPointFinishAsync.Invoke(result);
+
+                results.Add((ExecutionResult)result);
             };
 
             process.ErrorDataReceived += (sender, e) =>
@@ -100,6 +91,8 @@ namespace PhiJudge.Plugin.Language.C
 
             process.WaitForExit();
             _logger.LogInformation("Record {0} finished testing", recordId);
+
+            return results;
         }
     }
 }

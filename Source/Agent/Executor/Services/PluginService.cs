@@ -3,7 +3,6 @@ using PhiJudge.Agent.API.Plugin;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System.Collections.Immutable;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace PhiJudge.Agent.Executor.Services
 {
@@ -30,7 +29,6 @@ namespace PhiJudge.Agent.Executor.Services
             _dataExchangeService = dataExchangeService;
             _loggerFactory = loggerFactory;
 
-            InitPlugins();
             LoadPlugins();
 
             RegisterFileWatcher();
@@ -47,11 +45,11 @@ namespace PhiJudge.Agent.Executor.Services
             ).Value;
         }
 
-        public void InitPlugins()
+        public void LoadPlugins()
         {
             foreach (var file in Directory.GetFiles(PluginsDirectory, "*.dll"))
             {
-                var assembly = Assembly.LoadFile(file);
+                var assembly = Assembly.LoadFrom(file);
                 var types = assembly.GetTypes();
 
                 var entrypoint = types.FirstOrDefault(t => t.GetInterface(nameof(IPluginEntrypoint)) is not null)!
@@ -59,46 +57,21 @@ namespace PhiJudge.Agent.Executor.Services
                     .First()
                     .Invoke([])
                     as IPluginEntrypoint;
+                var pluginLogger = _loggerFactory.CreateLogger(entrypoint!.Id);
+
                 var compilationStage = types.ToList().FindAll(t => t.GetInterface(nameof(ICompilationStage)) is not null)!
                     .ConvertAll(t => t.GetConstructors().First().Invoke([]) as ICompilationStage);
-                var executionStage = types.ToList().FindAll(t => t.GetInterface(nameof(IExecutionStage)) is not null)
-                    .ConvertAll(t => t.GetConstructors().First().Invoke([]) as IExecutionStage);
+                compilationStage.ForEach(c => c!.SetLogger(pluginLogger));
 
-                foreach (var entry in executionStage)
-                {
-                    foreach (var method in entry?.GetType().GetMethods() ?? [])
-                    {
-                        try
-                        {
-                            RuntimeHelpers.PrepareMethod(method.MethodHandle);
-                        }
-                        catch (Exception e)
-                        {
-                            _logger.LogError(e, "Failed to prepare method {0}", method.Name);
-                        }
-                    }
-                }
+                var executionStage = types.ToList().FindAll(t => t.IsSubclassOf(typeof(ExecutionStageBase)))
+                    .ConvertAll(t => t.GetConstructors().First().Invoke([pluginLogger]) as ExecutionStageBase);
 
                 Plugins.Add(entrypoint!.Id, new Plugin(entrypoint!, compilationStage!, executionStage!));
-                _logger.LogInformation("Loaded plugin {0}, whose id is {1}", entrypoint.Name, entrypoint.Id);
-            }
-            _logger.LogInformation("Found {0} plugins", Plugins.Count);
-
-            _dataExchangeService.UpdateSupportedLanguagesAsync(Plugins.Values.SelectMany(p => p.PluginEntrypoint.SupportedLanguageId).Distinct());
-        }
-
-        public void LoadPlugins()
-        {
-            foreach (var plugin in Plugins.Values)
-            {
-                var pluginLogger = _loggerFactory.CreateLogger(plugin.PluginEntrypoint.Id);
-
-                plugin.PluginEntrypoint.Load(pluginLogger);
-                plugin.CompilationStage.ToList().ForEach(X => X.SetLogger(pluginLogger));
-                plugin.ExecutionStage.ToList().ForEach(x => x.SetLogger(pluginLogger));
             }
 
             _logger.LogInformation("Loaded {0} plugins", Plugins.Count);
+
+            _dataExchangeService.UpdateSupportedLanguagesAsync(Plugins.Values.SelectMany(p => p.PluginEntrypoint.SupportedLanguageId).Distinct());
         }
 
         public void UnloadPlugins()
@@ -125,7 +98,6 @@ namespace PhiJudge.Agent.Executor.Services
         private void ReloadPlugins(object _s, FileSystemEventArgs _e)
         {
             UnloadPlugins();
-            InitPlugins();
             LoadPlugins();
             _logger.LogInformation($"Reloaded plugins due to the change of plugins directory");
         }

@@ -9,5 +9,13 @@ namespace PhiJudge.Agent.API.Plugin
         public ExecutionResultType Type { get; } = type;
         public long TimeMilliseconds { get; } = timeMilliseconds;
         public long PeakMemoryBytes { get; } = peakMemoryBytes;
+
+        public static explicit operator ExecutionResult(SingleExecutionResultEvent executionResultEvent)
+        {
+            var result = new ExecutionResult(executionResultEvent.Type, "lang.c ignored", executionResultEvent.TimeMilliseconds, executionResultEvent.PeakMemoryBytes);
+            result.RecordId = executionResultEvent.RecordId;
+            result.Order = executionResultEvent.Order;
+            return result;
+        }
     }
 }
