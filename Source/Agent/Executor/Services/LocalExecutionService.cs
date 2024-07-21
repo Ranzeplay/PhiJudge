@@ -80,7 +80,7 @@ namespace PhiJudge.Agent.Executor.Services
             await _dataExchangeService.BeginCompilationAsync(recordData.RecordId);
             var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordData.RecordId.ToString()));
             return await plugin.CompilationStage
-                .First(x => MatchCompilationStageToEnvironment(x))
+                .First(x => MatchStageToEnvironment(x))
                 .CompileAsync(workingDirectory.FullName, recordData.SourceCode, recordData.EnableOptimization, recordData.WarningAsError);
         }
 
@@ -89,7 +89,7 @@ namespace PhiJudge.Agent.Executor.Services
             await _dataExchangeService.BeginExecutionAsync(recordId);
 
             var workingDirectory = Directory.CreateDirectory(Path.Combine(TempDirectoryPath, recordId.ToString())).FullName;
-            var executionStage = plugin.ExecutionStage.First(x => MatchExecutionStageToEnvironment(x));
+            var executionStage = plugin.ExecutionStage.First(x => MatchStageToEnvironment(x));
 
             if (executionStage is SingleExecutionStageBase single)
             {
@@ -157,18 +157,11 @@ namespace PhiJudge.Agent.Executor.Services
             throw new NotImplementedException();
         }
 
-        private bool MatchExecutionStageToEnvironment<T>(T x) where T : ExecutionStageBase
+        private bool MatchStageToEnvironment<T>(T x) where T : IEnvironmentRestricted
         {
             return x.EnvironmentType == EnvironmentType.Container
                 ? isInContainer
                 : !isInContainer;
-        }
-
-        private bool MatchCompilationStageToEnvironment<T>(T x) where T : ICompilationStage
-        {
-            return (x?.GetType().GetCustomAttribute<ApplicationRunningOn>()?.RunningOnType) == RunningOnType.VirtualMachine
-                ? !isInContainer
-                : isInContainer;
         }
     }
 }

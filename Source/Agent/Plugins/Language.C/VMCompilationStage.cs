@@ -1,20 +1,20 @@
 ﻿using Microsoft.Extensions.Logging;
 using PhiJudge.Agent.API.Plugin.Attributes;
+using PhiJudge.Agent.API.Plugin.Enums;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System.Diagnostics;
 
 namespace PhiJudge.Plugin.Language.C
 {
-    [ApplicationRunningOn(RunningOnType.VirtualMachine)]
-    internal class VMCompilationStage : ICompilationStage
+    internal class VMCompilationStage(ILogger logger) : CompilationStageBase(logger)
     {
-        private ILogger _logger = null!;
+        public override EnvironmentType EnvironmentType => EnvironmentType.Host;
 
-        public Task<CompilationResult> CompileAsync(string directoryPath, string sourceCode, bool enableOptimization, bool warningAsError)
+        public override Task<CompilationResult> CompileAsync(string directoryPath, string sourceCode, bool enableOptimization, bool warningAsError)
         {
             File.AppendAllText(Path.Combine(directoryPath, "source.c"), sourceCode);
 
-            _logger.LogInformation($"Compiling source code in {directoryPath}");
+            Logger.LogInformation("Compiling source code in {0}", directoryPath);
             var process = new Process
             {
                 StartInfo = new()
@@ -49,11 +49,6 @@ namespace PhiJudge.Plugin.Language.C
             {
                 return Task.FromResult(new CompilationResult(CompilationResultType.FailedWithErrors, output));
             }
-        }
-
-        public void SetLogger(ILogger logger)
-        {
-            _logger = logger;
         }
     }
 }

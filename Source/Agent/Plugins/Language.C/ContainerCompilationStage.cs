@@ -1,19 +1,19 @@
 ﻿using Microsoft.Extensions.Logging;
 using PhiJudge.Agent.API.Plugin.Attributes;
+using PhiJudge.Agent.API.Plugin.Enums;
 using PhiJudge.Agent.API.Plugin.Stages;
 using System.Diagnostics;
 
 namespace PhiJudge.Plugin.Language.C
 {
-    [ApplicationRunningOn(RunningOnType.Container)]
-    internal class ContainerCompilationStage : ICompilationStage
+    internal class ContainerCompilationStage(ILogger logger) : CompilationStageBase(logger)
     {
-        private ILogger _logger = null!;
+        public override EnvironmentType EnvironmentType => EnvironmentType.Container;
 
         // TODO: Use gcc-output-parser to format compiler output on source code
-        public async Task<CompilationResult> CompileAsync(string directoryPath, string sourceCode, bool enableOptimization, bool warningAsError)
+        public override async Task<CompilationResult> CompileAsync(string directoryPath, string sourceCode, bool enableOptimization, bool warningAsError)
         {
-            _logger.LogInformation($"Compiling source code in {directoryPath}");
+            Logger.LogInformation($"Compiling source code in {directoryPath}");
 
             var sourceFileName = Path.Combine(directoryPath, "source.c");
             var targetFileName = Path.Combine(directoryPath, "target.out");
@@ -42,7 +42,7 @@ namespace PhiJudge.Plugin.Language.C
             compilerProcess.Start();
             await compilerProcess.WaitForExitAsync();
 
-            _logger.LogInformation("Finished compiling source code in {0}", directoryPath);
+            Logger.LogInformation("Finished compiling source code in {0}", directoryPath);
 
             var resultType = CompilationResultType.Unknown;
             if (compilerProcess.ExitCode == 0 && string.IsNullOrWhiteSpace(output))
@@ -66,7 +66,5 @@ namespace PhiJudge.Plugin.Language.C
 
             return new CompilationResult(resultType, output);
         }
-
-        public void SetLogger(ILogger logger) => _logger = logger;
     }
 }

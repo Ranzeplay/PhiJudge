@@ -59,9 +59,8 @@ namespace PhiJudge.Agent.Executor.Services
                     as IPluginEntrypoint;
                 var pluginLogger = _loggerFactory.CreateLogger(entrypoint!.Id);
 
-                var compilationStage = types.ToList().FindAll(t => t.GetInterface(nameof(ICompilationStage)) is not null)!
-                    .ConvertAll(t => t.GetConstructors().First().Invoke([]) as ICompilationStage);
-                compilationStage.ForEach(c => c!.SetLogger(pluginLogger));
+                var compilationStage = types.ToList().FindAll(t => t.IsSubclassOf(typeof(CompilationStageBase)))
+                    .ConvertAll(t => t.GetConstructors().First().Invoke([pluginLogger]) as CompilationStageBase);
 
                 var executionStage = types.ToList().FindAll(t => t.IsSubclassOf(typeof(ExecutionStageBase)))
                     .ConvertAll(t => t.GetConstructors().First().Invoke([pluginLogger]) as ExecutionStageBase);
