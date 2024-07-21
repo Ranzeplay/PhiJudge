@@ -7,7 +7,6 @@ namespace PhiJudge.Agent.Executor.Services
     {
         Task<CompilationResult> CompileAsync(Plugin plugin, RecordData recordData);
         Task ExecuteAllAsync(Plugin plugin, long recordId, ProblemData data);
-        Task<ExecutionResult> ExecuteSingleAsync(Plugin plugin, long recordId, TestPointData data);
         Task RunAsync(long recordId);
     }
 }

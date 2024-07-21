@@ -146,22 +146,17 @@ namespace PhiJudge.Agent.Executor.Services
             TestQueue.Add(e);
         }
 
-        public void Dispose()
-        {
-            _logger.LogInformation("Deleting temporary directory");
-            Directory.Delete(TempDirectoryPath, true);
-        }
-
-        public Task<ExecutionResult> ExecuteSingleAsync(Plugin plugin, long recordId, TestPointData data)
-        {
-            throw new NotImplementedException();
-        }
-
         private bool MatchStageToEnvironment<T>(T x) where T : IEnvironmentRestricted
         {
             return x.EnvironmentType == EnvironmentType.Container
                 ? isInContainer
                 : !isInContainer;
+        }
+
+        public void Dispose()
+        {
+            _logger.LogInformation("Deleting temporary directory");
+            Directory.Delete(TempDirectoryPath, true);
         }
     }
 }
