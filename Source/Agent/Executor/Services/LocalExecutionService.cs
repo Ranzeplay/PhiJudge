@@ -127,7 +127,7 @@ namespace PhiJudge.Agent.Executor.Services
                 }
             }
 
-            await _dataExchangeService.FinishExecutionAsync(recordId);
+            // await _dataExchangeService.FinishExecutionAsync(recordId);
             _logger.LogInformation("Successfully finished test for record {0}", recordId);
         }
 

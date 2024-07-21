@@ -90,9 +90,50 @@ export async function POST(
           actualPeakMemoryBytes: body.peakMemoryBytes,
         },
       });
+
+      channel.unsubscribe();
     }
   });
-  channel.unsubscribe();
+
+  await finishTestIfAllTestPointsPassed(parseInt(params.id));
 
   return NextResponse.json({ success: true });
+}
+
+async function finishTestIfAllTestPointsPassed(id: number) {
+  const record = await serverPrisma.record.findUnique({
+    where: { id },
+    include: {
+      recordTestPoint: true,
+      problem: {
+        include: {
+          testData: true,
+        },
+      },
+    },
+  });
+
+  if (record?.recordTestPoint.length === record?.problem.testData.length) {
+    const allTestPointsPassed = record?.recordTestPoint.every(
+      (tp) => tp.status === RecordTestPointStatus.ACCEPTED
+    );
+
+    await serverPrisma.record.update({
+      where: { id },
+      data: {
+        status: allTestPointsPassed ? RecordStatus.PASSED : RecordStatus.FAILED,
+      },
+    });
+
+    await serverPrisma.problem.update({
+      where: {
+        id: record?.problemId,
+      },
+      data: {
+        totalPassed: {
+          increment: allTestPointsPassed ? 1 : 0,
+        },
+      },
+    });
+  }
 }
