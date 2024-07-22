@@ -26,17 +26,17 @@ import {
 import { HandleSubmission } from './server';
 import { serialize } from 'object-to-formdata';
 import { useRouter } from 'next/navigation';
-import { availableProgrammingLanguage } from '@prisma/client';
 import { useEffect, useState } from 'react';
 import { LoaderCircle } from 'lucide-react';
+import { LanguageView } from '@/lib/models/language';
 
 export default function Page({ params }: { params: { id: string } }) {
-  const [availableProgrammingLanguages, setAvailableProgrammingLanguages] = useState<availableProgrammingLanguage[]>([]);
+  const [availableProgrammingLanguages, setAvailableProgrammingLanguages] = useState<LanguageView[]>([]);
   useEffect(() => {
     async function fetchLang() {
       const res = await fetch(`/api/v0/lang`);
-      const data = await res.json();
-      setAvailableProgrammingLanguages(data);
+      const data: LanguageView[] = await res.json();
+      setAvailableProgrammingLanguages(data.filter(x => x.agents > 0));
     }
 
     fetchLang();

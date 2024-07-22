@@ -26,7 +26,7 @@ export async function GET(_request: NextRequest) {
       name: l.name,
       agents: agentCount,
       enabled: l.enabled,
-    });
+    } as LanguageView);
   }
 
   return NextResponse.json(result);
