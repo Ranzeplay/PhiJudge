@@ -1,5 +1,5 @@
 [package]
-name = "phijudge-plugin-lang-c-execution"
+name = "phijudge-plugin-lang-cpp-execution"
 version = "0.1.0"
 edition = "2021"
 

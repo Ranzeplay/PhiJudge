@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using PhiJudge.Agent.API.Plugin;
 
-namespace PhiJudge.Plugin.Language.C
+namespace PhiJudge.Plugin.Language.Cpp
 {
     public class Entrypoint : IPluginEntrypoint
     {
