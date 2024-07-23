@@ -85,6 +85,13 @@ enum ExecutionResultType {
 
 ## Finish execution
 
+:::warning[Deprecation]
+
+When the last test point has submitted to the server through `/api/v0/agent/record/[id]/execution`,
+the excution stage will be finished automatically.
+
+:::
+
 **Path:** `/api/v0/agent/record/[id]/execution/finish`
 
 **Method:** GET
